@@ -13,6 +13,8 @@ import ELibrary from "./pages/ELibrary";
 import Login from "./pages/Login";
 import BecomeSeller from "./pages/BecomeSeller";
 import Admin from "./pages/Admin";
+import SellerDashboard from "./pages/SellerDashboard";
+import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,8 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/become-seller" element={<BecomeSeller />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/seller" element={<SellerDashboard />} />
+              <Route path="/subscription" element={<Subscription />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
