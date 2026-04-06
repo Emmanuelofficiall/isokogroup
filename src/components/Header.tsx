@@ -53,7 +53,7 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
           <button
             onClick={() => setLang(lang === "en" ? "rw" : "en")}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted hover:bg-muted/80 transition-colors"
@@ -63,8 +63,14 @@ const Header = () => {
           </button>
           {user ? (
             <>
+              <Link to="/seller">
+                <Button variant="outline" size="sm">Seller</Button>
+              </Link>
               <Link to="/admin">
                 <Button variant="outline" size="sm">{t("nav.admin")}</Button>
+              </Link>
+              <Link to="/subscription">
+                <Button variant="outline" size="sm">Plan</Button>
               </Link>
               <Button size="sm" variant="ghost" onClick={handleLogout}>{t("nav.logout")}</Button>
             </>
@@ -114,8 +120,14 @@ const Header = () => {
             <div className="flex flex-col gap-2 mt-4 px-4">
               {user ? (
                 <>
+                  <Link to="/seller" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full">Seller Dashboard</Button>
+                  </Link>
                   <Link to="/admin" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">{t("nav.admin")}</Button>
+                  </Link>
+                  <Link to="/subscription" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full">Subscription</Button>
                   </Link>
                   <Button className="w-full" onClick={() => { handleLogout(); setMobileOpen(false); }}>{t("nav.logout")}</Button>
                 </>
