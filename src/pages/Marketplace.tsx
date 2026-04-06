@@ -68,7 +68,7 @@ const Marketplace = () => {
       toast({ title: "Added to Cart!", description: `${product.name} added to your cart.` });
       return;
     }
-    const { error } = await supabase.from("cart_items").insert({
+    const { error } = await (supabase as any).from("cart_items").insert({
       user_id: user.id,
       product_id: product.id,
       quantity: 1,

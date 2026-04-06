@@ -37,7 +37,7 @@ const Packaging = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("packaging_requests").insert({
+    const { error } = await (supabase as any).from("packaging_requests").insert({
       user_id: user.id,
       item_description: items,
       quantity: parseInt(qty) || 1,

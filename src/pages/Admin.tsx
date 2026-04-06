@@ -52,9 +52,9 @@ const Admin = () => {
       supabase.from("products").select("*").order("created_at", { ascending: false }),
       supabase.from("subscriptions").select("*").order("created_at", { ascending: false }),
       supabase.from("books").select("*").order("created_at", { ascending: false }),
-      supabase.from("logistics_requests").select("*").order("created_at", { ascending: false }),
-      supabase.from("packaging_requests").select("*").order("created_at", { ascending: false }),
-      supabase.from("seller_applications").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("logistics_requests").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("packaging_requests").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("seller_applications").select("*").order("created_at", { ascending: false }),
     ]);
     setProfiles(profilesRes.data || []);
     setOrders(ordersRes.data || []);
@@ -137,18 +137,18 @@ const Admin = () => {
   };
 
   const handleUpdateLogisticsStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("logistics_requests").update({ status }).eq("id", id);
+    const { error } = await (supabase as any).from("logistics_requests").update({ status }).eq("id", id);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
   const handleUpdatePackagingStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("packaging_requests").update({ status }).eq("id", id);
+    const { error } = await (supabase as any).from("packaging_requests").update({ status }).eq("id", id);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
   const handleApproveApplication = async (app: any) => {
     // Update application status
-    await supabase.from("seller_applications").update({ status: "approved" }).eq("id", app.id);
+    await (supabase as any).from("seller_applications").update({ status: "approved" }).eq("id", app.id);
     // Update user profile role to seller
     await supabase.from("profiles").update({ role: "seller", business_name: app.business_name }).eq("user_id", app.user_id);
     toast({ title: "Seller Approved!" });
@@ -156,7 +156,7 @@ const Admin = () => {
   };
 
   const handleRejectApplication = async (id: string) => {
-    await supabase.from("seller_applications").update({ status: "rejected" }).eq("id", id);
+    await (supabase as any).from("seller_applications").update({ status: "rejected" }).eq("id", id);
     toast({ title: "Application Rejected" });
     fetchAll();
   };

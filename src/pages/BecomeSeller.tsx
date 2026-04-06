@@ -38,7 +38,7 @@ const BecomeSeller = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("seller_applications").insert({
+    const { error } = await (supabase as any).from("seller_applications").insert({
       user_id: user.id,
       full_name: fullname,
       business_name: business,

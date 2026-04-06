@@ -37,7 +37,7 @@ const Logistics = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("logistics_requests").insert({
+    const { error } = await (supabase as any).from("logistics_requests").insert({
       user_id: user.id,
       pickup_location: pickup,
       dropoff_location: dropoff,
