@@ -1,20 +1,30 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import logo from "@/assets/isoko-logo.jpeg";
-
-const navItems = [
-  { label: "Home", path: "/" },
-  { label: "Logistics", path: "/logistics" },
-  { label: "Packaging", path: "/packaging" },
-  { label: "Marketplace", path: "/marketplace" },
-  { label: "E-Library", path: "/e-library" },
-];
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { t, lang, setLang } = useI18n();
+  const { user, signOut } = useAuth();
+
+  const navItems = [
+    { label: t("nav.home"), path: "/" },
+    { label: t("nav.logistics"), path: "/logistics" },
+    { label: t("nav.packaging"), path: "/packaging" },
+    { label: t("nav.marketplace"), path: "/marketplace" },
+    { label: t("nav.elibrary"), path: "/e-library" },
+  ];
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -26,7 +36,6 @@ const Header = () => {
           </span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
             <Link
@@ -45,21 +54,37 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/become-seller">
-            <Button variant="outline" size="sm">Become a Seller</Button>
-          </Link>
-          <Link to="/login">
-            <Button size="sm">Login / Register</Button>
-          </Link>
+          <button
+            onClick={() => setLang(lang === "en" ? "rw" : "en")}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted hover:bg-muted/80 transition-colors"
+          >
+            <Globe className="h-3.5 w-3.5" />
+            {lang === "en" ? "RW" : "EN"}
+          </button>
+          {user ? (
+            <>
+              <Link to="/admin">
+                <Button variant="outline" size="sm">{t("nav.admin")}</Button>
+              </Link>
+              <Button size="sm" variant="ghost" onClick={handleLogout}>{t("nav.logout")}</Button>
+            </>
+          ) : (
+            <>
+              <Link to="/become-seller">
+                <Button variant="outline" size="sm">{t("nav.becomeSeller")}</Button>
+              </Link>
+              <Link to="/login">
+                <Button size="sm">{t("nav.login")}</Button>
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Mobile Toggle */}
         <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
-      {/* Mobile Nav */}
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-background animate-fade-in">
           <nav className="container flex flex-col py-4 gap-1">
@@ -77,13 +102,33 @@ const Header = () => {
                 {item.label}
               </Link>
             ))}
+            <div className="flex items-center gap-2 px-4 py-2">
+              <button
+                onClick={() => setLang(lang === "en" ? "rw" : "en")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                {lang === "en" ? "Kinyarwanda" : "English"}
+              </button>
+            </div>
             <div className="flex flex-col gap-2 mt-4 px-4">
-              <Link to="/become-seller" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full">Become a Seller</Button>
-              </Link>
-              <Link to="/login" onClick={() => setMobileOpen(false)}>
-                <Button className="w-full">Login / Register</Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link to="/admin" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full">{t("nav.admin")}</Button>
+                  </Link>
+                  <Button className="w-full" onClick={() => { handleLogout(); setMobileOpen(false); }}>{t("nav.logout")}</Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/become-seller" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full">{t("nav.becomeSeller")}</Button>
+                  </Link>
+                  <Link to="/login" onClick={() => setMobileOpen(false)}>
+                    <Button className="w-full">{t("nav.login")}</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>

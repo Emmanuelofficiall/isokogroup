@@ -2,24 +2,35 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Star, ShoppingCart, Search, SlidersHorizontal } from "lucide-react";
+import { Star, Search, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n";
+
+import wirelessEarbuds from "@/assets/products/wireless-earbuds.jpg";
+import coffeeBeans from "@/assets/products/coffee-beans.jpg";
+import handwovenBasket from "@/assets/products/handwoven-basket.jpg";
+import smartWatch from "@/assets/products/smart-watch.jpg";
+import leatherWallet from "@/assets/products/leather-wallet.jpg";
+import bluetoothSpeaker from "@/assets/products/bluetooth-speaker.jpg";
+import traditionalFabric from "@/assets/products/traditional-fabric.jpg";
+import candleSet from "@/assets/products/candle-set.jpg";
 
 const categories = ["All", "Electronics", "Fashion", "Food & Drink", "Crafts", "Home", "Accessories"];
 
 const allProducts = [
-  { name: "Wireless Earbuds Pro", price: "12,500 RWF", rating: 4.8, category: "Electronics" },
-  { name: "Organic Coffee Beans", price: "8,000 RWF", rating: 4.9, category: "Food & Drink" },
-  { name: "Handwoven Basket", price: "15,000 RWF", rating: 4.7, category: "Crafts" },
-  { name: "Smart Watch Band", price: "22,000 RWF", rating: 4.6, category: "Accessories" },
-  { name: "Leather Wallet", price: "18,000 RWF", rating: 4.5, category: "Fashion" },
-  { name: "Bluetooth Speaker", price: "30,000 RWF", rating: 4.8, category: "Electronics" },
-  { name: "Traditional Fabric", price: "10,000 RWF", rating: 4.4, category: "Fashion" },
-  { name: "Home Candle Set", price: "6,500 RWF", rating: 4.3, category: "Home" },
+  { name: "Wireless Earbuds Pro", price: "12,500 RWF", rating: 4.8, category: "Electronics", image: wirelessEarbuds },
+  { name: "Organic Coffee Beans", price: "8,000 RWF", rating: 4.9, category: "Food & Drink", image: coffeeBeans },
+  { name: "Handwoven Basket", price: "15,000 RWF", rating: 4.7, category: "Crafts", image: handwovenBasket },
+  { name: "Smart Watch Band", price: "22,000 RWF", rating: 4.6, category: "Accessories", image: smartWatch },
+  { name: "Leather Wallet", price: "18,000 RWF", rating: 4.5, category: "Fashion", image: leatherWallet },
+  { name: "Bluetooth Speaker", price: "30,000 RWF", rating: 4.8, category: "Electronics", image: bluetoothSpeaker },
+  { name: "Traditional Fabric", price: "10,000 RWF", rating: 4.4, category: "Fashion", image: traditionalFabric },
+  { name: "Home Candle Set", price: "6,500 RWF", rating: 4.3, category: "Home", image: candleSet },
 ];
 
 const Marketplace = () => {
   const [active, setActive] = useState("All");
+  const { t } = useI18n();
   const filtered = active === "All" ? allProducts : allProducts.filter((p) => p.category === active);
 
   return (
@@ -28,22 +39,20 @@ const Marketplace = () => {
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">Marketplace</span>
-            <h1 className="text-4xl md:text-5xl font-display font-bold">Shop the Best Products</h1>
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">{t("nav.marketplace")}</span>
+            <h1 className="text-4xl md:text-5xl font-display font-bold">{t("marketplace.title")}</h1>
           </div>
 
-          {/* Search & Filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search products..." className="pl-10" />
+              <Input placeholder={t("marketplace.search")} className="pl-10" />
             </div>
             <Button variant="outline" className="gap-2">
-              <SlidersHorizontal className="h-4 w-4" /> Filters
+              <SlidersHorizontal className="h-4 w-4" /> {t("marketplace.filters")}
             </Button>
           </div>
 
-          {/* Categories */}
           <div className="flex flex-wrap gap-2 mb-10">
             {categories.map((cat) => (
               <button
@@ -60,12 +69,11 @@ const Marketplace = () => {
             ))}
           </div>
 
-          {/* Products Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filtered.map((product, i) => (
               <div key={i} className="group rounded-xl border border-border bg-card overflow-hidden hover-lift">
-                <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                  <ShoppingCart className="h-12 w-12 text-muted-foreground/30 group-hover:text-primary/40 transition-colors" />
+                <div className="aspect-square overflow-hidden">
+                  <img src={product.image} alt={product.name} loading="lazy" width={512} height={512} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="p-4 space-y-2">
                   <span className="text-xs text-primary font-medium">{product.category}</span>
@@ -77,7 +85,7 @@ const Marketplace = () => {
                       {product.rating}
                     </div>
                   </div>
-                  <Button size="sm" className="w-full mt-2">Add to Cart</Button>
+                  <Button size="sm" className="w-full mt-2">{t("marketplace.addToCart")}</Button>
                 </div>
               </div>
             ))}
