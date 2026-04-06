@@ -22,7 +22,7 @@ const CTASection = () => {
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">{t("cta.joinToday")}</span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold">
-            {t("cta.title")} <span className="text-primary">200 RWF</span>
+            {t("cta.title")} <span className="text-primary">50 RWF</span>
           </h2>
           <p className="text-background/60 text-lg max-w-xl mx-auto">{t("cta.subtitle")}</p>
 
