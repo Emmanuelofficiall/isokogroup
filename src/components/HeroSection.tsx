@@ -36,7 +36,7 @@ const HeroSection = () => (
             </Button>
           </Link>
           <Link to="/marketplace">
-            <Button size="lg" variant="outline" className="text-base px-8 border-background/20 text-background hover:bg-background/10">
+            <Button size="lg" variant="outline" className="text-base px-8 border-primary-foreground/40 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 font-semibold">
               Browse Marketplace
             </Button>
           </Link>
