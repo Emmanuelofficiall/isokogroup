@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
@@ -61,6 +61,9 @@ const Header = () => {
             <Globe className="h-3.5 w-3.5" />
             {lang === "en" ? "RW" : "EN"}
           </button>
+          <Link to="/cart" aria-label="Cart">
+            <Button variant="ghost" size="icon"><ShoppingCart className="h-4 w-4" /></Button>
+          </Link>
           {user ? (
             <>
               <Link to="/seller">

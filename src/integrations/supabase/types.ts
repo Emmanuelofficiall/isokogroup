@@ -53,6 +53,38 @@ export type Database = {
         }
         Relationships: []
       }
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commissions: {
         Row: {
           commission_amount: number
@@ -93,6 +125,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      logistics_requests: {
+        Row: {
+          created_at: string
+          dropoff: string
+          id: string
+          pickup: string
+          preferred_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          dropoff: string
+          id?: string
+          pickup: string
+          preferred_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          dropoff?: string
+          id?: string
+          pickup?: string
+          preferred_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -169,6 +237,39 @@ export type Database = {
         }
         Relationships: []
       }
+      packaging_requests: {
+        Row: {
+          created_at: string
+          id: string
+          item_description: string
+          pickup_date: string | null
+          quantity: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_description: string
+          pickup_date?: string | null
+          quantity?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_description?: string
+          pickup_date?: string | null
+          quantity?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
@@ -242,6 +343,42 @@ export type Database = {
           id?: string
           phone?: string | null
           role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      seller_applications: {
+        Row: {
+          business_name: string
+          created_at: string
+          full_name: string
+          id: string
+          id_number: string
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_name: string
+          created_at?: string
+          full_name: string
+          id?: string
+          id_number: string
+          phone: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          id_number?: string
+          phone?: string
+          status?: string
           updated_at?: string
           user_id?: string
         }
