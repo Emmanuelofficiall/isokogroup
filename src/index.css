@@ -6,39 +6,43 @@
 
 @layer base {
   :root {
+    /* Pure White */
     --background: 0 0% 100%;
-    --foreground: 0 0% 8%;
+    /* Pure Black */
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 8%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 0 85% 50%;
+    /* Vivid Red */
+    --primary: 0 90% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 8%;
+    --secondary: 0 0% 0%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 0 0% 35%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 8%;
+    --accent: 0 90% 48%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 90% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 85% 50%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 90% 48%;
 
     --radius: 0.75rem;
 
-    --hero-gradient: linear-gradient(135deg, hsl(0 85% 50%), hsl(0 70% 35%));
-    --card-shadow: 0 4px 24px -4px hsl(0 0% 0% / 0.08);
-    --card-shadow-hover: 0 12px 40px -8px hsl(0 85% 50% / 0.2);
+    --hero-gradient: linear-gradient(135deg, hsl(0 90% 48%), hsl(0 0% 0%));
+    --card-shadow: 0 4px 24px -4px hsl(0 0% 0% / 0.1);
+    --card-shadow-hover: 0 16px 50px -8px hsl(0 90% 48% / 0.35);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 25%;
@@ -102,12 +106,34 @@
   }
 
   .hover-lift {
-    @apply transition-all duration-300 ease-out;
+    transition: var(--transition-smooth);
   }
 
   .hover-lift:hover {
-    transform: translateY(-6px);
+    transform: translateY(-8px) scale(1.02);
     box-shadow: var(--card-shadow-hover);
+  }
+
+  .hover-glow {
+    transition: var(--transition-smooth);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.5);
+    transform: scale(1.05);
+  }
+
+  .hover-scale {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* Smooth transitions on all interactive elements */
+  a, button {
+    transition: var(--transition-smooth);
   }
 
   .animate-slide-up {
