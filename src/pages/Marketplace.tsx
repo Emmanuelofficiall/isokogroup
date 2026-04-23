@@ -65,7 +65,10 @@ const Marketplace = () => {
       return;
     }
     if (product.isDefault) {
-      toast({ title: "Added to Cart!", description: `${product.name} added to your cart.` });
+      toast({
+        title: "Demo product",
+        description: "This is a sample. Browse seller-listed products to add real items to your cart.",
+      });
       return;
     }
     const { error } = await (supabase as any).from("cart_items").insert({

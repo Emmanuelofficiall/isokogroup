@@ -4,6 +4,7 @@ import { Menu, X, Globe, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import logo from "@/assets/isoko-logo.jpeg";
 
 const Header = () => {
@@ -12,6 +13,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { t, lang, setLang } = useI18n();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
 
   const navItems = [
     { label: t("nav.home"), path: "/" },
@@ -69,9 +71,11 @@ const Header = () => {
               <Link to="/seller">
                 <Button variant="outline" size="sm">Seller</Button>
               </Link>
-              <Link to="/admin">
-                <Button variant="outline" size="sm">{t("nav.admin")}</Button>
-              </Link>
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="outline" size="sm">{t("nav.admin")}</Button>
+                </Link>
+              )}
               <Link to="/subscription">
                 <Button variant="outline" size="sm">Plan</Button>
               </Link>
@@ -126,9 +130,11 @@ const Header = () => {
                   <Link to="/seller" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">Seller Dashboard</Button>
                   </Link>
-                  <Link to="/admin" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" className="w-full">{t("nav.admin")}</Button>
-                  </Link>
+                  {isAdmin && (
+                    <Link to="/admin" onClick={() => setMobileOpen(false)}>
+                      <Button variant="outline" className="w-full">{t("nav.admin")}</Button>
+                    </Link>
+                  )}
                   <Link to="/subscription" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">Subscription</Button>
                   </Link>
