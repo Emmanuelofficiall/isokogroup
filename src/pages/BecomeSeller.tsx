@@ -107,33 +107,34 @@ const BecomeSeller = () => {
           </div>
 
           <div className="rounded-xl border border-border bg-card p-8">
-            <h2 className="text-xl font-semibold mb-6">{t("seller.form")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("seller.form")}</h2>
+            <p className="text-sm text-muted-foreground mb-6">All fields are required. Please provide accurate information — applications with missing or invalid details will be rejected.</p>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fullname">{t("seller.fullName")}</Label>
-                  <Input id="fullname" placeholder="Your full name" value={fullname} onChange={(e) => setFullname(e.target.value)} required />
+                  <Label htmlFor="fullname">{t("seller.fullName")} *</Label>
+                  <Input id="fullname" placeholder="Your full legal name" value={fullname} onChange={(e) => setFullname(e.target.value)} required minLength={3} maxLength={100} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="business">{t("seller.businessName")}</Label>
-                  <Input id="business" placeholder="Your business name" value={business} onChange={(e) => setBusiness(e.target.value)} required />
+                  <Label htmlFor="business">{t("seller.businessName")} *</Label>
+                  <Input id="business" placeholder="Your business name" value={business} onChange={(e) => setBusiness(e.target.value)} required minLength={2} maxLength={100} />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t("auth.email")}</Label>
-                  <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                  <Label htmlFor="email">{t("auth.email")} *</Label>
+                  <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={255} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">{t("seller.phone")}</Label>
-                  <Input id="phone" placeholder="+250 7XX XXX XXX" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                  <Label htmlFor="phone">{t("seller.phone")} *</Label>
+                  <Input id="phone" type="tel" placeholder="+250 7XX XXX XXX" value={phone} onChange={(e) => setPhone(e.target.value)} required minLength={8} maxLength={20} />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="id">{t("seller.idNumber")}</Label>
-                <Input id="id" placeholder="National ID number" value={idNumber} onChange={(e) => setIdNumber(e.target.value)} required />
+                <Label htmlFor="id">{t("seller.idNumber")} *</Label>
+                <Input id="id" placeholder="National ID number" value={idNumber} onChange={(e) => setIdNumber(e.target.value)} required minLength={6} maxLength={30} />
               </div>
-              <Button className="w-full" size="lg" disabled={loading}>
+              <Button className="w-full hover-glow" size="lg" disabled={loading}>
                 {loading ? "Submitting..." : t("seller.submit")}
               </Button>
             </form>
