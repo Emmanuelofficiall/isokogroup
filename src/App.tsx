@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/lib/auth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Logistics from "./pages/Logistics";
 import Packaging from "./pages/Packaging";
@@ -30,16 +31,16 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/logistics" element={<Logistics />} />
-              <Route path="/packaging" element={<Packaging />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/e-library" element={<ELibrary />} />
               <Route path="/login" element={<Login />} />
               <Route path="/become-seller" element={<BecomeSeller />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/seller" element={<SellerDashboard />} />
               <Route path="/subscription" element={<Subscription />} />
-              <Route path="/cart" element={<Cart />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/logistics" element={<ProtectedRoute><Logistics /></ProtectedRoute>} />
+              <Route path="/packaging" element={<ProtectedRoute><Packaging /></ProtectedRoute>} />
+              <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+              <Route path="/e-library" element={<ProtectedRoute><ELibrary /></ProtectedRoute>} />
+              <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
+              <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
