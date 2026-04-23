@@ -37,14 +37,43 @@ const BecomeSeller = () => {
       navigate("/login");
       return;
     }
+
+    // Strict validation — all fields required and properly formatted
+    const trimmedName = fullname.trim();
+    const trimmedBusiness = business.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phone.trim();
+    const trimmedId = idNumber.trim();
+
+    if (!trimmedName || trimmedName.length < 3) {
+      toast({ title: "Invalid full name", description: "Please enter your full legal name (at least 3 characters).", variant: "destructive" });
+      return;
+    }
+    if (!trimmedBusiness || trimmedBusiness.length < 2) {
+      toast({ title: "Invalid business name", description: "Please enter a valid business name.", variant: "destructive" });
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      toast({ title: "Invalid email", description: "Please enter a valid email address.", variant: "destructive" });
+      return;
+    }
+    if (!/^\+?[\d\s-]{8,15}$/.test(trimmedPhone)) {
+      toast({ title: "Invalid phone", description: "Please enter a valid phone number (8-15 digits).", variant: "destructive" });
+      return;
+    }
+    if (!trimmedId || trimmedId.length < 6) {
+      toast({ title: "Invalid ID", description: "Please enter your full national ID number.", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
     const { error } = await (supabase as any).from("seller_applications").insert({
       user_id: user.id,
-      full_name: fullname,
-      business_name: business,
-      email,
-      phone,
-      id_number: idNumber,
+      full_name: trimmedName,
+      business_name: trimmedBusiness,
+      email: trimmedEmail,
+      phone: trimmedPhone,
+      id_number: trimmedId,
     });
     setLoading(false);
     if (error) {
