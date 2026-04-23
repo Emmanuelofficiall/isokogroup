@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/lib/auth";
+import { SubscriptionProvider } from "@/lib/subscription";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Logistics from "./pages/Logistics";
@@ -25,26 +26,28 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <I18nProvider>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/become-seller" element={<BecomeSeller />} />
-              <Route path="/subscription" element={<Subscription />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/logistics" element={<ProtectedRoute><Logistics /></ProtectedRoute>} />
-              <Route path="/packaging" element={<ProtectedRoute><Packaging /></ProtectedRoute>} />
-              <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
-              <Route path="/e-library" element={<ProtectedRoute><ELibrary /></ProtectedRoute>} />
-              <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
-              <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <SubscriptionProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/become-seller" element={<BecomeSeller />} />
+                <Route path="/subscription" element={<Subscription />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/logistics" element={<ProtectedRoute><Logistics /></ProtectedRoute>} />
+                <Route path="/packaging" element={<ProtectedRoute><Packaging /></ProtectedRoute>} />
+                <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+                <Route path="/e-library" element={<ProtectedRoute><ELibrary /></ProtectedRoute>} />
+                <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
+                <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </SubscriptionProvider>
       </AuthProvider>
     </I18nProvider>
   </QueryClientProvider>
