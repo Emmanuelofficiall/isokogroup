@@ -161,6 +161,44 @@ const Admin = () => {
     fetchAll();
   };
 
+  const getSignedIdUrl = async (path: string) => {
+    const { data, error } = await supabase.storage
+      .from("id-documents")
+      .createSignedUrl(path, 60 * 5); // 5 min
+    if (error || !data?.signedUrl) {
+      toast({ title: "Could not load document", description: error?.message || "Unknown error", variant: "destructive" });
+      return null;
+    }
+    return data.signedUrl;
+  };
+
+  const handleViewId = async (path: string | null) => {
+    if (!path) { toast({ title: "No document uploaded", variant: "destructive" }); return; }
+    const url = await getSignedIdUrl(path);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleDownloadId = async (path: string | null, applicantName: string) => {
+    if (!path) { toast({ title: "No document uploaded", variant: "destructive" }); return; }
+    const url = await getSignedIdUrl(path);
+    if (!url) return;
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const ext = path.split(".").pop() || "bin";
+      const a = document.createElement("a");
+      const objectUrl = URL.createObjectURL(blob);
+      a.href = objectUrl;
+      a.download = `id-${applicantName.replace(/[^a-z0-9]+/gi, "_")}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(objectUrl);
+    } catch (e: any) {
+      toast({ title: "Download failed", description: e?.message || "Unknown error", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
