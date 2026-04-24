@@ -191,3 +191,42 @@
   0%, 100% { box-shadow: 0 0 0 0 hsl(0 85% 50% / 0.4); }
   50% { box-shadow: 0 0 20px 4px hsl(0 85% 50% / 0.2); }
 }
+
+/* Book card scroll fade-in */
+@keyframes bookFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.book-card {
+  opacity: 0;
+}
+
+.book-card.in-view {
+  animation: bookFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Reader page-turn animation */
+@keyframes pageTurn {
+  0% {
+    opacity: 0;
+    transform: perspective(1200px) rotateY(-90deg);
+    transform-origin: left center;
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1200px) rotateY(0deg);
+    transform-origin: left center;
+  }
+}
+
+.animate-page-turn {
+  animation: pageTurn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  backface-visibility: hidden;
+}
