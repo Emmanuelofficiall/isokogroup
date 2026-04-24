@@ -357,7 +357,8 @@ const Admin = () => {
                           <TableHead>Business</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>Phone</TableHead>
-                          <TableHead>ID</TableHead>
+                          <TableHead>ID Number</TableHead>
+                          <TableHead>ID Document</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
@@ -367,9 +368,37 @@ const Admin = () => {
                           <TableRow key={a.id}>
                             <TableCell className="font-medium">{a.full_name}</TableCell>
                             <TableCell>{a.business_name}</TableCell>
-                            <TableCell>{a.email}</TableCell>
+                            <TableCell>{a.email || "—"}</TableCell>
                             <TableCell>{a.phone}</TableCell>
-                            <TableCell>{a.id_number}</TableCell>
+                            <TableCell className="font-mono text-xs">{a.id_number}</TableCell>
+                            <TableCell>
+                              {a.id_document_url ? (
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-1 h-8 px-2"
+                                    onClick={() => handleViewId(a.id_document_url)}
+                                    title="View document"
+                                  >
+                                    <Eye className="h-3.5 w-3.5" />
+                                    <span className="hidden sm:inline">View</span>
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-1 h-8 px-2"
+                                    onClick={() => handleDownloadId(a.id_document_url, a.full_name)}
+                                    title="Download document"
+                                  >
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span className="hidden sm:inline">Download</span>
+                                  </Button>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">No document</span>
+                              )}
+                            </TableCell>
                             <TableCell>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 a.status === "approved" ? "bg-green-100 text-green-700" :
@@ -378,11 +407,13 @@ const Admin = () => {
                               }`}>{a.status}</span>
                             </TableCell>
                             <TableCell>
-                              {a.status === "pending" && (
+                              {a.status === "pending" ? (
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => handleApproveApplication(a)}>Approve</Button>
                                   <Button size="sm" variant="destructive" onClick={() => handleRejectApplication(a.id)}>Reject</Button>
                                 </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">—</span>
                               )}
                             </TableCell>
                           </TableRow>
