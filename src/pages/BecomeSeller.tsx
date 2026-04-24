@@ -195,8 +195,36 @@ const BecomeSeller = () => {
             </ul>
           </div>
 
+          {/* Application status banner */}
+          {!checkingApp && existingApp && statusConfig[existingApp.status as keyof typeof statusConfig] && (() => {
+            const cfg = statusConfig[existingApp.status as keyof typeof statusConfig];
+            const Icon = cfg.icon;
+            return (
+              <div className={`rounded-xl border p-6 mb-8 ${cfg.bg}`}>
+                <div className="flex items-start gap-4">
+                  <Icon className={`h-6 w-6 flex-shrink-0 mt-0.5 ${cfg.color}`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-lg font-semibold">Your Application Status:</h3>
+                      <span className={`px-3 py-1 rounded-full text-sm font-bold ${cfg.color} bg-background/60`}>
+                        {cfg.label}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">{cfg.message}</p>
+                    <div className="mt-3 text-xs text-muted-foreground space-y-1">
+                      <p><span className="font-medium text-foreground">Submitted:</span> {new Date(existingApp.created_at).toLocaleString()}</p>
+                      <p><span className="font-medium text-foreground">Business:</span> {existingApp.business_name}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="rounded-xl border border-border bg-card p-8">
-            <h2 className="text-xl font-semibold mb-2">{t("seller.form")}</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {existingApp?.status === "rejected" ? "Re-apply" : existingApp ? "Submit a new application" : t("seller.form")}
+            </h2>
             <p className="text-sm text-muted-foreground mb-6">All fields are required. Please provide accurate information — applications with missing or invalid details will be rejected.</p>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
