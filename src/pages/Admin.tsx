@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText } from "lucide-react";
+import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText, Eye, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -159,6 +159,44 @@ const Admin = () => {
     await (supabase as any).from("seller_applications").update({ status: "rejected" }).eq("id", id);
     toast({ title: "Application Rejected" });
     fetchAll();
+  };
+
+  const getSignedIdUrl = async (path: string) => {
+    const { data, error } = await supabase.storage
+      .from("id-documents")
+      .createSignedUrl(path, 60 * 5); // 5 min
+    if (error || !data?.signedUrl) {
+      toast({ title: "Could not load document", description: error?.message || "Unknown error", variant: "destructive" });
+      return null;
+    }
+    return data.signedUrl;
+  };
+
+  const handleViewId = async (path: string | null) => {
+    if (!path) { toast({ title: "No document uploaded", variant: "destructive" }); return; }
+    const url = await getSignedIdUrl(path);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleDownloadId = async (path: string | null, applicantName: string) => {
+    if (!path) { toast({ title: "No document uploaded", variant: "destructive" }); return; }
+    const url = await getSignedIdUrl(path);
+    if (!url) return;
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const ext = path.split(".").pop() || "bin";
+      const a = document.createElement("a");
+      const objectUrl = URL.createObjectURL(blob);
+      a.href = objectUrl;
+      a.download = `id-${applicantName.replace(/[^a-z0-9]+/gi, "_")}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(objectUrl);
+    } catch (e: any) {
+      toast({ title: "Download failed", description: e?.message || "Unknown error", variant: "destructive" });
+    }
   };
 
   return (
@@ -319,7 +357,8 @@ const Admin = () => {
                           <TableHead>Business</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>Phone</TableHead>
-                          <TableHead>ID</TableHead>
+                          <TableHead>ID Number</TableHead>
+                          <TableHead>ID Document</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
@@ -329,9 +368,37 @@ const Admin = () => {
                           <TableRow key={a.id}>
                             <TableCell className="font-medium">{a.full_name}</TableCell>
                             <TableCell>{a.business_name}</TableCell>
-                            <TableCell>{a.email}</TableCell>
+                            <TableCell>{a.email || "—"}</TableCell>
                             <TableCell>{a.phone}</TableCell>
-                            <TableCell>{a.id_number}</TableCell>
+                            <TableCell className="font-mono text-xs">{a.id_number}</TableCell>
+                            <TableCell>
+                              {a.id_document_url ? (
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-1 h-8 px-2"
+                                    onClick={() => handleViewId(a.id_document_url)}
+                                    title="View document"
+                                  >
+                                    <Eye className="h-3.5 w-3.5" />
+                                    <span className="hidden sm:inline">View</span>
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-1 h-8 px-2"
+                                    onClick={() => handleDownloadId(a.id_document_url, a.full_name)}
+                                    title="Download document"
+                                  >
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span className="hidden sm:inline">Download</span>
+                                  </Button>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">No document</span>
+                              )}
+                            </TableCell>
                             <TableCell>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 a.status === "approved" ? "bg-green-100 text-green-700" :
@@ -340,11 +407,13 @@ const Admin = () => {
                               }`}>{a.status}</span>
                             </TableCell>
                             <TableCell>
-                              {a.status === "pending" && (
+                              {a.status === "pending" ? (
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => handleApproveApplication(a)}>Approve</Button>
                                   <Button size="sm" variant="destructive" onClick={() => handleRejectApplication(a.id)}>Reject</Button>
                                 </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">—</span>
                               )}
                             </TableCell>
                           </TableRow>
