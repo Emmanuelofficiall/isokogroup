@@ -211,6 +211,12 @@ const BecomeSeller = () => {
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-2">{cfg.message}</p>
+                    {existingApp.status === "rejected" && existingApp.rejection_reason && (
+                      <div className="mt-3 rounded-md border border-destructive/30 bg-background/60 p-3">
+                        <p className="text-xs font-semibold text-destructive uppercase tracking-wide">Reason from admin</p>
+                        <p className="text-sm text-foreground mt-1 whitespace-pre-wrap break-words">{existingApp.rejection_reason}</p>
+                      </div>
+                    )}
                     <div className="mt-3 text-xs text-muted-foreground space-y-1">
                       <p><span className="font-medium text-foreground">Submitted:</span> {new Date(existingApp.created_at).toLocaleString()}</p>
                       <p><span className="font-medium text-foreground">Business:</span> {existingApp.business_name}</p>

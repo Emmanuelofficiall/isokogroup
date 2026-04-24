@@ -13,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
 const COLORS = ["hsl(0, 85%, 50%)", "hsl(0, 0%, 20%)", "hsl(0, 85%, 65%)", "hsl(0, 0%, 45%)", "hsl(0, 85%, 80%)"];
@@ -38,6 +40,12 @@ const Admin = () => {
   const [bookCategory, setBookCategory] = useState("Business");
   const [bookPages, setBookPages] = useState("");
   const [bookDesc, setBookDesc] = useState("");
+
+  // Reject dialog state
+  const [rejectingApp, setRejectingApp] = useState<any | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
+  const MAX_REASON = 500;
 
   useEffect(() => {
     if (!user) return;
@@ -155,9 +163,27 @@ const Admin = () => {
     fetchAll();
   };
 
-  const handleRejectApplication = async (id: string) => {
-    await (supabase as any).from("seller_applications").update({ status: "rejected" }).eq("id", id);
-    toast({ title: "Application Rejected" });
+  const handleRejectApplication = (app: any) => {
+    setRejectingApp(app);
+    setRejectReason("");
+  };
+
+  const confirmRejectApplication = async () => {
+    if (!rejectingApp) return;
+    const trimmed = rejectReason.trim().slice(0, MAX_REASON);
+    setRejectSubmitting(true);
+    const { error } = await (supabase as any)
+      .from("seller_applications")
+      .update({ status: "rejected", rejection_reason: trimmed || null })
+      .eq("id", rejectingApp.id);
+    setRejectSubmitting(false);
+    if (error) {
+      toast({ title: "Reject failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Application Rejected", description: trimmed ? "Reason shared with applicant." : "No reason provided." });
+    setRejectingApp(null);
+    setRejectReason("");
     fetchAll();
   };
 
@@ -410,7 +436,7 @@ const Admin = () => {
                               {a.status === "pending" ? (
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => handleApproveApplication(a)}>Approve</Button>
-                                  <Button size="sm" variant="destructive" onClick={() => handleRejectApplication(a.id)}>Reject</Button>
+                                  <Button size="sm" variant="destructive" onClick={() => handleRejectApplication(a)}>Reject</Button>
                                 </div>
                               ) : (
                                 <span className="text-xs text-muted-foreground">—</span>
@@ -744,6 +770,43 @@ const Admin = () => {
         </div>
       </section>
       <Footer />
+
+      {/* Reject application dialog with optional reason */}
+      <Dialog open={!!rejectingApp} onOpenChange={(open) => { if (!open) { setRejectingApp(null); setRejectReason(""); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reject Seller Application</DialogTitle>
+            <DialogDescription>
+              {rejectingApp ? (
+                <>You are about to reject <span className="font-medium text-foreground">{rejectingApp.full_name}</span>'s application{rejectingApp.business_name ? ` for ${rejectingApp.business_name}` : ""}.</>
+              ) : null}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="reject-reason">Reason (optional)</Label>
+            <Textarea
+              id="reject-reason"
+              placeholder="e.g. ID document is unclear, name does not match, missing details…"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value.slice(0, MAX_REASON))}
+              rows={4}
+              maxLength={MAX_REASON}
+            />
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>This reason will be shown to the applicant.</span>
+              <span>{rejectReason.length}/{MAX_REASON}</span>
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => { setRejectingApp(null); setRejectReason(""); }} disabled={rejectSubmitting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmRejectApplication} disabled={rejectSubmitting}>
+              {rejectSubmitting ? "Rejecting…" : "Confirm Reject"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
