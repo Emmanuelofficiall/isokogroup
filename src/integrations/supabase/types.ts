@@ -354,6 +354,7 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
+          id_document_url: string | null
           id_number: string
           phone: string
           status: string
@@ -365,6 +366,7 @@ export type Database = {
           created_at?: string
           full_name: string
           id?: string
+          id_document_url?: string | null
           id_number: string
           phone: string
           status?: string
@@ -376,6 +378,7 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
+          id_document_url?: string | null
           id_number?: string
           phone?: string
           status?: string

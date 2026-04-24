@@ -73,7 +73,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
     const { data, error } = await supabase
       .from("subscriptions")
-      .insert({ user_id: user.id, plan: "basic", amount: 50, status: "trial" })
+      .insert({ user_id: user.id, plan: "basic", amount: 200, status: "trial" })
       .select()
       .single();
     if (!error && data) setSubscription(data as Subscription);

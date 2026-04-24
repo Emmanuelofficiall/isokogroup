@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Upload, FileCheck2, X } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
@@ -15,20 +15,44 @@ const rules = [
   "10% monthly commission on profits",
   "Products must meet quality standards",
   "ID verification required",
-  "Active subscription required (50 RWF)",
+  "Active subscription required (200 RWF)",
 ];
+
+const MAX_ID_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_ID_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
 
 const BecomeSeller = () => {
   const { user } = useAuth();
   const { t } = useI18n();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [fullname, setFullname] = useState("");
   const [business, setBusiness] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [idNumber, setIdNumber] = useState("");
+  const [idFile, setIdFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!ALLOWED_ID_TYPES.includes(f.type)) {
+      toast({ title: "Invalid file type", description: "Upload a JPG, PNG, WEBP or PDF file.", variant: "destructive" });
+      return;
+    }
+    if (f.size > MAX_ID_SIZE) {
+      toast({ title: "File too large", description: "Maximum file size is 5MB.", variant: "destructive" });
+      return;
+    }
+    setIdFile(f);
+  };
+
+  const clearFile = () => {
+    setIdFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +62,6 @@ const BecomeSeller = () => {
       return;
     }
 
-    // Strict validation — all fields required and properly formatted
     const trimmedName = fullname.trim();
     const trimmedBusiness = business.trim();
     const trimmedEmail = email.trim();
@@ -65,8 +88,26 @@ const BecomeSeller = () => {
       toast({ title: "Invalid ID", description: "Please enter your full national ID number.", variant: "destructive" });
       return;
     }
+    if (!idFile) {
+      toast({ title: "ID document required", description: "Please upload a clear scan or photo of your national ID.", variant: "destructive" });
+      return;
+    }
 
     setLoading(true);
+
+    // Upload ID document to private storage bucket under user's folder
+    const ext = idFile.name.split(".").pop()?.toLowerCase() || "bin";
+    const path = `${user.id}/id-${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("id-documents")
+      .upload(path, idFile, { upsert: false, contentType: idFile.type });
+
+    if (uploadError) {
+      setLoading(false);
+      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+      return;
+    }
+
     const { error } = await (supabase as any).from("seller_applications").insert({
       user_id: user.id,
       full_name: trimmedName,
@@ -74,13 +115,15 @@ const BecomeSeller = () => {
       email: trimmedEmail,
       phone: trimmedPhone,
       id_number: trimmedId,
+      id_document_url: path,
     });
     setLoading(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Application Submitted!", description: "We will review your application and get back to you soon." });
+      toast({ title: "Application Submitted!", description: "We will review your application and ID document and get back to you soon." });
       setFullname(""); setBusiness(""); setEmail(""); setPhone(""); setIdNumber("");
+      clearFile();
     }
   };
 
@@ -134,6 +177,50 @@ const BecomeSeller = () => {
                 <Label htmlFor="id">{t("seller.idNumber")} *</Label>
                 <Input id="id" placeholder="National ID number" value={idNumber} onChange={(e) => setIdNumber(e.target.value)} required minLength={6} maxLength={30} />
               </div>
+
+              {/* ID document upload */}
+              <div className="space-y-2">
+                <Label htmlFor="id-doc">National ID document *</Label>
+                <p className="text-xs text-muted-foreground">Upload a clear scan or photo of your national ID (JPG, PNG, WEBP or PDF, max 5MB).</p>
+                <input
+                  ref={fileInputRef}
+                  id="id-doc"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                {!idFile ? (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-border bg-muted/30 hover:bg-muted/60 hover:border-primary transition-colors p-6 text-sm text-muted-foreground"
+                  >
+                    <Upload className="h-6 w-6 text-primary" />
+                    <span className="font-medium">Click to upload your ID document</span>
+                    <span className="text-xs">JPG, PNG, WEBP or PDF · max 5MB</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center justify-between rounded-md border border-border bg-muted/40 p-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FileCheck2 className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{idFile.name}</p>
+                        <p className="text-xs text-muted-foreground">{(idFile.size / 1024).toFixed(0)} KB</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearFile}
+                      className="p-1 rounded hover:bg-background text-muted-foreground hover:text-destructive transition-colors"
+                      aria-label="Remove file"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <Button className="w-full hover-glow" size="lg" disabled={loading}>
                 {loading ? "Submitting..." : t("seller.submit")}
               </Button>
