@@ -30,11 +30,23 @@ const defaultBooks = [
   { title: "The Living Cell", author: "Dr. Sarah N.", category: "Science", pages: 350, image: livingCell },
 ];
 
+const READER_PAGES = [
+  "Welcome to the ISOKO GROUP E-Library reader. Enjoy a smooth, distraction-free reading experience.",
+  "Chapter 1 — Introduction. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.",
+  "Chapter 2 — Foundations. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+  "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore.",
+  "Chapter 3 — Conclusion. Thank you for reading on ISOKO GROUP E-Library. Your reading progress is saved automatically while you read.",
+];
+
 const ELibrary = () => {
   const [active, setActive] = useState("All");
   const [search, setSearch] = useState("");
   const [dbBooks, setDbBooks] = useState<any[]>([]);
   const [readingBook, setReadingBook] = useState<string | null>(null);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageKey, setPageKey] = useState(0);
+  const gridRef = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
   const { toast } = useToast();
 
@@ -55,10 +67,43 @@ const ELibrary = () => {
     .filter(b => active === "All" || b.category === active)
     .filter(b => b.title.toLowerCase().includes(search.toLowerCase()) || b.author.toLowerCase().includes(search.toLowerCase()));
 
+  // Fade-in book cards on scroll
+  useEffect(() => {
+    if (!gridRef.current) return;
+    const cards = gridRef.current.querySelectorAll(".book-card");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.animationDelay = `${(i % 8) * 60}ms`;
+            el.classList.add("in-view");
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+    cards.forEach((c) => observer.observe(c));
+    return () => observer.disconnect();
+  }, [filtered.length]);
+
   const handleRead = (title: string) => {
     setReadingBook(title);
+    setPageIndex(0);
+    setPageKey((k) => k + 1);
     toast({ title: `Opening: ${title}`, description: "Book reader opened. Enjoy reading!" });
   };
+
+  const turnPage = (dir: 1 | -1) => {
+    setPageIndex((p) => {
+      const next = Math.min(Math.max(p + dir, 0), READER_PAGES.length - 1);
+      if (next !== p) setPageKey((k) => k + 1);
+      return next;
+    });
+  };
+
+  const progress = Math.round(((pageIndex + 1) / READER_PAGES.length) * 100);
 
   return (
     <div className="min-h-screen">
