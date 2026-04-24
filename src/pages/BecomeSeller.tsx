@@ -34,6 +34,27 @@ const BecomeSeller = () => {
   const [phone, setPhone] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [idFile, setIdFile] = useState<File | null>(null);
+  const [existingApp, setExistingApp] = useState<any>(null);
+  const [checkingApp, setCheckingApp] = useState(true);
+
+  const fetchApplication = async () => {
+    if (!user) { setCheckingApp(false); return; }
+    setCheckingApp(true);
+    const { data } = await (supabase as any)
+      .from("seller_applications")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setExistingApp(data);
+    setCheckingApp(false);
+  };
+
+  useEffect(() => {
+    fetchApplication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
