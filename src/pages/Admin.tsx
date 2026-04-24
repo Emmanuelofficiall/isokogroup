@@ -770,6 +770,43 @@ const Admin = () => {
         </div>
       </section>
       <Footer />
+
+      {/* Reject application dialog with optional reason */}
+      <Dialog open={!!rejectingApp} onOpenChange={(open) => { if (!open) { setRejectingApp(null); setRejectReason(""); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reject Seller Application</DialogTitle>
+            <DialogDescription>
+              {rejectingApp ? (
+                <>You are about to reject <span className="font-medium text-foreground">{rejectingApp.full_name}</span>'s application{rejectingApp.business_name ? ` for ${rejectingApp.business_name}` : ""}.</>
+              ) : null}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="reject-reason">Reason (optional)</Label>
+            <Textarea
+              id="reject-reason"
+              placeholder="e.g. ID document is unclear, name does not match, missing details…"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value.slice(0, MAX_REASON))}
+              rows={4}
+              maxLength={MAX_REASON}
+            />
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>This reason will be shown to the applicant.</span>
+              <span>{rejectReason.length}/{MAX_REASON}</span>
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => { setRejectingApp(null); setRejectReason(""); }} disabled={rejectSubmitting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmRejectApplication} disabled={rejectSubmitting}>
+              {rejectSubmitting ? "Rejecting…" : "Confirm Reject"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
