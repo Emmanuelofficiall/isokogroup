@@ -68,8 +68,8 @@ const SubscriptionRequired = ({ reason }: Props) => {
             </h1>
             <p className="text-muted-foreground">
               {expired
-                ? "Renew your plan for 50 RWF to keep accessing all ISOKO services."
-                : "Subscribe for just 50 RWF/month to unlock all ISOKO GROUP services."}
+                ? "Renew your plan for 200 RWF to keep accessing all ISOKO services."
+                : "Subscribe for just 200 RWF/month to unlock all ISOKO GROUP services."}
             </p>
           </div>
 
@@ -106,7 +106,7 @@ const SubscriptionRequired = ({ reason }: Props) => {
             </DialogTitle>
             <DialogDescription>
               {expired
-                ? "Pay 50 RWF to restore access for 30 days."
+                ? "Pay 200 RWF to restore access for 30 days."
                 : "Start with a free trial or pay now for full access."}
             </DialogDescription>
           </DialogHeader>
@@ -133,7 +133,7 @@ const SubscriptionRequired = ({ reason }: Props) => {
             <div className="rounded-lg border-2 border-primary bg-primary/5 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-semibold">Monthly Plan</span>
-                <span className="text-lg text-primary font-bold">50 RWF</span>
+                <span className="text-lg text-primary font-bold">200 RWF</span>
               </div>
               <p className="text-xs text-muted-foreground">30 days of unlimited access. Mobile Money, Card, or PayPal.</p>
               <Button
@@ -142,7 +142,7 @@ const SubscriptionRequired = ({ reason }: Props) => {
                 disabled={processing || (!expired && !subscription)}
               >
                 <CreditCard className="h-4 w-4" />
-                {processing ? "Processing..." : "Pay 50 RWF"}
+                {processing ? "Processing..." : "Pay 200 RWF"}
               </Button>
               {!expired && !subscription && (
                 <p className="text-xs text-center text-muted-foreground">Start a trial first to unlock paid upgrade.</p>

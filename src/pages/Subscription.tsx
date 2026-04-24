@@ -53,7 +53,7 @@ const Subscription = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-primary">50 RWF</p>
+                  <p className="text-4xl font-bold text-primary">200 RWF</p>
                   <p className="text-muted-foreground">per month after trial</p>
                 </div>
                 <ul className="space-y-3">
@@ -112,10 +112,10 @@ const Subscription = () => {
 
                 {subscription.status === "expired" && (
                   <div className="text-center space-y-4">
-                    <p className="text-muted-foreground">Your access has expired. Pay 50 RWF to continue for 30 days.</p>
+                    <p className="text-muted-foreground">Your access has expired. Pay 200 RWF to continue for 30 days.</p>
                     <Button className="w-full gap-2" size="lg" onClick={handleActivate}>
                       <CreditCard className="h-4 w-4" />
-                      Pay 50 RWF — Renew Now
+                      Pay 200 RWF — Renew Now
                     </Button>
                     <p className="text-xs text-muted-foreground">
                       Pay via Mobile Money, Card, or PayPal
@@ -128,7 +128,7 @@ const Subscription = () => {
                     <p className="text-muted-foreground">Enjoying the trial? Upgrade now to extend for 30 days.</p>
                     <Button className="w-full gap-2" size="lg" onClick={handleActivate}>
                       <CreditCard className="h-4 w-4" />
-                      Pay 50 RWF — Upgrade Now
+                      Pay 200 RWF — Upgrade Now
                     </Button>
                   </div>
                 )}
