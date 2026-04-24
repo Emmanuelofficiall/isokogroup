@@ -316,32 +316,57 @@ const SellerDashboard = () => {
             {/* Earnings Tab */}
             <TabsContent value="earnings">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Total Sales</p><p className="text-2xl font-bold text-primary mt-1">{totalSales.toLocaleString()} RWF</p></CardContent></Card>
-                <Card><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Commission (10%)</p><p className="text-2xl font-bold text-destructive mt-1">-{totalCommission.toLocaleString()} RWF</p></CardContent></Card>
-                <Card><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Net Earnings</p><p className="text-2xl font-bold mt-1">{netEarnings.toLocaleString()} RWF</p></CardContent></Card>
+                <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Gross Sales</p><p className="text-2xl font-bold text-primary mt-1">{totalSales.toLocaleString()} RWF</p></CardContent></Card>
+                <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Platform Commission (10%)</p><p className="text-2xl font-bold text-destructive mt-1">-{totalCommission.toLocaleString()} RWF</p></CardContent></Card>
+                <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Net Earnings</p><p className="text-2xl font-bold mt-1">{netEarnings.toLocaleString()} RWF</p></CardContent></Card>
               </div>
-              <Card>
-                <CardHeader><CardTitle>Commission History</CardTitle></CardHeader>
+
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Commission Breakdown (10% per Order)</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">A 10% commission is deducted from each completed sale. Below is the per-order breakdown of your earnings.</p>
+                </CardHeader>
                 <CardContent>
                   {commissions.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">No commission records yet.</p>
+                    <p className="text-muted-foreground text-center py-8">No commission records yet. Earnings appear here once orders are placed.</p>
                   ) : (
                     <Table>
                       <TableHeader><TableRow>
-                        <TableHead>Order</TableHead><TableHead>Sale</TableHead><TableHead>Rate</TableHead><TableHead>Commission</TableHead><TableHead>Status</TableHead><TableHead>Date</TableHead>
+                        <TableHead>Order</TableHead>
+                        <TableHead>Sale Amount</TableHead>
+                        <TableHead>Rate</TableHead>
+                        <TableHead>Commission</TableHead>
+                        <TableHead>You Receive</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Date</TableHead>
                       </TableRow></TableHeader>
                       <TableBody>
-                        {commissions.map((c) => (
-                          <TableRow key={c.id}>
-                            <TableCell>{c.order_id.slice(0, 8)}...</TableCell>
-                            <TableCell>{c.sale_amount.toLocaleString()} RWF</TableCell>
-                            <TableCell>{c.commission_rate}%</TableCell>
-                            <TableCell className="text-primary font-medium">{c.commission_amount.toLocaleString()} RWF</TableCell>
-                            <TableCell><span className={`px-2 py-1 rounded-full text-xs font-medium ${c.status === "paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{c.status}</span></TableCell>
-                            <TableCell>{new Date(c.created_at).toLocaleDateString()}</TableCell>
-                          </TableRow>
-                        ))}
+                        {commissions.map((c) => {
+                          const youReceive = c.sale_amount - c.commission_amount;
+                          return (
+                            <TableRow key={c.id} className="hover:bg-muted/40 transition-colors">
+                              <TableCell className="font-mono text-xs">{c.order_id.slice(0, 8)}…</TableCell>
+                              <TableCell>{c.sale_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell><span className="px-2 py-0.5 rounded-full bg-muted text-xs">{c.commission_rate}%</span></TableCell>
+                              <TableCell className="text-destructive font-medium">-{c.commission_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="text-primary font-semibold">{youReceive.toLocaleString()} RWF</TableCell>
+                              <TableCell><span className={`px-2 py-1 rounded-full text-xs font-medium ${c.status === "paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{c.status}</span></TableCell>
+                              <TableCell>{new Date(c.created_at).toLocaleDateString()}</TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
+                      <tfoot className="border-t-2 border-border">
+                        <tr className="font-semibold">
+                          <td className="p-3 text-sm">TOTALS</td>
+                          <td className="p-3 text-sm">{totalSales.toLocaleString()} RWF</td>
+                          <td className="p-3"></td>
+                          <td className="p-3 text-sm text-destructive">-{totalCommission.toLocaleString()} RWF</td>
+                          <td className="p-3 text-sm text-primary">{netEarnings.toLocaleString()} RWF</td>
+                          <td className="p-3"></td>
+                          <td className="p-3"></td>
+                        </tr>
+                      </tfoot>
                     </Table>
                   )}
                 </CardContent>
