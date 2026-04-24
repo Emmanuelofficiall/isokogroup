@@ -436,7 +436,7 @@ const Admin = () => {
                               {a.status === "pending" ? (
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => handleApproveApplication(a)}>Approve</Button>
-                                  <Button size="sm" variant="destructive" onClick={() => handleRejectApplication(a.id)}>Reject</Button>
+                                  <Button size="sm" variant="destructive" onClick={() => handleRejectApplication(a)}>Reject</Button>
                                 </div>
                               ) : (
                                 <span className="text-xs text-muted-foreground">—</span>
