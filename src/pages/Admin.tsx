@@ -41,6 +41,12 @@ const Admin = () => {
   const [bookPages, setBookPages] = useState("");
   const [bookDesc, setBookDesc] = useState("");
 
+  // Reject dialog state
+  const [rejectingApp, setRejectingApp] = useState<any | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
+  const MAX_REASON = 500;
+
   useEffect(() => {
     if (!user) return;
     fetchAll();
