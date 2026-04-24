@@ -163,9 +163,27 @@ const Admin = () => {
     fetchAll();
   };
 
-  const handleRejectApplication = async (id: string) => {
-    await (supabase as any).from("seller_applications").update({ status: "rejected" }).eq("id", id);
-    toast({ title: "Application Rejected" });
+  const handleRejectApplication = (app: any) => {
+    setRejectingApp(app);
+    setRejectReason("");
+  };
+
+  const confirmRejectApplication = async () => {
+    if (!rejectingApp) return;
+    const trimmed = rejectReason.trim().slice(0, MAX_REASON);
+    setRejectSubmitting(true);
+    const { error } = await (supabase as any)
+      .from("seller_applications")
+      .update({ status: "rejected", rejection_reason: trimmed || null })
+      .eq("id", rejectingApp.id);
+    setRejectSubmitting(false);
+    if (error) {
+      toast({ title: "Reject failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Application Rejected", description: trimmed ? "Reason shared with applicant." : "No reason provided." });
+    setRejectingApp(null);
+    setRejectReason("");
     fetchAll();
   };
 
