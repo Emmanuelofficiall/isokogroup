@@ -145,8 +145,33 @@ const BecomeSeller = () => {
       toast({ title: "Application Submitted!", description: "We will review your application and ID document and get back to you soon." });
       setFullname(""); setBusiness(""); setEmail(""); setPhone(""); setIdNumber("");
       clearFile();
+      fetchApplication();
     }
   };
+
+  const statusConfig = {
+    pending: {
+      icon: Clock,
+      label: "Pending Review",
+      color: "text-yellow-700 dark:text-yellow-400",
+      bg: "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-900",
+      message: "Your application is under review. We'll notify you once a decision is made.",
+    },
+    approved: {
+      icon: CheckCircle,
+      label: "Approved",
+      color: "text-green-700 dark:text-green-400",
+      bg: "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900",
+      message: "Congratulations! Your seller application has been approved. You can now access the seller dashboard.",
+    },
+    rejected: {
+      icon: XCircle,
+      label: "Rejected",
+      color: "text-destructive",
+      bg: "bg-destructive/5 border-destructive/30",
+      message: "Your application was not approved. Please contact support or submit a new application with corrected information.",
+    },
+  } as const;
 
   return (
     <div className="min-h-screen">
