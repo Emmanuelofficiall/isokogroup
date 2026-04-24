@@ -358,6 +358,7 @@ export type Database = {
           id_document_url: string | null
           id_number: string
           phone: string
+          rejection_reason: string | null
           status: string
           updated_at: string
           user_id: string
@@ -371,6 +372,7 @@ export type Database = {
           id_document_url?: string | null
           id_number: string
           phone: string
+          rejection_reason?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -384,6 +386,7 @@ export type Database = {
           id_document_url?: string | null
           id_number?: string
           phone?: string
+          rejection_reason?: string | null
           status?: string
           updated_at?: string
           user_id?: string
