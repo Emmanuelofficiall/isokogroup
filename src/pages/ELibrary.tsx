@@ -130,25 +130,65 @@ const ELibrary = () => {
             ))}
           </div>
 
-          {/* Reading modal */}
+          {/* Reading modal with page-turn animation */}
           {readingBook && (
-            <div className="mb-8 rounded-xl border border-border bg-card p-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary" /> Reading: {readingBook}</h2>
+            <div className="mb-8 rounded-xl border border-border bg-card p-6 md:p-8 shadow-xl">
+              <div className="flex items-center justify-between mb-4 gap-3">
+                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 min-w-0">
+                  <BookOpen className="h-5 w-5 text-primary flex-shrink-0" />
+                  <span className="truncate">Reading: {readingBook}</span>
+                </h2>
                 <Button variant="outline" size="sm" onClick={() => setReadingBook(null)}>Close</Button>
               </div>
-              <div className="prose prose-sm max-w-none text-muted-foreground">
-                <p>Welcome to the ISOKO GROUP E-Library reader. This is a preview of <strong>{readingBook}</strong>.</p>
-                <p>Chapter 1: Introduction</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+
+              {/* Progress bar */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                  <span>Page {pageIndex + 1} of {READER_PAGES.length}</span>
+                  <span>{progress}% complete</span>
+                </div>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary transition-all duration-500 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Page content with page-turn animation */}
+              <div
+                key={pageKey}
+                className="animate-page-turn min-h-[180px] rounded-lg bg-muted/30 border border-border p-6 text-sm md:text-base leading-relaxed text-foreground"
+              >
+                {READER_PAGES[pageIndex]}
+              </div>
+
+              {/* Reader controls */}
+              <div className="flex items-center justify-between mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1"
+                  onClick={() => turnPage(-1)}
+                  disabled={pageIndex === 0}
+                >
+                  <ChevronLeft className="h-4 w-4" /> Previous
+                </Button>
+                <Button
+                  size="sm"
+                  className="gap-1 hover-glow"
+                  onClick={() => turnPage(1)}
+                  disabled={pageIndex === READER_PAGES.length - 1}
+                >
+                  Next <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filtered.map((book, i) => (
-              <div key={book.id || i} className="group rounded-xl border border-border bg-card p-5 hover-lift">
+              <div key={book.id || i} className="book-card group rounded-xl border border-border bg-card p-5 hover-lift">
                 <div className="relative aspect-[3/4] rounded-lg overflow-hidden mb-4 bg-muted">
                   {book.image ? (
                     <img src={book.image} alt={book.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
