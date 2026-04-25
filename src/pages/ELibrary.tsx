@@ -14,33 +14,54 @@ import { useIsAdmin } from "@/hooks/use-is-admin";
 
 const categories = ["All", "Business", "Technology", "History", "Self-Help", "Science", "Literature", "Other"];
 
+type Book = {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  pages: number;
+  cover_url: string | null;
+  content_url: string | null;
+  description: string | null;
+};
+
 const ELibrary = () => {
   const [active, setActive] = useState("All");
   const [search, setSearch] = useState("");
-  const [dbBooks, setDbBooks] = useState<any[]>([]);
-  const [readingBook, setReadingBook] = useState<string | null>(null);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageKey, setPageKey] = useState(0);
+  const [books, setBooks] = useState<Book[]>([]);
+  const [reading, setReading] = useState<Book | null>(null);
+  const [uploading, setUploading] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
   const { toast } = useToast();
+  const { isAdmin } = useIsAdmin();
+
+  const [form, setForm] = useState({
+    title: "",
+    author: "",
+    category: "Business",
+    pages: 0,
+    description: "",
+  });
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [contentFile, setContentFile] = useState<File | null>(null);
+
+  const fetchBooks = async () => {
+    const { data } = await supabase.from("books").select("*").order("created_at", { ascending: false });
+    if (data) setBooks(data as Book[]);
+  };
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const { data } = await supabase.from("books").select("*");
-      if (data) setDbBooks(data);
-    };
     fetchBooks();
   }, []);
 
-  const allBooks = [
-    ...defaultBooks.map(b => ({ ...b, id: b.title })),
-    ...dbBooks.map(b => ({ title: b.title, author: b.author, category: b.category, pages: b.pages, image: b.cover_url, id: b.id })),
-  ];
-
-  const filtered = allBooks
-    .filter(b => active === "All" || b.category === active)
-    .filter(b => b.title.toLowerCase().includes(search.toLowerCase()) || b.author.toLowerCase().includes(search.toLowerCase()));
+  const filtered = books
+    .filter((b) => active === "All" || b.category === active)
+    .filter(
+      (b) =>
+        b.title.toLowerCase().includes(search.toLowerCase()) ||
+        b.author.toLowerCase().includes(search.toLowerCase())
+    );
 
   // Fade-in book cards on scroll
   useEffect(() => {
@@ -63,33 +84,135 @@ const ELibrary = () => {
     return () => observer.disconnect();
   }, [filtered.length]);
 
-  const handleRead = (title: string) => {
-    setReadingBook(title);
-    setPageIndex(0);
-    setPageKey((k) => k + 1);
-    toast({ title: `Opening: ${title}`, description: "Book reader opened. Enjoy reading!" });
+  const uploadToBucket = async (file: File, prefix: string) => {
+    const ext = file.name.split(".").pop();
+    const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("books").upload(path, file);
+    if (error) throw error;
+    const { data } = supabase.storage.from("books").getPublicUrl(path);
+    return data.publicUrl;
   };
 
-  const turnPage = (dir: 1 | -1) => {
-    setPageIndex((p) => {
-      const next = Math.min(Math.max(p + dir, 0), READER_PAGES.length - 1);
-      if (next !== p) setPageKey((k) => k + 1);
-      return next;
-    });
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title.trim() || !form.author.trim()) {
+      toast({ title: "Missing fields", description: "Title and author are required.", variant: "destructive" });
+      return;
+    }
+    if (!contentFile) {
+      toast({ title: "Book file required", description: "Upload a PDF.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const cover_url = coverFile ? await uploadToBucket(coverFile, "covers") : null;
+      const content_url = await uploadToBucket(contentFile, "content");
+      const { error } = await supabase.from("books").insert({
+        title: form.title.trim(),
+        author: form.author.trim(),
+        category: form.category,
+        pages: Number(form.pages) || 0,
+        description: form.description.trim() || null,
+        cover_url,
+        content_url,
+      });
+      if (error) throw error;
+      toast({ title: "Book uploaded", description: form.title });
+      setForm({ title: "", author: "", category: "Business", pages: 0, description: "" });
+      setCoverFile(null);
+      setContentFile(null);
+      fetchBooks();
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const progress = Math.round(((pageIndex + 1) / READER_PAGES.length) * 100);
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("books").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Removed" });
+      fetchBooks();
+    }
+  };
+
+  const handleRead = (book: Book) => {
+    if (!book.content_url) {
+      toast({ title: "Not available", description: "This book has no readable file yet.", variant: "destructive" });
+      return;
+    }
+    setReading(book);
+  };
 
   return (
     <div className="min-h-screen">
       <Header />
       <section className="py-20">
         <div className="container">
-          <div className="text-center mb-12 space-y-4">
+          <div className="text-center mb-10 space-y-4">
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">{t("nav.elibrary")}</span>
             <h1 className="text-4xl md:text-5xl font-display font-bold">{t("elibrary.title")}</h1>
             <p className="text-muted-foreground max-w-xl mx-auto">{t("elibrary.subtitle")}</p>
           </div>
+
+          {isAdmin && (
+            <Card className="mb-10 border-primary/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Upload className="h-5 w-5 text-primary" /> Admin: Upload book
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpload} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="b-title">Title</Label>
+                    <Input id="b-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label htmlFor="b-author">Author</Label>
+                    <Input id="b-author" value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label htmlFor="b-cat">Category</Label>
+                    <select
+                      id="b-cat"
+                      value={form.category}
+                      onChange={(e) => setForm({ ...form, category: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      {categories.filter((c) => c !== "All").map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="b-pages">Pages</Label>
+                    <Input id="b-pages" type="number" min={0} value={form.pages} onChange={(e) => setForm({ ...form, pages: Number(e.target.value) })} />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="b-desc">Description</Label>
+                    <Textarea id="b-desc" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label htmlFor="b-cover">Cover image</Label>
+                    <Input id="b-cover" type="file" accept="image/*" onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
+                  </div>
+                  <div>
+                    <Label htmlFor="b-content">Book file (PDF)</Label>
+                    <Input id="b-content" type="file" accept="application/pdf" onChange={(e) => setContentFile(e.target.files?.[0] || null)} />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Button type="submit" disabled={uploading} className="w-full md:w-auto">
+                      {uploading ? "Uploading..." : "Upload book"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="max-w-md mx-auto relative mb-8">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -105,68 +228,35 @@ const ELibrary = () => {
             ))}
           </div>
 
-          {/* Reading modal with page-turn animation */}
-          {readingBook && (
-            <div className="mb-8 rounded-xl border border-border bg-card p-6 md:p-8 shadow-xl">
-              <div className="flex items-center justify-between mb-4 gap-3">
+          {/* Reading modal — embed uploaded PDF (read-only, no download UI) */}
+          {reading && (
+            <div className="mb-8 rounded-xl border border-border bg-card p-4 md:p-6 shadow-xl">
+              <div className="flex items-center justify-between mb-3 gap-3">
                 <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 min-w-0">
                   <BookOpen className="h-5 w-5 text-primary flex-shrink-0" />
-                  <span className="truncate">Reading: {readingBook}</span>
+                  <span className="truncate">Reading: {reading.title}</span>
                 </h2>
-                <Button variant="outline" size="sm" onClick={() => setReadingBook(null)}>Close</Button>
+                <Button variant="outline" size="sm" onClick={() => setReading(null)}>Close</Button>
               </div>
-
-              {/* Progress bar */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                  <span>Page {pageIndex + 1} of {READER_PAGES.length}</span>
-                  <span>{progress}% complete</span>
-                </div>
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all duration-500 ease-out"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Page content with page-turn animation */}
-              <div
-                key={pageKey}
-                className="animate-page-turn min-h-[180px] rounded-lg bg-muted/30 border border-border p-6 text-sm md:text-base leading-relaxed text-foreground"
-              >
-                {READER_PAGES[pageIndex]}
-              </div>
-
-              {/* Reader controls */}
-              <div className="flex items-center justify-between mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1"
-                  onClick={() => turnPage(-1)}
-                  disabled={pageIndex === 0}
-                >
-                  <ChevronLeft className="h-4 w-4" /> Previous
-                </Button>
-                <Button
-                  size="sm"
-                  className="gap-1 hover-glow"
-                  onClick={() => turnPage(1)}
-                  disabled={pageIndex === READER_PAGES.length - 1}
-                >
-                  Next <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              <iframe
+                src={`${reading.content_url}#toolbar=0&navpanes=0`}
+                title={reading.title}
+                className="w-full h-[70vh] rounded-lg border border-border bg-muted"
+              />
             </div>
           )}
 
           <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filtered.map((book, i) => (
-              <div key={book.id || i} className="book-card group rounded-xl border border-border bg-card p-5 hover-lift">
+            {filtered.length === 0 && (
+              <p className="text-center text-muted-foreground col-span-full py-10">
+                No books available yet. {isAdmin ? "Upload your first book above." : "Check back soon."}
+              </p>
+            )}
+            {filtered.map((book) => (
+              <div key={book.id} className="book-card group rounded-xl border border-border bg-card p-5 hover-lift">
                 <div className="relative aspect-[3/4] rounded-lg overflow-hidden mb-4 bg-muted">
-                  {book.image ? (
-                    <img src={book.image} alt={book.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  {book.cover_url ? (
+                    <img src={book.cover_url} alt={book.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <BookOpen className="h-12 w-12 text-muted-foreground" />
@@ -181,9 +271,16 @@ const ELibrary = () => {
                 <p className="text-xs text-muted-foreground mt-1">by {book.author}</p>
                 <div className="flex items-center justify-between mt-3">
                   <span className="text-xs text-muted-foreground">{book.pages} {t("elibrary.pages")}</span>
-                  <Button size="sm" variant="outline" className="gap-1" onClick={() => handleRead(book.title)}>
-                    <BookOpen className="h-3 w-3" /> {t("elibrary.readNow")}
-                  </Button>
+                  <div className="flex gap-1">
+                    {isAdmin && (
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(book.id)} aria-label="Delete">
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    )}
+                    <Button size="sm" variant="outline" className="gap-1" onClick={() => handleRead(book)}>
+                      <BookOpen className="h-3 w-3" /> {t("elibrary.readNow")}
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
