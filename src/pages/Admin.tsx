@@ -42,8 +42,6 @@ const Admin = () => {
   const [bookCategory, setBookCategory] = useState("Business");
   const [bookPages, setBookPages] = useState("");
   const [bookDesc, setBookDesc] = useState("");
-  const [bookCoverFile, setBookCoverFile] = useState<File | null>(null);
-  const [bookContentFile, setBookContentFile] = useState<File | null>(null);
 
   // Entertainment form
   const [entForm, setEntForm] = useState({
