@@ -2,42 +2,17 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Bookmark, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Search, Bookmark, BookOpen, Upload, Trash2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
-import artOfBusiness from "@/assets/books/art-of-business.jpg";
-import rwandaRising from "@/assets/books/rwanda-rising.jpg";
-import digitalInnovation from "@/assets/books/digital-innovation.jpg";
-import leadershipEssentials from "@/assets/books/leadership-essentials.jpg";
-import dataScience from "@/assets/books/data-science.jpg";
-import africanPhilosophy from "@/assets/books/african-philosophy.jpg";
-import startupBlueprint from "@/assets/books/startup-blueprint.jpg";
-import livingCell from "@/assets/books/living-cell.jpg";
-
-const categories = ["All", "Business", "Technology", "History", "Self-Help", "Science", "Literature"];
-
-const defaultBooks = [
-  { title: "The Art of Business", author: "Jean Paul M.", category: "Business", pages: 240, image: artOfBusiness },
-  { title: "Rwanda Rising", author: "Marie Claire N.", category: "History", pages: 310, image: rwandaRising },
-  { title: "Digital Innovation", author: "Patrick K.", category: "Technology", pages: 198, image: digitalInnovation },
-  { title: "Leadership Essentials", author: "Grace U.", category: "Self-Help", pages: 175, image: leadershipEssentials },
-  { title: "Data Science Fundamentals", author: "Eric T.", category: "Technology", pages: 420, image: dataScience },
-  { title: "African Philosophy", author: "Joseph M.", category: "Literature", pages: 280, image: africanPhilosophy },
-  { title: "Startup Blueprint", author: "Alice K.", category: "Business", pages: 155, image: startupBlueprint },
-  { title: "The Living Cell", author: "Dr. Sarah N.", category: "Science", pages: 350, image: livingCell },
-];
-
-const READER_PAGES = [
-  "Welcome to the ISOKO GROUP E-Library reader. Enjoy a smooth, distraction-free reading experience.",
-  "Chapter 1 — Introduction. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.",
-  "Chapter 2 — Foundations. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore.",
-  "Chapter 3 — Conclusion. Thank you for reading on ISOKO GROUP E-Library. Your reading progress is saved automatically while you read.",
-];
+const categories = ["All", "Business", "Technology", "History", "Self-Help", "Science", "Literature", "Other"];
 
 const ELibrary = () => {
   const [active, setActive] = useState("All");
