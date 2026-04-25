@@ -70,7 +70,7 @@ const Admin = () => {
   }, [user]);
 
   const fetchAll = async () => {
-    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes] = await Promise.all([
+    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").order("created_at", { ascending: false }),
@@ -80,6 +80,7 @@ const Admin = () => {
       (supabase as any).from("logistics_requests").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("packaging_requests").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("seller_applications").select("*").order("created_at", { ascending: false }),
+      supabase.from("entertainment").select("*").order("created_at", { ascending: false }),
     ]);
     setProfiles(profilesRes.data || []);
     setOrders(ordersRes.data || []);
@@ -90,6 +91,7 @@ const Admin = () => {
     setLogisticsRequests(logRes.data || []);
     setPackagingRequests(packRes.data || []);
     setSellerApplications(sellerRes.data || []);
+    setEntertainment(entRes.data || []);
     setLoading(false);
   };
 
