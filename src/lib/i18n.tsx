@@ -9,6 +9,7 @@ const translations: Record<string, Record<Lang, string>> = {
   "nav.packaging": { en: "Packaging", rw: "Gupakira" },
   "nav.marketplace": { en: "Marketplace", rw: "Isoko" },
   "nav.elibrary": { en: "E-Library", rw: "Ibitabo" },
+  "nav.entertainment": { en: "Entertainment", rw: "Imyidagaduro" },
   "nav.becomeSeller": { en: "Become a Seller", rw: "Ba Umucuruzi" },
   "nav.login": { en: "Login / Register", rw: "Injira / Iyandikishe" },
   "nav.logout": { en: "Logout", rw: "Sohoka" },

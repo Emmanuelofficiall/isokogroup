@@ -12,6 +12,7 @@ import Logistics from "./pages/Logistics";
 import Packaging from "./pages/Packaging";
 import Marketplace from "./pages/Marketplace";
 import ELibrary from "./pages/ELibrary";
+import Entertainment from "./pages/Entertainment";
 import Login from "./pages/Login";
 import BecomeSeller from "./pages/BecomeSeller";
 import Admin from "./pages/Admin";
@@ -41,6 +42,7 @@ const App = () => (
                 <Route path="/packaging" element={<ProtectedRoute><Packaging /></ProtectedRoute>} />
                 <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
                 <Route path="/e-library" element={<ProtectedRoute><ELibrary /></ProtectedRoute>} />
+                <Route path="/entertainment" element={<ProtectedRoute><Entertainment /></ProtectedRoute>} />
                 <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
                 <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />

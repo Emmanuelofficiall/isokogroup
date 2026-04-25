@@ -21,6 +21,7 @@ const Header = () => {
     { label: t("nav.packaging"), path: "/packaging" },
     { label: t("nav.marketplace"), path: "/marketplace" },
     { label: t("nav.elibrary"), path: "/e-library" },
+    { label: t("nav.entertainment"), path: "/entertainment" },
   ];
 
   const handleLogout = async () => {
