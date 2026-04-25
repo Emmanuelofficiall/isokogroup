@@ -33,6 +33,7 @@ const Admin = () => {
   const [logisticsRequests, setLogisticsRequests] = useState<any[]>([]);
   const [packagingRequests, setPackagingRequests] = useState<any[]>([]);
   const [sellerApplications, setSellerApplications] = useState<any[]>([]);
+  const [entertainment, setEntertainment] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
@@ -41,6 +42,23 @@ const Admin = () => {
   const [bookCategory, setBookCategory] = useState("Business");
   const [bookPages, setBookPages] = useState("");
   const [bookDesc, setBookDesc] = useState("");
+  const [bookCoverFile, setBookCoverFile] = useState<File | null>(null);
+  const [bookContentFile, setBookContentFile] = useState<File | null>(null);
+
+  // Entertainment form
+  const [entForm, setEntForm] = useState({
+    title: "",
+    creator: "",
+    type: "film" as "film" | "podcast",
+    category: "trending",
+    description: "",
+    price: 0,
+    duration: 0,
+    trending: true,
+  });
+  const [entCoverFile, setEntCoverFile] = useState<File | null>(null);
+  const [entMediaFile, setEntMediaFile] = useState<File | null>(null);
+  const [entUploading, setEntUploading] = useState(false);
 
   // Reject dialog state
   const [rejectingApp, setRejectingApp] = useState<any | null>(null);
