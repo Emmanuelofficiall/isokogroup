@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText, Eye, Download } from "lucide-react";
+import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText, Eye, Download, Film, Mic, Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
 const COLORS = ["hsl(0, 85%, 50%)", "hsl(0, 0%, 20%)", "hsl(0, 85%, 65%)", "hsl(0, 0%, 45%)", "hsl(0, 85%, 80%)"];
@@ -32,6 +33,7 @@ const Admin = () => {
   const [logisticsRequests, setLogisticsRequests] = useState<any[]>([]);
   const [packagingRequests, setPackagingRequests] = useState<any[]>([]);
   const [sellerApplications, setSellerApplications] = useState<any[]>([]);
+  const [entertainment, setEntertainment] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
@@ -40,6 +42,21 @@ const Admin = () => {
   const [bookCategory, setBookCategory] = useState("Business");
   const [bookPages, setBookPages] = useState("");
   const [bookDesc, setBookDesc] = useState("");
+
+  // Entertainment form
+  const [entForm, setEntForm] = useState({
+    title: "",
+    creator: "",
+    type: "film" as "film" | "podcast",
+    category: "trending",
+    description: "",
+    price: 0,
+    duration: 0,
+    trending: true,
+  });
+  const [entCoverFile, setEntCoverFile] = useState<File | null>(null);
+  const [entMediaFile, setEntMediaFile] = useState<File | null>(null);
+  const [entUploading, setEntUploading] = useState(false);
 
   // Reject dialog state
   const [rejectingApp, setRejectingApp] = useState<any | null>(null);
@@ -53,7 +70,7 @@ const Admin = () => {
   }, [user]);
 
   const fetchAll = async () => {
-    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes] = await Promise.all([
+    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").order("created_at", { ascending: false }),
@@ -63,6 +80,7 @@ const Admin = () => {
       (supabase as any).from("logistics_requests").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("packaging_requests").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("seller_applications").select("*").order("created_at", { ascending: false }),
+      supabase.from("entertainment").select("*").order("created_at", { ascending: false }),
     ]);
     setProfiles(profilesRes.data || []);
     setOrders(ordersRes.data || []);
@@ -73,6 +91,7 @@ const Admin = () => {
     setLogisticsRequests(logRes.data || []);
     setPackagingRequests(packRes.data || []);
     setSellerApplications(sellerRes.data || []);
+    setEntertainment(entRes.data || []);
     setLoading(false);
   };
 
@@ -142,6 +161,59 @@ const Admin = () => {
     } else {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     }
+  };
+
+  // Entertainment handlers
+  const uploadEntFile = async (file: File, prefix: string) => {
+    const ext = file.name.split(".").pop();
+    const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("entertainment").upload(path, file);
+    if (error) throw error;
+    return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
+  };
+
+  const handleAddEntertainment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!entForm.title.trim() || !entForm.creator.trim()) {
+      toast({ title: "Missing fields", description: "Title and creator are required.", variant: "destructive" });
+      return;
+    }
+    if (!entMediaFile) {
+      toast({ title: "Media file required", description: "Upload a video or audio file.", variant: "destructive" });
+      return;
+    }
+    setEntUploading(true);
+    try {
+      const cover_url = entCoverFile ? await uploadEntFile(entCoverFile, "covers") : null;
+      const media_url = await uploadEntFile(entMediaFile, "media");
+      const { error } = await supabase.from("entertainment").insert({
+        title: entForm.title.trim(),
+        creator: entForm.creator.trim(),
+        type: entForm.type,
+        category: entForm.category.trim() || "trending",
+        description: entForm.description.trim() || null,
+        price: Number(entForm.price) || 0,
+        cover_url,
+        media_url,
+        duration_minutes: Number(entForm.duration) || 0,
+        trending: entForm.trending,
+      });
+      if (error) throw error;
+      toast({ title: "Uploaded", description: `${entForm.title} is now live.` });
+      setEntForm({ title: "", creator: "", type: "film", category: "trending", description: "", price: 0, duration: 0, trending: true });
+      setEntCoverFile(null);
+      setEntMediaFile(null);
+      fetchAll();
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setEntUploading(false);
+    }
+  };
+
+  const handleDeleteEntertainment = async (id: string) => {
+    const { error } = await supabase.from("entertainment").delete().eq("id", id);
+    if (!error) { toast({ title: "Deleted" }); fetchAll(); }
   };
 
   const handleUpdateLogisticsStatus = async (id: string, status: string) => {
@@ -264,6 +336,7 @@ const Admin = () => {
               <TabsTrigger value="logistics">Logistics</TabsTrigger>
               <TabsTrigger value="packaging">Packaging</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
+              <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
             </TabsList>
 
             {/* Analytics */}
@@ -757,6 +830,108 @@ const Admin = () => {
                             <TableCell>{b.pages}</TableCell>
                             <TableCell>
                               <Button size="sm" variant="destructive" onClick={() => handleDeleteBook(b.id)}>Delete</Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Entertainment */}
+            <TabsContent value="entertainment">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Film className="h-5 w-5 text-primary" /> Entertainment ({entertainment.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleAddEntertainment} className="mb-6 p-4 border border-border rounded-lg space-y-4">
+                    <h3 className="font-semibold flex items-center gap-2"><Upload className="h-4 w-4 text-primary" /> Upload film or podcast</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Title</Label>
+                        <Input value={entForm.title} onChange={(e) => setEntForm({ ...entForm, title: e.target.value })} required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Creator</Label>
+                        <Input value={entForm.creator} onChange={(e) => setEntForm({ ...entForm, creator: e.target.value })} required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Type</Label>
+                        <Select value={entForm.type} onValueChange={(v: "film" | "podcast") => setEntForm({ ...entForm, type: v })}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="film">Film</SelectItem>
+                            <SelectItem value="podcast">Podcast</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Category</Label>
+                        <Input value={entForm.category} onChange={(e) => setEntForm({ ...entForm, category: e.target.value })} placeholder="trending, drama, tech..." />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Price (RWF)</Label>
+                        <Input type="number" min={0} value={entForm.price} onChange={(e) => setEntForm({ ...entForm, price: Number(e.target.value) })} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Duration (minutes)</Label>
+                        <Input type="number" min={0} value={entForm.duration} onChange={(e) => setEntForm({ ...entForm, duration: Number(e.target.value) })} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea rows={3} value={entForm.description} onChange={(e) => setEntForm({ ...entForm, description: e.target.value })} />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Cover image</Label>
+                        <Input type="file" accept="image/*" onChange={(e) => setEntCoverFile(e.target.files?.[0] || null)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Media file (video/audio)</Label>
+                        <Input type="file" accept="video/*,audio/*" onChange={(e) => setEntMediaFile(e.target.files?.[0] || null)} />
+                      </div>
+                    </div>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input type="checkbox" checked={entForm.trending} onChange={(e) => setEntForm({ ...entForm, trending: e.target.checked })} />
+                      Mark as trending
+                    </label>
+                    <Button type="submit" disabled={entUploading}>
+                      {entUploading ? "Uploading..." : "Upload"}
+                    </Button>
+                  </form>
+
+                  {entertainment.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No films or podcasts uploaded yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Creator</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Category</TableHead>
+                          <TableHead>Price</TableHead>
+                          <TableHead>Trending</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {entertainment.map((it) => (
+                          <TableRow key={it.id}>
+                            <TableCell className="font-medium">{it.title}</TableCell>
+                            <TableCell>{it.creator}</TableCell>
+                            <TableCell className="capitalize">{it.type}</TableCell>
+                            <TableCell>{it.category}</TableCell>
+                            <TableCell>{it.price > 0 ? `${it.price} RWF` : "Free"}</TableCell>
+                            <TableCell>{it.trending ? "Yes" : "No"}</TableCell>
+                            <TableCell>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteEntertainment(it.id)}>Delete</Button>
                             </TableCell>
                           </TableRow>
                         ))}

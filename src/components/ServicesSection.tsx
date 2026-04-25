@@ -1,4 +1,4 @@
-import { Truck, Package, ShoppingBag, BookOpen, ArrowRight } from "lucide-react";
+import { Truck, Package, ShoppingBag, BookOpen, Film, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 
@@ -30,6 +30,12 @@ const ServicesSection = () => {
       description: t("hero.readOnline"),
       path: "/e-library",
     },
+    {
+      icon: Film,
+      title: t("nav.entertainment"),
+      description: "Stream films & podcasts",
+      path: "/entertainment",
+    },
   ];
 
   return (
@@ -41,7 +47,7 @@ const ServicesSection = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">{t("services.subtitle")}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {services.map((service, i) => (
             <Link
               key={service.title}
