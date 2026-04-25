@@ -186,70 +186,7 @@ const Entertainment = () => {
             <p className="text-muted-foreground mt-2">Stream curated films and podcasts from creators across the region.</p>
           </div>
 
-          {isAdmin && (
-            <Card className="mb-10 border-primary/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Upload className="h-5 w-5 text-primary" /> Admin: Upload film or podcast
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleUpload} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="ent-title">Title</Label>
-                    <Input id="ent-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label htmlFor="ent-creator">Creator</Label>
-                    <Input id="ent-creator" value={form.creator} onChange={(e) => setForm({ ...form, creator: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label>Type</Label>
-                    <Select value={form.type} onValueChange={(v: "film" | "podcast") => setForm({ ...form, type: v })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="film">Film</SelectItem>
-                        <SelectItem value="podcast">Podcast</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="ent-cat">Category</Label>
-                    <Input id="ent-cat" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="trending, drama, tech..." />
-                  </div>
-                  <div>
-                    <Label htmlFor="ent-price">Price (RWF)</Label>
-                    <Input id="ent-price" type="number" min={0} value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} />
-                  </div>
-                  <div>
-                    <Label htmlFor="ent-dur">Duration (minutes)</Label>
-                    <Input id="ent-dur" type="number" min={0} value={form.duration} onChange={(e) => setForm({ ...form, duration: Number(e.target.value) })} />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="ent-desc">Description</Label>
-                    <Textarea id="ent-desc" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label htmlFor="ent-cover">Cover image</Label>
-                    <Input id="ent-cover" type="file" accept="image/*" onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="ent-media">Media file (video/audio)</Label>
-                    <Input id="ent-media" type="file" accept="video/*,audio/*" onChange={(e) => setMediaFile(e.target.files?.[0] || null)} />
-                  </div>
-                  <label className="flex items-center gap-2 text-sm md:col-span-2">
-                    <input type="checkbox" checked={form.trending} onChange={(e) => setForm({ ...form, trending: e.target.checked })} />
-                    Mark as trending
-                  </label>
-                  <div className="md:col-span-2">
-                    <Button type="submit" disabled={uploading} className="w-full md:w-auto">
-                      {uploading ? "Uploading..." : "Upload"}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          )}
+          {/* Admin uploads happen in the Admin Dashboard → Entertainment tab. */}
 
           <div className="max-w-md mx-auto relative mb-6">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
