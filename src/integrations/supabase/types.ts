@@ -126,6 +126,54 @@ export type Database = {
           },
         ]
       }
+      entertainment: {
+        Row: {
+          category: string
+          cover_url: string | null
+          created_at: string
+          creator: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          media_url: string | null
+          price: number
+          title: string
+          trending: boolean
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          cover_url?: string | null
+          created_at?: string
+          creator: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          media_url?: string | null
+          price?: number
+          title: string
+          trending?: boolean
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          cover_url?: string | null
+          created_at?: string
+          creator?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          media_url?: string | null
+          price?: number
+          title?: string
+          trending?: boolean
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       logistics_requests: {
         Row: {
           created_at: string
