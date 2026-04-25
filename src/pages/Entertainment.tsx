@@ -28,25 +28,9 @@ const Entertainment = () => {
   const [tab, setTab] = useState<"all" | "film" | "podcast">("all");
   const [search, setSearch] = useState("");
   const [playing, setPlaying] = useState<EntItem | null>(null);
-  const [uploading, setUploading] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { isAdmin } = useIsAdmin();
-  const { user } = useAuth();
-
-  // Form state
-  const [form, setForm] = useState({
-    title: "",
-    creator: "",
-    type: "film" as "film" | "podcast",
-    category: "trending",
-    description: "",
-    price: 0,
-    duration: 0,
-    trending: true,
-  });
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
 
   const fetchItems = async () => {
     const { data } = await supabase
@@ -68,55 +52,6 @@ const Entertainment = () => {
         i.title.toLowerCase().includes(search.toLowerCase()) ||
         i.creator.toLowerCase().includes(search.toLowerCase())
     );
-
-  const uploadToBucket = async (file: File, prefix: string) => {
-    const ext = file.name.split(".").pop();
-    const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("entertainment").upload(path, file);
-    if (error) throw error;
-    const { data } = supabase.storage.from("entertainment").getPublicUrl(path);
-    return data.publicUrl;
-  };
-
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    if (!form.title.trim() || !form.creator.trim()) {
-      toast({ title: "Missing fields", description: "Title and creator are required.", variant: "destructive" });
-      return;
-    }
-    if (!mediaFile) {
-      toast({ title: "Media file required", description: "Upload a video or audio file.", variant: "destructive" });
-      return;
-    }
-    setUploading(true);
-    try {
-      const cover_url = coverFile ? await uploadToBucket(coverFile, "covers") : null;
-      const media_url = await uploadToBucket(mediaFile, "media");
-      const { error } = await supabase.from("entertainment").insert({
-        title: form.title.trim(),
-        creator: form.creator.trim(),
-        type: form.type,
-        category: form.category.trim() || "trending",
-        description: form.description.trim() || null,
-        price: Number(form.price) || 0,
-        cover_url,
-        media_url,
-        duration_minutes: Number(form.duration) || 0,
-        trending: form.trending,
-      });
-      if (error) throw error;
-      toast({ title: "Uploaded", description: `${form.title} is now live.` });
-      setForm({ title: "", creator: "", type: "film", category: "trending", description: "", price: 0, duration: 0, trending: true });
-      setCoverFile(null);
-      setMediaFile(null);
-      fetchItems();
-    } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("entertainment").delete().eq("id", id);
