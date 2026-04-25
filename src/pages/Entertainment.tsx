@@ -2,17 +2,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Film, Mic, Search, Play, Upload, Trash2, Flame } from "lucide-react";
+import { Film, Mic, Search, Play, Trash2, Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/use-is-admin";
-import { useAuth } from "@/lib/auth";
 
 type EntItem = {
   id: string;
