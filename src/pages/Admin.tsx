@@ -163,6 +163,59 @@ const Admin = () => {
     }
   };
 
+  // Entertainment handlers
+  const uploadEntFile = async (file: File, prefix: string) => {
+    const ext = file.name.split(".").pop();
+    const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("entertainment").upload(path, file);
+    if (error) throw error;
+    return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
+  };
+
+  const handleAddEntertainment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!entForm.title.trim() || !entForm.creator.trim()) {
+      toast({ title: "Missing fields", description: "Title and creator are required.", variant: "destructive" });
+      return;
+    }
+    if (!entMediaFile) {
+      toast({ title: "Media file required", description: "Upload a video or audio file.", variant: "destructive" });
+      return;
+    }
+    setEntUploading(true);
+    try {
+      const cover_url = entCoverFile ? await uploadEntFile(entCoverFile, "covers") : null;
+      const media_url = await uploadEntFile(entMediaFile, "media");
+      const { error } = await supabase.from("entertainment").insert({
+        title: entForm.title.trim(),
+        creator: entForm.creator.trim(),
+        type: entForm.type,
+        category: entForm.category.trim() || "trending",
+        description: entForm.description.trim() || null,
+        price: Number(entForm.price) || 0,
+        cover_url,
+        media_url,
+        duration_minutes: Number(entForm.duration) || 0,
+        trending: entForm.trending,
+      });
+      if (error) throw error;
+      toast({ title: "Uploaded", description: `${entForm.title} is now live.` });
+      setEntForm({ title: "", creator: "", type: "film", category: "trending", description: "", price: 0, duration: 0, trending: true });
+      setEntCoverFile(null);
+      setEntMediaFile(null);
+      fetchAll();
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setEntUploading(false);
+    }
+  };
+
+  const handleDeleteEntertainment = async (id: string) => {
+    const { error } = await supabase.from("entertainment").delete().eq("id", id);
+    if (!error) { toast({ title: "Deleted" }); fetchAll(); }
+  };
+
   const handleUpdateLogisticsStatus = async (id: string, status: string) => {
     const { error } = await (supabase as any).from("logistics_requests").update({ status }).eq("id", id);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
