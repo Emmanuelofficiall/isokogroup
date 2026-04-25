@@ -139,11 +139,51 @@ const Entertainment = () => {
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-10 space-y-3">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">Entertainment</span>
-            <h1 className="text-4xl md:text-5xl font-display font-bold">Trending Films & Podcasts</h1>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Stream curated films and podcasts from creators across the region.
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">Isoko Entertainment</span>
+            <h1 className="text-4xl md:text-5xl font-display font-bold">Creative Media & Digital Storytelling</h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Isoko Entertainment is a dynamic creative platform under Isoko Groups Company Ltd, dedicated to producing impactful media content that informs, inspires, and connects audiences. We specialize in storytelling through film, audio, and digital platforms — helping brands, creators, and communities share their voice with the world.
             </p>
+          </div>
+
+          {/* What We Create */}
+          <div className="mb-12">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-8">What We Create</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                { icon: Film, title: "Film Production", desc: "High-quality films, documentaries, and visual content that tell powerful stories and promote brands with creativity and professionalism." },
+                { icon: Mic, title: "Podcast Production", desc: "Engaging podcasts that educate, entertain, and spark meaningful conversations across diverse audiences." },
+                { icon: Flame, title: "Digital Content", desc: "From social media content to branded campaigns — creative materials that capture attention and drive engagement." },
+                { icon: Play, title: "E-Library Content", desc: "Educational and inspirational digital resources that support learning and knowledge sharing." },
+              ].map((c) => (
+                <div key={c.title} className="rounded-xl border border-border bg-card p-5 hover-lift">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                    <c.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="font-semibold mb-1">{c.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{c.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Purpose / Vision / Mission */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14">
+            {[
+              { title: "Our Purpose", desc: "We believe in the power of content to shape ideas and influence communities. Our goal is to deliver creative solutions that entertain, educate, and inspire positive change." },
+              { title: "Our Vision", desc: "To become a leading creative media hub in Africa, recognized for innovative storytelling and impactful digital content." },
+              { title: "Our Mission", desc: "To produce high-quality, meaningful content that connects brands and audiences through creativity, technology, and storytelling." },
+            ].map((b) => (
+              <div key={b.title} className="rounded-xl border border-primary/20 bg-gradient-to-br from-card to-primary/5 p-6">
+                <h3 className="text-lg font-display font-bold text-primary mb-2">{b.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-display font-bold">Trending Films & Podcasts</h2>
+            <p className="text-muted-foreground mt-2">Stream curated films and podcasts from creators across the region.</p>
           </div>
 
           {isAdmin && (
