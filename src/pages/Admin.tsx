@@ -842,7 +842,19 @@ const Admin = () => {
                         <Input value={bookDesc} onChange={(e) => setBookDesc(e.target.value)} />
                       </div>
                     </div>
-                    <Button type="submit">Add Book</Button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Cover image</Label>
+                        <Input type="file" accept="image/*" onChange={(e) => setBookCoverFile(e.target.files?.[0] || null)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Book file (PDF / EPUB)</Label>
+                        <Input type="file" accept="application/pdf,application/epub+zip,.epub" onChange={(e) => setBookContentFile(e.target.files?.[0] || null)} required />
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={bookUploading}>
+                      {bookUploading ? "Uploading..." : "Add Book"}
+                    </Button>
                   </form>
 
                   {books.length === 0 ? (
