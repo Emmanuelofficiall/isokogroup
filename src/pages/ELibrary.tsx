@@ -208,8 +208,8 @@ const ELibrary = () => {
                     <Input id="b-cover" type="file" accept="image/*" onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
                   </div>
                   <div>
-                    <Label htmlFor="b-content">Book file (PDF)</Label>
-                    <Input id="b-content" type="file" accept="application/pdf" onChange={(e) => setContentFile(e.target.files?.[0] || null)} />
+                    <Label htmlFor="b-content">Book file (PDF / EPUB)</Label>
+                    <Input id="b-content" type="file" accept="application/pdf,application/epub+zip,.epub" onChange={(e) => setContentFile(e.target.files?.[0] || null)} />
                   </div>
                   <div className="md:col-span-2">
                     <Button type="submit" disabled={uploading} className="w-full md:w-auto">
