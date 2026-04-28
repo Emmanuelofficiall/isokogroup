@@ -151,18 +151,45 @@ const Admin = () => {
     if (!error) { toast({ title: "Deleted" }); fetchAll(); }
   };
 
+  const uploadBookFile = async (file: File, prefix: string) => {
+    const ext = file.name.split(".").pop();
+    const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("books").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || undefined,
+    });
+    if (error) throw error;
+    return supabase.storage.from("books").getPublicUrl(path).data.publicUrl;
+  };
+
   const handleAddBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { error } = await supabase.from("books").insert({
-      title: bookTitle, author: bookAuthor, category: bookCategory,
-      pages: parseInt(bookPages) || 0, description: bookDesc,
-    });
-    if (!error) {
+    if (!bookContentFile) {
+      toast({ title: "Book file required", description: "Upload a PDF or EPUB.", variant: "destructive" });
+      return;
+    }
+    setBookUploading(true);
+    try {
+      // Upload cover and content in parallel for max speed
+      const [cover_url, content_url] = await Promise.all([
+        bookCoverFile ? uploadBookFile(bookCoverFile, "covers") : Promise.resolve(null),
+        uploadBookFile(bookContentFile, "content"),
+      ]);
+      const { error } = await supabase.from("books").insert({
+        title: bookTitle, author: bookAuthor, category: bookCategory,
+        pages: parseInt(bookPages) || 0, description: bookDesc,
+        cover_url, content_url,
+      });
+      if (error) throw error;
       toast({ title: "Book added!" });
       setBookTitle(""); setBookAuthor(""); setBookPages(""); setBookDesc("");
+      setBookCoverFile(null); setBookContentFile(null);
       fetchAll();
-    } else {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setBookUploading(false);
     }
   };
 
