@@ -42,6 +42,9 @@ const Admin = () => {
   const [bookCategory, setBookCategory] = useState("Business");
   const [bookPages, setBookPages] = useState("");
   const [bookDesc, setBookDesc] = useState("");
+  const [bookCoverFile, setBookCoverFile] = useState<File | null>(null);
+  const [bookContentFile, setBookContentFile] = useState<File | null>(null);
+  const [bookUploading, setBookUploading] = useState(false);
 
   // Entertainment form
   const [entForm, setEntForm] = useState({
@@ -148,18 +151,45 @@ const Admin = () => {
     if (!error) { toast({ title: "Deleted" }); fetchAll(); }
   };
 
+  const uploadBookFile = async (file: File, prefix: string) => {
+    const ext = file.name.split(".").pop();
+    const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("books").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || undefined,
+    });
+    if (error) throw error;
+    return supabase.storage.from("books").getPublicUrl(path).data.publicUrl;
+  };
+
   const handleAddBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { error } = await supabase.from("books").insert({
-      title: bookTitle, author: bookAuthor, category: bookCategory,
-      pages: parseInt(bookPages) || 0, description: bookDesc,
-    });
-    if (!error) {
+    if (!bookContentFile) {
+      toast({ title: "Book file required", description: "Upload a PDF or EPUB.", variant: "destructive" });
+      return;
+    }
+    setBookUploading(true);
+    try {
+      // Upload cover and content in parallel for max speed
+      const [cover_url, content_url] = await Promise.all([
+        bookCoverFile ? uploadBookFile(bookCoverFile, "covers") : Promise.resolve(null),
+        uploadBookFile(bookContentFile, "content"),
+      ]);
+      const { error } = await supabase.from("books").insert({
+        title: bookTitle, author: bookAuthor, category: bookCategory,
+        pages: parseInt(bookPages) || 0, description: bookDesc,
+        cover_url, content_url,
+      });
+      if (error) throw error;
       toast({ title: "Book added!" });
       setBookTitle(""); setBookAuthor(""); setBookPages(""); setBookDesc("");
+      setBookCoverFile(null); setBookContentFile(null);
       fetchAll();
-    } else {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setBookUploading(false);
     }
   };
 
@@ -167,7 +197,11 @@ const Admin = () => {
   const uploadEntFile = async (file: File, prefix: string) => {
     const ext = file.name.split(".").pop();
     const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("entertainment").upload(path, file);
+    const { error } = await supabase.storage.from("entertainment").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || undefined,
+    });
     if (error) throw error;
     return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
   };
@@ -184,8 +218,11 @@ const Admin = () => {
     }
     setEntUploading(true);
     try {
-      const cover_url = entCoverFile ? await uploadEntFile(entCoverFile, "covers") : null;
-      const media_url = await uploadEntFile(entMediaFile, "media");
+      // Upload cover and media in parallel for fastest results
+      const [cover_url, media_url] = await Promise.all([
+        entCoverFile ? uploadEntFile(entCoverFile, "covers") : Promise.resolve(null),
+        uploadEntFile(entMediaFile, "media"),
+      ]);
       const { error } = await supabase.from("entertainment").insert({
         title: entForm.title.trim(),
         creator: entForm.creator.trim(),
@@ -805,7 +842,19 @@ const Admin = () => {
                         <Input value={bookDesc} onChange={(e) => setBookDesc(e.target.value)} />
                       </div>
                     </div>
-                    <Button type="submit">Add Book</Button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Cover image</Label>
+                        <Input type="file" accept="image/*" onChange={(e) => setBookCoverFile(e.target.files?.[0] || null)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Book file (PDF / EPUB)</Label>
+                        <Input type="file" accept="application/pdf,application/epub+zip,.epub" onChange={(e) => setBookContentFile(e.target.files?.[0] || null)} required />
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={bookUploading}>
+                      {bookUploading ? "Uploading..." : "Add Book"}
+                    </Button>
                   </form>
 
                   {books.length === 0 ? (
