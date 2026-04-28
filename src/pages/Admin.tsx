@@ -197,7 +197,11 @@ const Admin = () => {
   const uploadEntFile = async (file: File, prefix: string) => {
     const ext = file.name.split(".").pop();
     const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("entertainment").upload(path, file);
+    const { error } = await supabase.storage.from("entertainment").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || undefined,
+    });
     if (error) throw error;
     return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
   };
@@ -214,8 +218,11 @@ const Admin = () => {
     }
     setEntUploading(true);
     try {
-      const cover_url = entCoverFile ? await uploadEntFile(entCoverFile, "covers") : null;
-      const media_url = await uploadEntFile(entMediaFile, "media");
+      // Upload cover and media in parallel for fastest results
+      const [cover_url, media_url] = await Promise.all([
+        entCoverFile ? uploadEntFile(entCoverFile, "covers") : Promise.resolve(null),
+        uploadEntFile(entMediaFile, "media"),
+      ]);
       const { error } = await supabase.from("entertainment").insert({
         title: entForm.title.trim(),
         creator: entForm.creator.trim(),
