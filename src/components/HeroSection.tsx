@@ -6,15 +6,15 @@ import { useI18n } from "@/lib/i18n";
 const HeroSection = () => {
   const { t } = useI18n();
   return (
-    <section className="relative overflow-hidden bg-foreground text-background">
-      <div className="absolute inset-0 opacity-10">
+    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-card text-foreground border-b border-border">
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary blur-3xl" />
         <div className="absolute bottom-10 right-20 w-96 h-96 rounded-full bg-primary blur-3xl" />
       </div>
 
       <div className="container relative py-24 md:py-32 lg:py-40">
         <div className="max-w-3xl space-y-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-background/20 px-4 py-1.5 text-sm text-background/70 animate-fade-in">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-1.5 text-sm text-muted-foreground animate-fade-in">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             {t("hero.badge")}
           </div>
@@ -26,7 +26,7 @@ const HeroSection = () => {
             <span className="text-primary">{t("hero.knowledge")}</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-background/60 max-w-2xl leading-relaxed animate-slide-up" style={{ animationDelay: "0.15s" }}>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed animate-slide-up" style={{ animationDelay: "0.15s" }}>
             {t("hero.subtitle")}
           </p>
 
@@ -37,13 +37,13 @@ const HeroSection = () => {
               </Button>
             </Link>
             <Link to="/marketplace">
-              <Button size="lg" variant="outline" className="text-base px-8 border-primary-foreground/40 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 font-semibold">
+              <Button size="lg" variant="outline" className="text-base px-8 font-semibold">
                 {t("hero.browseMarketplace")}
               </Button>
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-background/10 animate-slide-up" style={{ animationDelay: "0.45s" }}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-border animate-slide-up" style={{ animationDelay: "0.45s" }}>
             {[
               { icon: Truck, label: t("hero.logistics"), desc: t("hero.fastDelivery") },
               { icon: Package, label: t("nav.packaging"), desc: t("hero.securePacking") },
@@ -56,7 +56,7 @@ const HeroSection = () => {
                 </div>
                 <div>
                   <p className="text-sm font-semibold">{item.label}</p>
-                  <p className="text-xs text-background/50">{item.desc}</p>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
                 </div>
               </div>
             ))}

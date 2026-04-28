@@ -99,6 +99,10 @@ const ELibrary = () => {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAdmin) {
+      toast({ title: "Admins only", description: "Only administrators can upload books.", variant: "destructive" });
+      return;
+    }
     if (!form.title.trim() || !form.author.trim()) {
       toast({ title: "Missing fields", description: "Title and author are required.", variant: "destructive" });
       return;
