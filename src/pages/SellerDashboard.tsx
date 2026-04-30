@@ -354,14 +354,14 @@ const SellerDashboard = () => {
             <TabsContent value="earnings">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Gross Sales</p><p className="text-2xl font-bold text-primary mt-1">{totalSales.toLocaleString()} RWF</p></CardContent></Card>
-                <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Platform Commission (10%)</p><p className="text-2xl font-bold text-destructive mt-1">-{totalCommission.toLocaleString()} RWF</p></CardContent></Card>
+                <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Platform Commission (7%)</p><p className="text-2xl font-bold text-destructive mt-1">-{totalCommission.toLocaleString()} RWF</p></CardContent></Card>
                 <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Net Earnings</p><p className="text-2xl font-bold mt-1">{netEarnings.toLocaleString()} RWF</p></CardContent></Card>
               </div>
 
               <Card className="mb-6">
                 <CardHeader>
-                  <CardTitle>Commission Breakdown (10% per Order)</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">A 10% commission is deducted from each completed sale. Below is the per-order breakdown of your earnings.</p>
+                  <CardTitle>Commission Breakdown (7% per Order)</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">A 7% commission is deducted from each completed sale. Below is the per-order breakdown of your earnings.</p>
                 </CardHeader>
                 <CardContent>
                   {commissions.length === 0 ? (
