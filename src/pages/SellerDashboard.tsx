@@ -149,6 +149,10 @@ const SellerDashboard = () => {
       toast({ title: "Payout destination required", description: "Enter your MoMo number or bank account first.", variant: "destructive" });
       return;
     }
+    if (!payoutAccountName.trim()) {
+      toast({ title: "Account holder name required", description: "Enter the full name on your MoMo or bank account.", variant: "destructive" });
+      return;
+    }
     const commission = Math.round(order.total_amount * COMMISSION_RATE);
     const net = order.total_amount - commission;
     const { error } = await (supabase as any).from("payout_requests").insert({
@@ -158,7 +162,7 @@ const SellerDashboard = () => {
       commission_amount: commission,
       net_amount: net,
       payout_method: payoutMethod,
-      payout_destination: payoutDestination.trim(),
+      payout_destination: `${payoutAccountName.trim()} · ${payoutDestination.trim()}`,
       status: "pending",
     });
     if (error) {
