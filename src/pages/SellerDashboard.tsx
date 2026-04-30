@@ -410,7 +410,106 @@ const SellerDashboard = () => {
               </Card>
             </TabsContent>
 
-            {/* Profile Tab */}
+            {/* Payouts Tab */}
+            <TabsContent value="payouts">
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Wallet className="h-5 w-5 text-primary" /> Request your money</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    After the buyer confirms delivery, you can ask the company to pay you. Company keeps 7%, you receive 93%.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Payout method</Label>
+                      <select
+                        value={payoutMethod}
+                        onChange={(e) => setPayoutMethod(e.target.value as any)}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      >
+                        <option value="momo">Mobile Money (MoMo)</option>
+                        <option value="bank">Bank account</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{payoutMethod === "momo" ? "MoMo number" : "Bank account number"}</Label>
+                      <Input value={payoutDestination} onChange={(e) => setPayoutDestination(e.target.value)} placeholder={payoutMethod === "momo" ? "07xx xxx xxx" : "Bank · Account · Name"} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-sm mb-2">Eligible delivered orders</h4>
+                    {eligibleOrders.length === 0 ? (
+                      <p className="text-muted-foreground text-sm py-4">
+                        No eligible orders. An order becomes eligible once the buyer confirms delivery.
+                      </p>
+                    ) : (
+                      <Table>
+                        <TableHeader><TableRow>
+                          <TableHead>Order</TableHead>
+                          <TableHead>Sale</TableHead>
+                          <TableHead>Company keeps (7%)</TableHead>
+                          <TableHead>You get (93%)</TableHead>
+                          <TableHead></TableHead>
+                        </TableRow></TableHeader>
+                        <TableBody>
+                          {eligibleOrders.map((o) => {
+                            const commission = Math.round(o.total_amount * COMMISSION_RATE);
+                            const net = o.total_amount - commission;
+                            return (
+                              <TableRow key={o.id}>
+                                <TableCell className="font-mono text-xs">{o.id.slice(0, 8)}…</TableCell>
+                                <TableCell>{o.total_amount.toLocaleString()} RWF</TableCell>
+                                <TableCell className="text-destructive">-{commission.toLocaleString()} RWF</TableCell>
+                                <TableCell className="text-primary font-semibold">{net.toLocaleString()} RWF</TableCell>
+                                <TableCell>
+                                  <Button size="sm" onClick={() => requestPayout(o)}>Request payout</Button>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-sm mb-2 mt-6">My payout requests</h4>
+                    {payouts.length === 0 ? (
+                      <p className="text-muted-foreground text-sm py-4">No payout requests yet.</p>
+                    ) : (
+                      <Table>
+                        <TableHeader><TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Order</TableHead>
+                          <TableHead>Net</TableHead>
+                          <TableHead>Method</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow></TableHeader>
+                        <TableBody>
+                          {payouts.map((p) => (
+                            <TableRow key={p.id}>
+                              <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                              <TableCell className="font-mono text-xs">{p.order_id?.slice(0, 8) || "—"}…</TableCell>
+                              <TableCell className="text-primary font-semibold">{p.net_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="capitalize">{p.payout_method}</TableCell>
+                              <TableCell>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.status === "paid" ? "bg-green-500/15 text-green-500" : p.status === "rejected" ? "bg-destructive/15 text-destructive" : "bg-yellow-500/15 text-yellow-500"}`}>
+                                  {p.status}
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+
             <TabsContent value="profile">
               <Card>
                 <CardHeader><CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Account Settings</CardTitle></CardHeader>
