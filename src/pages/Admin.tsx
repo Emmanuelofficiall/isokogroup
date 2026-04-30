@@ -6,7 +6,8 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText, Eye, Download, Film, Mic, Upload } from "lucide-react";
+import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText, Eye, Download, Film, Mic, Upload, Wallet, CheckCircle } from "lucide-react";
+import { notify } from "@/lib/notify";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,6 +35,7 @@ const Admin = () => {
   const [packagingRequests, setPackagingRequests] = useState<any[]>([]);
   const [sellerApplications, setSellerApplications] = useState<any[]>([]);
   const [entertainment, setEntertainment] = useState<any[]>([]);
+  const [payouts, setPayouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
@@ -73,7 +75,7 @@ const Admin = () => {
   }, [user]);
 
   const fetchAll = async () => {
-    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes] = await Promise.all([
+    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes, payoutsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").order("created_at", { ascending: false }),
@@ -84,6 +86,7 @@ const Admin = () => {
       (supabase as any).from("packaging_requests").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("seller_applications").select("*").order("created_at", { ascending: false }),
       supabase.from("entertainment").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("payout_requests").select("*").order("created_at", { ascending: false }),
     ]);
     setProfiles(profilesRes.data || []);
     setOrders(ordersRes.data || []);
@@ -95,6 +98,7 @@ const Admin = () => {
     setPackagingRequests(packRes.data || []);
     setSellerApplications(sellerRes.data || []);
     setEntertainment(entRes.data || []);
+    setPayouts(payoutsRes.data || []);
     setLoading(false);
   };
 
