@@ -310,12 +310,11 @@ const Admin = () => {
       return;
     }
     setEntUploading(true);
+    setEntUploadProgress(0);
     try {
-      // Upload cover and media in parallel for fastest results
-      const [cover_url, media_url] = await Promise.all([
-        entCoverFile ? uploadEntFile(entCoverFile, "covers") : Promise.resolve(null),
-        uploadEntFile(entMediaFile, "media"),
-      ]);
+      // Upload cover first (small), then media with progress tracking
+      const cover_url = entCoverFile ? await uploadEntFile(entCoverFile, "covers") : null;
+      const media_url = await uploadEntFile(entMediaFile, "media", (pct) => setEntUploadProgress(pct));
       const { error } = await supabase.from("entertainment").insert({
         title: entForm.title.trim(),
         creator: entForm.creator.trim(),
@@ -335,9 +334,10 @@ const Admin = () => {
       setEntMediaFile(null);
       fetchAll();
     } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: "Upload failed", description: err.message || "Try a smaller file or check your connection.", variant: "destructive" });
     } finally {
       setEntUploading(false);
+      setEntUploadProgress(0);
     }
   };
 
