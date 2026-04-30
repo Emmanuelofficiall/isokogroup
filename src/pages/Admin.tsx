@@ -424,6 +424,7 @@ const Admin = () => {
               <TabsTrigger value="packaging">Packaging</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
+              <TabsTrigger value="payouts">Payouts</TabsTrigger>
             </TabsList>
 
             {/* Analytics */}
