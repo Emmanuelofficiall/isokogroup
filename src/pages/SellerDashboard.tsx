@@ -217,6 +217,7 @@ const SellerDashboard = () => {
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="earnings">Earnings</TabsTrigger>
+              <TabsTrigger value="payouts">Payouts</TabsTrigger>
               <TabsTrigger value="profile">Profile</TabsTrigger>
             </TabsList>
 
