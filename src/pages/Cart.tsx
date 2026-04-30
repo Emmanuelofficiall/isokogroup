@@ -279,11 +279,23 @@ const Cart = () => {
               </div>
 
               <div className="space-y-2">
+                <label className="text-sm font-medium">Your full name (as paid)</label>
+                <Input
+                  placeholder="e.g. Jean Mukamana"
+                  value={payerName}
+                  onChange={(e) => setPayerName(e.target.value)}
+                  maxLength={100}
+                />
+                <p className="text-xs text-muted-foreground">Enter the name you used when sending the payment.</p>
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-sm font-medium">Payment reference / transaction ID</label>
                 <Input
                   placeholder="e.g. MoMo TXN ID or bank ref"
                   value={paymentReference}
                   onChange={(e) => setPaymentReference(e.target.value)}
+                  maxLength={100}
                 />
                 <p className="text-xs text-muted-foreground">After paying, enter the transaction reference so admin can verify.</p>
               </div>
