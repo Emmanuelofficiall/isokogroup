@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
+import { useSubscription } from "@/lib/subscription";
 import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
@@ -16,6 +17,7 @@ const Login = () => {
   const { t } = useI18n();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isActive } = useSubscription();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,7 +30,12 @@ const Login = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Success", description: "Logged in successfully!" });
-      navigate("/");
+      // Redirect to subscription page if no active subscription
+      if (!isActive) {
+        navigate("/subscription");
+      } else {
+        navigate("/");
+      }
     }
   };
 
