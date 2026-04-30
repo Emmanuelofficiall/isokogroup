@@ -15,8 +15,14 @@ const Subscription = () => {
   const { t } = useI18n();
   const { toast } = useToast();
 
-  if (authLoading || subLoading) return null;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user && !authLoading) return <Navigate to="/login" replace />;
+  if (authLoading || subLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+      </div>
+    );
+  }
 
   const handleStartTrial = async () => {
     const result = await startTrial();
