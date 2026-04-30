@@ -36,6 +36,7 @@ const SellerDashboard = () => {
   const [uploading, setUploading] = useState(false);
   const [payoutMethod, setPayoutMethod] = useState<"momo" | "bank">("momo");
   const [payoutDestination, setPayoutDestination] = useState("");
+  const [payoutAccountName, setPayoutAccountName] = useState("");
 
   // Product form
   const [productName, setProductName] = useState("");
