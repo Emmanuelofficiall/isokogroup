@@ -89,6 +89,10 @@ const SellerDashboard = () => {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!isApprovedSeller) {
+      toast({ title: "Not approved yet", description: "Only approved sellers can add products.", variant: "destructive" });
+      return;
+    }
     setUploading(true);
     let imageUrl = null;
     if (productImage) {
