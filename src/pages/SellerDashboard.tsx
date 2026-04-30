@@ -135,9 +135,38 @@ const SellerDashboard = () => {
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
 
-  const totalSales = orders.filter(o => o.status === "delivered").reduce((sum, o) => sum + o.total_amount, 0);
+  const deliveredOrders = orders.filter((o) => o.status === "delivered");
+  const totalSales = deliveredOrders.reduce((sum, o) => sum + o.total_amount, 0);
   const totalCommission = commissions.reduce((sum, c) => sum + c.commission_amount, 0);
   const netEarnings = totalSales - totalCommission;
+  const requestedOrderIds = new Set(payouts.map((p) => p.order_id).filter(Boolean));
+  const eligibleOrders = deliveredOrders.filter((o) => !requestedOrderIds.has(o.id));
+
+  const requestPayout = async (order: any) => {
+    if (!user) return;
+    if (!payoutDestination.trim()) {
+      toast({ title: "Payout destination required", description: "Enter your MoMo number or bank account first.", variant: "destructive" });
+      return;
+    }
+    const commission = Math.round(order.total_amount * COMMISSION_RATE);
+    const net = order.total_amount - commission;
+    const { error } = await (supabase as any).from("payout_requests").insert({
+      seller_id: user.id,
+      order_id: order.id,
+      gross_amount: order.total_amount,
+      commission_amount: commission,
+      net_amount: net,
+      payout_method: payoutMethod,
+      payout_destination: payoutDestination.trim(),
+      status: "pending",
+    });
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Payout requested", description: `${net.toLocaleString()} RWF — admin will process it shortly.` });
+    fetchData();
+  };
 
   const monthlyData = orders.reduce((acc: any[], order) => {
     const month = new Date(order.created_at).toLocaleString("default", { month: "short" });
