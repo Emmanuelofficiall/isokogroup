@@ -38,30 +38,38 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     setLoading(true);
-    const { data } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-    if (data) {
-      const now = new Date();
-      const expiresAt = new Date(data.expires_at);
-      const trialEndsAt = data.trial_ends_at ? new Date(data.trial_ends_at) : null;
+      if (error) console.error("subscription fetch error", error);
 
-      if (data.status === "trial" && trialEndsAt && now > trialEndsAt) {
-        setSubscription({ ...data, status: "expired" });
-      } else if (data.status === "active" && now > expiresAt) {
-        setSubscription({ ...data, status: "expired" });
+      if (data) {
+        const now = new Date();
+        const expiresAt = new Date(data.expires_at);
+        const trialEndsAt = data.trial_ends_at ? new Date(data.trial_ends_at) : null;
+
+        if (data.status === "trial" && trialEndsAt && now > trialEndsAt) {
+          setSubscription({ ...data, status: "expired" });
+        } else if (data.status === "active" && now > expiresAt) {
+          setSubscription({ ...data, status: "expired" });
+        } else {
+          setSubscription(data);
+        }
       } else {
-        setSubscription(data);
+        setSubscription(null);
       }
-    } else {
+    } catch (e) {
+      console.error("subscription fetch threw", e);
       setSubscription(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [user]);
 
   useEffect(() => {
