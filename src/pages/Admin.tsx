@@ -1057,6 +1057,70 @@ const Admin = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Payouts */}
+            <TabsContent value="payouts">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Wallet className="h-5 w-5 text-primary" /> Seller payout requests ({payouts.length})</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Review payouts requested by sellers after buyers confirmed delivery. Pay them outside the platform, then mark as paid here.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {payouts.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No payout requests yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Seller</TableHead>
+                        <TableHead>Order</TableHead>
+                        <TableHead>Gross</TableHead>
+                        <TableHead>Commission (7%)</TableHead>
+                        <TableHead>Net to pay</TableHead>
+                        <TableHead>Method</TableHead>
+                        <TableHead>Destination</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {payouts.map((p) => {
+                          const sellerProfile = profiles.find((pr) => pr.user_id === p.seller_id);
+                          return (
+                            <TableRow key={p.id}>
+                              <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                              <TableCell className="text-xs">{sellerProfile?.full_name || sellerProfile?.business_name || p.seller_id.slice(0, 8)}…</TableCell>
+                              <TableCell className="font-mono text-xs">{p.order_id?.slice(0, 8) || "—"}…</TableCell>
+                              <TableCell>{p.gross_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="text-destructive">-{p.commission_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="text-primary font-semibold">{p.net_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="capitalize">{p.payout_method}</TableCell>
+                              <TableCell className="font-mono text-xs">{p.payout_destination}</TableCell>
+                              <TableCell>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.status === "paid" ? "bg-green-500/15 text-green-500" : p.status === "rejected" ? "bg-destructive/15 text-destructive" : "bg-yellow-500/15 text-yellow-500"}`}>
+                                  {p.status}
+                                </span>
+                              </TableCell>
+                              <TableCell>
+                                {p.status === "pending" && (
+                                  <div className="flex gap-1">
+                                    <Button size="sm" className="h-7 text-xs gap-1" onClick={() => handleUpdatePayout(p, "paid")}>
+                                      <CheckCircle className="h-3 w-3" /> Mark paid
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleUpdatePayout(p, "rejected", "Please contact support")}>Reject</Button>
+                                  </div>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       </section>
