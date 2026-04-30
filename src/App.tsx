@@ -20,6 +20,7 @@ import Admin from "./pages/Admin";
 import SellerDashboard from "./pages/SellerDashboard";
 import Subscription from "./pages/Subscription";
 import Cart from "./pages/Cart";
+import BuyerOrders from "./pages/BuyerOrders";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
                   <Route path="/entertainment" element={<ProtectedRoute><Entertainment /></ProtectedRoute>} />
                   <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
                   <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                  <Route path="/my-orders" element={<ProtectedRoute><BuyerOrders /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
