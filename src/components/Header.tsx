@@ -111,7 +111,7 @@ const Header = () => {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-background animate-fade-in">
+        <div className="xl:hidden border-t border-border bg-background animate-fade-in">
           <nav className="container flex flex-col py-4 gap-1">
             {navItems.map((item) => (
               <Link
