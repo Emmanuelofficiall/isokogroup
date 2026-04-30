@@ -438,8 +438,17 @@ const SellerDashboard = () => {
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <Label>{payoutMethod === "momo" ? "MoMo number" : "Bank account number"}</Label>
-                      <Input value={payoutDestination} onChange={(e) => setPayoutDestination(e.target.value)} placeholder={payoutMethod === "momo" ? "07xx xxx xxx" : "Bank · Account · Name"} />
+                      <Label>Account holder full name</Label>
+                      <Input
+                        value={payoutAccountName}
+                        onChange={(e) => setPayoutAccountName(e.target.value)}
+                        placeholder="e.g. Jean Mukamana"
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>{payoutMethod === "momo" ? "MoMo number" : "Bank · Account number"}</Label>
+                      <Input value={payoutDestination} onChange={(e) => setPayoutDestination(e.target.value)} placeholder={payoutMethod === "momo" ? "07xx xxx xxx" : "Bank of Kigali · 00040-12345678-90"} maxLength={150} />
                     </div>
                   </div>
 
