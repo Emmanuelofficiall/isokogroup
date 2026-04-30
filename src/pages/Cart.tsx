@@ -33,6 +33,8 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [shipping, setShipping] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"momo" | "bank" | "auto">("momo");
+  const [paymentReference, setPaymentReference] = useState("");
 
   const load = async () => {
     if (!user) return;
