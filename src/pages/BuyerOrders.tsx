@@ -71,7 +71,7 @@ const BuyerOrders = () => {
       title: "Buyer confirmed delivery",
       body: `Order #${order.id.slice(0, 8)} delivered. You can now request payout from the company.`,
       type: "success",
-      link: "/seller-dashboard",
+      link: "/seller",
     });
     toast({ title: "Delivery confirmed", description: "Thanks! The seller has been notified." });
     load();
