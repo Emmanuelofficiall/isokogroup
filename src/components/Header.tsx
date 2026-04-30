@@ -33,26 +33,26 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="ISOKO GROUP" className="h-10 w-10 rounded-full object-cover" />
-          <span className="text-xl font-bold font-display tracking-tight">
+      <div className="container flex h-14 items-center justify-between gap-2">
+        <Link to="/" className="flex items-center gap-1.5 shrink-0">
+          <img src={logo} alt="ISOKO GROUP" className="h-8 w-8 rounded-full object-cover" />
+          <span className="text-base font-bold font-display tracking-tight whitespace-nowrap">
             ISOKO <span className="text-primary">GROUP</span>
           </span>
         </Link>
 
-        <nav className="hidden xl:flex items-center gap-1">
+        <nav className="hidden xl:flex items-center gap-0.5">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`relative px-3 py-2 text-sm font-medium transition-colors hover:text-primary whitespace-nowrap ${
+              className={`relative px-2 py-1.5 text-xs font-medium transition-colors hover:text-primary whitespace-nowrap ${
                 location.pathname === item.path ? "text-primary" : "text-foreground/70"
               }`}
             >
               {item.label}
               {location.pathname === item.path && (
-                <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />
+                <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
               )}
             </Link>
           ))}
