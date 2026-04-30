@@ -140,6 +140,52 @@ const Admin = () => {
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
+  const handleConfirmPayment = async (order: any) => {
+    const { error } = await (supabase as any)
+      .from("orders")
+      .update({
+        payment_status: "paid",
+        payment_confirmed_at: new Date().toISOString(),
+        status: order.status === "pending" ? "processing" : order.status,
+      })
+      .eq("id", order.id);
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    await notify({
+      userId: order.seller_id,
+      title: "Payment received — please ship",
+      body: `Order #${order.id.slice(0, 8)} (${order.total_amount.toLocaleString()} RWF) has been paid by the buyer. Please prepare and deliver the products.`,
+      type: "success",
+      link: "/seller",
+    });
+    toast({ title: "Payment confirmed", description: "Seller has been notified to deliver." });
+    fetchAll();
+  };
+
+  const handleUpdatePayout = async (payout: any, status: "paid" | "rejected", note?: string) => {
+    const update: any = { status, admin_note: note ?? null };
+    if (status === "paid") update.paid_at = new Date().toISOString();
+    const { error } = await (supabase as any).from("payout_requests").update(update).eq("id", payout.id);
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    await notify({
+      userId: payout.seller_id,
+      title: status === "paid" ? "Payout sent" : "Payout rejected",
+      body:
+        status === "paid"
+          ? `Your payout of ${payout.net_amount.toLocaleString()} RWF was sent to your ${payout.payout_method.toUpperCase()}.`
+          : `Your payout request was rejected. ${note || ""}`.trim(),
+      type: status === "paid" ? "success" : "warning",
+      link: "/seller",
+    });
+    toast({ title: status === "paid" ? "Marked as paid" : "Rejected" });
+    fetchAll();
+  };
+
   const handleUpdateProductStatus = async (productId: string, status: string) => {
     const { error } = await supabase.from("products").update({ status }).eq("id", productId);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
