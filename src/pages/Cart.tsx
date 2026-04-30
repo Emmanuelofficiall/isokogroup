@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, ShoppingBag, Minus, Plus } from "lucide-react";
+import { Trash2, ShoppingBag, Minus, Plus, Smartphone, Landmark, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import { COMPANY_PAYMENT, COMMISSION_RATE } from "@/lib/company";
+import { notify } from "@/lib/notify";
 
 type CartRow = {
   id: string;
@@ -31,6 +33,8 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [shipping, setShipping] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"momo" | "bank" | "auto">("momo");
+  const [paymentReference, setPaymentReference] = useState("");
 
   const load = async () => {
     if (!user) return;
@@ -75,9 +79,16 @@ const Cart = () => {
       toast({ title: "Shipping address required", variant: "destructive" });
       return;
     }
+    if (paymentMethod === "auto") {
+      toast({ title: "Coming soon", description: "Automatic payment is not yet available. Use MoMo or Bank.", variant: "destructive" });
+      return;
+    }
+    if (!paymentReference.trim()) {
+      toast({ title: "Payment reference required", description: "Enter the MoMo transaction ID or bank transfer reference.", variant: "destructive" });
+      return;
+    }
     setPlacing(true);
     try {
-      // Group by seller
       const groups: Record<string, CartRow[]> = {};
       items.forEach((r) => {
         const k = r.product.seller_id;
@@ -97,6 +108,9 @@ const Cart = () => {
             total_amount: orderTotal,
             shipping_address: shipping,
             status: "pending",
+            payment_status: "awaiting_confirmation",
+            payment_method: paymentMethod,
+            payment_reference: paymentReference.trim(),
           })
           .select()
           .single();
@@ -111,21 +125,27 @@ const Cart = () => {
         const { error: iErr } = await (supabase as any).from("order_items").insert(orderItems);
         if (iErr) throw iErr;
 
-        // 10% commission record
         await (supabase as any).from("commissions").insert({
           seller_id: sellerId,
           order_id: order.id,
           sale_amount: orderTotal,
-          commission_amount: Math.round(orderTotal * 0.1),
-          commission_rate: 10,
+          commission_amount: Math.round(orderTotal * COMMISSION_RATE),
+          commission_rate: COMMISSION_RATE * 100,
           status: "pending",
+        });
+
+        // Notify the buyer (themselves) of order creation
+        await notify({
+          userId: user.id,
+          title: "Order placed",
+          body: `Your order of ${orderTotal.toLocaleString()} RWF was submitted. We will confirm payment shortly.`,
+          link: "/my-orders",
         });
       }
 
-      // clear cart
       await (supabase as any).from("cart_items").delete().eq("user_id", user.id);
-      toast({ title: "Order placed!", description: "Your order has been submitted to the seller." });
-      navigate("/marketplace");
+      toast({ title: "Order placed!", description: "We'll confirm your payment and notify the seller to ship it." });
+      navigate("/my-orders");
     } catch (e: any) {
       toast({ title: "Checkout failed", description: e.message, variant: "destructive" });
     } finally {
@@ -199,9 +219,72 @@ const Cart = () => {
                 <label className="text-sm font-medium">Shipping address</label>
                 <Input placeholder="Street, City, Rwanda" value={shipping} onChange={(e) => setShipping(e.target.value)} />
               </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Payment method</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { k: "momo", label: "MoMo", icon: Smartphone },
+                    { k: "bank", label: "Bank", icon: Landmark },
+                    { k: "auto", label: "Auto", icon: Zap },
+                  ].map((opt) => {
+                    const Icon = opt.icon;
+                    const active = paymentMethod === opt.k;
+                    return (
+                      <button
+                        key={opt.k}
+                        type="button"
+                        onClick={() => setPaymentMethod(opt.k as any)}
+                        className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-3 text-xs transition-colors ${active ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/50"}`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-border bg-background p-3 text-xs space-y-1">
+                {paymentMethod === "momo" && (
+                  <>
+                    <p className="font-semibold">{COMPANY_PAYMENT.momo.label}</p>
+                    <p>Send to: <span className="font-mono text-primary">{COMPANY_PAYMENT.momo.number}</span></p>
+                    <p>Name: {COMPANY_PAYMENT.momo.name}</p>
+                    <p className="text-muted-foreground">{COMPANY_PAYMENT.momo.note}</p>
+                  </>
+                )}
+                {paymentMethod === "bank" && (
+                  <>
+                    <p className="font-semibold">{COMPANY_PAYMENT.bank.label}</p>
+                    <p>{COMPANY_PAYMENT.bank.bank}</p>
+                    <p>Account: <span className="font-mono text-primary">{COMPANY_PAYMENT.bank.account}</span></p>
+                    <p>Name: {COMPANY_PAYMENT.bank.name}</p>
+                    <p className="text-muted-foreground">SWIFT: {COMPANY_PAYMENT.bank.swift}</p>
+                  </>
+                )}
+                {paymentMethod === "auto" && (
+                  <>
+                    <p className="font-semibold">{COMPANY_PAYMENT.auto.label}</p>
+                    <p className="text-muted-foreground">{COMPANY_PAYMENT.auto.note}</p>
+                  </>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Payment reference / transaction ID</label>
+                <Input
+                  placeholder="e.g. MoMo TXN ID or bank ref"
+                  value={paymentReference}
+                  onChange={(e) => setPaymentReference(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">After paying, enter the transaction reference so admin can verify.</p>
+              </div>
+
               <Button className="w-full" disabled={placing} onClick={checkout}>
-                {placing ? "Placing order…" : "Place Order"}
+                {placing ? "Placing order…" : "I have paid — Place Order"}
               </Button>
+              <Link to="/my-orders" className="block text-center text-xs text-primary hover:underline">View my orders</Link>
             </div>
           </div>
         )}

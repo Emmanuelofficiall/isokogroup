@@ -6,7 +6,8 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText, Eye, Download, Film, Mic, Upload } from "lucide-react";
+import { Users, ShoppingCart, DollarSign, TrendingUp, Package, BookOpen, Truck, Box, Bell, Settings, FileText, Eye, Download, Film, Mic, Upload, Wallet, CheckCircle } from "lucide-react";
+import { notify } from "@/lib/notify";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -34,6 +35,7 @@ const Admin = () => {
   const [packagingRequests, setPackagingRequests] = useState<any[]>([]);
   const [sellerApplications, setSellerApplications] = useState<any[]>([]);
   const [entertainment, setEntertainment] = useState<any[]>([]);
+  const [payouts, setPayouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
@@ -73,7 +75,7 @@ const Admin = () => {
   }, [user]);
 
   const fetchAll = async () => {
-    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes] = await Promise.all([
+    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes, payoutsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").order("created_at", { ascending: false }),
@@ -84,6 +86,7 @@ const Admin = () => {
       (supabase as any).from("packaging_requests").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("seller_applications").select("*").order("created_at", { ascending: false }),
       supabase.from("entertainment").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("payout_requests").select("*").order("created_at", { ascending: false }),
     ]);
     setProfiles(profilesRes.data || []);
     setOrders(ordersRes.data || []);
@@ -95,6 +98,7 @@ const Admin = () => {
     setPackagingRequests(packRes.data || []);
     setSellerApplications(sellerRes.data || []);
     setEntertainment(entRes.data || []);
+    setPayouts(payoutsRes.data || []);
     setLoading(false);
   };
 
@@ -134,6 +138,52 @@ const Admin = () => {
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
+  };
+
+  const handleConfirmPayment = async (order: any) => {
+    const { error } = await (supabase as any)
+      .from("orders")
+      .update({
+        payment_status: "paid",
+        payment_confirmed_at: new Date().toISOString(),
+        status: order.status === "pending" ? "processing" : order.status,
+      })
+      .eq("id", order.id);
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    await notify({
+      userId: order.seller_id,
+      title: "Payment received — please ship",
+      body: `Order #${order.id.slice(0, 8)} (${order.total_amount.toLocaleString()} RWF) has been paid by the buyer. Please prepare and deliver the products.`,
+      type: "success",
+      link: "/seller",
+    });
+    toast({ title: "Payment confirmed", description: "Seller has been notified to deliver." });
+    fetchAll();
+  };
+
+  const handleUpdatePayout = async (payout: any, status: "paid" | "rejected", note?: string) => {
+    const update: any = { status, admin_note: note ?? null };
+    if (status === "paid") update.paid_at = new Date().toISOString();
+    const { error } = await (supabase as any).from("payout_requests").update(update).eq("id", payout.id);
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    await notify({
+      userId: payout.seller_id,
+      title: status === "paid" ? "Payout sent" : "Payout rejected",
+      body:
+        status === "paid"
+          ? `Your payout of ${payout.net_amount.toLocaleString()} RWF was sent to your ${payout.payout_method.toUpperCase()}.`
+          : `Your payout request was rejected. ${note || ""}`.trim(),
+      type: status === "paid" ? "success" : "warning",
+      link: "/seller",
+    });
+    toast({ title: status === "paid" ? "Marked as paid" : "Rejected" });
+    fetchAll();
   };
 
   const handleUpdateProductStatus = async (productId: string, status: string) => {
@@ -374,6 +424,7 @@ const Admin = () => {
               <TabsTrigger value="packaging">Packaging</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
+              <TabsTrigger value="payouts">Payouts</TabsTrigger>
             </TabsList>
 
             {/* Analytics */}
@@ -625,6 +676,8 @@ const Admin = () => {
                         <TableRow>
                           <TableHead>Order ID</TableHead>
                           <TableHead>Amount</TableHead>
+                          <TableHead>Payment</TableHead>
+                          <TableHead>Ref</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Date</TableHead>
                           <TableHead>Actions</TableHead>
@@ -637,21 +690,35 @@ const Admin = () => {
                             <TableCell>{(o.total_amount || 0).toLocaleString()} RWF</TableCell>
                             <TableCell>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                o.status === "delivered" ? "bg-green-100 text-green-700" :
-                                o.status === "shipped" ? "bg-blue-100 text-blue-700" :
-                                "bg-yellow-100 text-yellow-700"
+                                o.payment_status === "paid" ? "bg-green-500/15 text-green-500" :
+                                "bg-yellow-500/15 text-yellow-500"
+                              }`}>
+                                {o.payment_method || "—"} · {o.payment_status || "unpaid"}
+                              </span>
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">{o.payment_reference || "—"}</TableCell>
+                            <TableCell>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                o.status === "delivered" ? "bg-green-500/15 text-green-500" :
+                                o.status === "shipped" ? "bg-blue-500/15 text-blue-500" :
+                                "bg-yellow-500/15 text-yellow-500"
                               }`}>{o.status}</span>
                             </TableCell>
                             <TableCell>{new Date(o.created_at).toLocaleDateString()}</TableCell>
-                            <TableCell>
+                            <TableCell className="space-y-1">
                               <select value={o.status} onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                                className="text-xs border rounded px-2 py-1 bg-background">
+                                className="text-xs border rounded px-2 py-1 bg-background block">
                                 <option value="pending">Pending</option>
                                 <option value="processing">Processing</option>
                                 <option value="shipped">Shipped</option>
                                 <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
+                              {o.payment_status !== "paid" && (
+                                <Button size="sm" variant="outline" className="h-7 text-xs gap-1 w-full" onClick={() => handleConfirmPayment(o)}>
+                                  <CheckCircle className="h-3 w-3" /> Confirm payment
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -984,6 +1051,70 @@ const Admin = () => {
                             </TableCell>
                           </TableRow>
                         ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Payouts */}
+            <TabsContent value="payouts">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Wallet className="h-5 w-5 text-primary" /> Seller payout requests ({payouts.length})</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Review payouts requested by sellers after buyers confirmed delivery. Pay them outside the platform, then mark as paid here.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {payouts.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No payout requests yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Seller</TableHead>
+                        <TableHead>Order</TableHead>
+                        <TableHead>Gross</TableHead>
+                        <TableHead>Commission (7%)</TableHead>
+                        <TableHead>Net to pay</TableHead>
+                        <TableHead>Method</TableHead>
+                        <TableHead>Destination</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {payouts.map((p) => {
+                          const sellerProfile = profiles.find((pr) => pr.user_id === p.seller_id);
+                          return (
+                            <TableRow key={p.id}>
+                              <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                              <TableCell className="text-xs">{sellerProfile?.full_name || sellerProfile?.business_name || p.seller_id.slice(0, 8)}…</TableCell>
+                              <TableCell className="font-mono text-xs">{p.order_id?.slice(0, 8) || "—"}…</TableCell>
+                              <TableCell>{p.gross_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="text-destructive">-{p.commission_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="text-primary font-semibold">{p.net_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="capitalize">{p.payout_method}</TableCell>
+                              <TableCell className="font-mono text-xs">{p.payout_destination}</TableCell>
+                              <TableCell>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.status === "paid" ? "bg-green-500/15 text-green-500" : p.status === "rejected" ? "bg-destructive/15 text-destructive" : "bg-yellow-500/15 text-yellow-500"}`}>
+                                  {p.status}
+                                </span>
+                              </TableCell>
+                              <TableCell>
+                                {p.status === "pending" && (
+                                  <div className="flex gap-1">
+                                    <Button size="sm" className="h-7 text-xs gap-1" onClick={() => handleUpdatePayout(p, "paid")}>
+                                      <CheckCircle className="h-3 w-3" /> Mark paid
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleUpdatePayout(p, "rejected", "Please contact support")}>Reject</Button>
+                                  </div>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   )}

@@ -13,7 +13,7 @@ const CTASection = () => {
   ];
 
   return (
-    <section className="py-20 bg-foreground text-background relative overflow-hidden">
+    <section className="py-20 bg-card text-foreground relative overflow-hidden border-y border-border">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-primary blur-3xl" />
       </div>
@@ -24,11 +24,11 @@ const CTASection = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold">
             {t("cta.title")} <span className="text-primary">50 RWF</span>
           </h2>
-          <p className="text-background/60 text-lg max-w-xl mx-auto">{t("cta.subtitle")}</p>
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">{t("cta.subtitle")}</p>
 
           <ul className="flex flex-col items-start max-w-md mx-auto gap-3">
             {benefits.map((b) => (
-              <li key={b} className="flex items-center gap-3 text-sm text-background/70">
+              <li key={b} className="flex items-center gap-3 text-sm text-muted-foreground">
                 <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
                 {b}
               </li>

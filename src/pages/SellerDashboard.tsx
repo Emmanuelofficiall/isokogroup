@@ -13,8 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
-import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Upload, User, Bell } from "lucide-react";
+import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Upload, User, Bell, Wallet } from "lucide-react";
 import { Navigate } from "react-router-dom";
+import { COMMISSION_RATE, COMPANY_PAYMENT } from "@/lib/company";
+import { notify } from "@/lib/notify";
 
 const categories = ["Electronics", "Fashion", "Food & Drink", "Crafts", "Home", "Accessories"];
 
@@ -27,10 +29,13 @@ const SellerDashboard = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [commissions, setCommissions] = useState<any[]>([]);
+  const [payouts, setPayouts] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [payoutMethod, setPayoutMethod] = useState<"momo" | "bank">("momo");
+  const [payoutDestination, setPayoutDestination] = useState("");
 
   // Product form
   const [productName, setProductName] = useState("");
@@ -53,15 +58,17 @@ const SellerDashboard = () => {
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
-    const [productsRes, ordersRes, commissionsRes, profileRes] = await Promise.all([
+    const [productsRes, ordersRes, commissionsRes, profileRes, payoutsRes] = await Promise.all([
       supabase.from("products").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("orders").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      (supabase as any).from("payout_requests").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
     ]);
     setProducts(productsRes.data || []);
     setOrders(ordersRes.data || []);
     setCommissions(commissionsRes.data || []);
+    setPayouts(payoutsRes.data || []);
     if (profileRes.data) {
       setProfile(profileRes.data);
       setEditFullName(profileRes.data.full_name || "");
@@ -128,9 +135,38 @@ const SellerDashboard = () => {
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
 
-  const totalSales = orders.filter(o => o.status === "delivered").reduce((sum, o) => sum + o.total_amount, 0);
+  const deliveredOrders = orders.filter((o) => o.status === "delivered");
+  const totalSales = deliveredOrders.reduce((sum, o) => sum + o.total_amount, 0);
   const totalCommission = commissions.reduce((sum, c) => sum + c.commission_amount, 0);
   const netEarnings = totalSales - totalCommission;
+  const requestedOrderIds = new Set(payouts.map((p) => p.order_id).filter(Boolean));
+  const eligibleOrders = deliveredOrders.filter((o) => !requestedOrderIds.has(o.id));
+
+  const requestPayout = async (order: any) => {
+    if (!user) return;
+    if (!payoutDestination.trim()) {
+      toast({ title: "Payout destination required", description: "Enter your MoMo number or bank account first.", variant: "destructive" });
+      return;
+    }
+    const commission = Math.round(order.total_amount * COMMISSION_RATE);
+    const net = order.total_amount - commission;
+    const { error } = await (supabase as any).from("payout_requests").insert({
+      seller_id: user.id,
+      order_id: order.id,
+      gross_amount: order.total_amount,
+      commission_amount: commission,
+      net_amount: net,
+      payout_method: payoutMethod,
+      payout_destination: payoutDestination.trim(),
+      status: "pending",
+    });
+    if (error) {
+      toast({ title: "Failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Payout requested", description: `${net.toLocaleString()} RWF — admin will process it shortly.` });
+    fetchData();
+  };
 
   const monthlyData = orders.reduce((acc: any[], order) => {
     const month = new Date(order.created_at).toLocaleString("default", { month: "short" });
@@ -181,6 +217,7 @@ const SellerDashboard = () => {
               <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="earnings">Earnings</TabsTrigger>
+              <TabsTrigger value="payouts">Payouts</TabsTrigger>
               <TabsTrigger value="profile">Profile</TabsTrigger>
             </TabsList>
 
@@ -317,14 +354,14 @@ const SellerDashboard = () => {
             <TabsContent value="earnings">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Gross Sales</p><p className="text-2xl font-bold text-primary mt-1">{totalSales.toLocaleString()} RWF</p></CardContent></Card>
-                <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Platform Commission (10%)</p><p className="text-2xl font-bold text-destructive mt-1">-{totalCommission.toLocaleString()} RWF</p></CardContent></Card>
+                <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Platform Commission (7%)</p><p className="text-2xl font-bold text-destructive mt-1">-{totalCommission.toLocaleString()} RWF</p></CardContent></Card>
                 <Card className="hover-lift"><CardContent className="p-6 text-center"><p className="text-sm text-muted-foreground">Net Earnings</p><p className="text-2xl font-bold mt-1">{netEarnings.toLocaleString()} RWF</p></CardContent></Card>
               </div>
 
               <Card className="mb-6">
                 <CardHeader>
-                  <CardTitle>Commission Breakdown (10% per Order)</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">A 10% commission is deducted from each completed sale. Below is the per-order breakdown of your earnings.</p>
+                  <CardTitle>Commission Breakdown (7% per Order)</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">A 7% commission is deducted from each completed sale. Below is the per-order breakdown of your earnings.</p>
                 </CardHeader>
                 <CardContent>
                   {commissions.length === 0 ? (
@@ -373,7 +410,106 @@ const SellerDashboard = () => {
               </Card>
             </TabsContent>
 
-            {/* Profile Tab */}
+            {/* Payouts Tab */}
+            <TabsContent value="payouts">
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Wallet className="h-5 w-5 text-primary" /> Request your money</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    After the buyer confirms delivery, you can ask the company to pay you. Company keeps 7%, you receive 93%.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Payout method</Label>
+                      <select
+                        value={payoutMethod}
+                        onChange={(e) => setPayoutMethod(e.target.value as any)}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      >
+                        <option value="momo">Mobile Money (MoMo)</option>
+                        <option value="bank">Bank account</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{payoutMethod === "momo" ? "MoMo number" : "Bank account number"}</Label>
+                      <Input value={payoutDestination} onChange={(e) => setPayoutDestination(e.target.value)} placeholder={payoutMethod === "momo" ? "07xx xxx xxx" : "Bank · Account · Name"} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-sm mb-2">Eligible delivered orders</h4>
+                    {eligibleOrders.length === 0 ? (
+                      <p className="text-muted-foreground text-sm py-4">
+                        No eligible orders. An order becomes eligible once the buyer confirms delivery.
+                      </p>
+                    ) : (
+                      <Table>
+                        <TableHeader><TableRow>
+                          <TableHead>Order</TableHead>
+                          <TableHead>Sale</TableHead>
+                          <TableHead>Company keeps (7%)</TableHead>
+                          <TableHead>You get (93%)</TableHead>
+                          <TableHead></TableHead>
+                        </TableRow></TableHeader>
+                        <TableBody>
+                          {eligibleOrders.map((o) => {
+                            const commission = Math.round(o.total_amount * COMMISSION_RATE);
+                            const net = o.total_amount - commission;
+                            return (
+                              <TableRow key={o.id}>
+                                <TableCell className="font-mono text-xs">{o.id.slice(0, 8)}…</TableCell>
+                                <TableCell>{o.total_amount.toLocaleString()} RWF</TableCell>
+                                <TableCell className="text-destructive">-{commission.toLocaleString()} RWF</TableCell>
+                                <TableCell className="text-primary font-semibold">{net.toLocaleString()} RWF</TableCell>
+                                <TableCell>
+                                  <Button size="sm" onClick={() => requestPayout(o)}>Request payout</Button>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-sm mb-2 mt-6">My payout requests</h4>
+                    {payouts.length === 0 ? (
+                      <p className="text-muted-foreground text-sm py-4">No payout requests yet.</p>
+                    ) : (
+                      <Table>
+                        <TableHeader><TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Order</TableHead>
+                          <TableHead>Net</TableHead>
+                          <TableHead>Method</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow></TableHeader>
+                        <TableBody>
+                          {payouts.map((p) => (
+                            <TableRow key={p.id}>
+                              <TableCell>{new Date(p.created_at).toLocaleDateString()}</TableCell>
+                              <TableCell className="font-mono text-xs">{p.order_id?.slice(0, 8) || "—"}…</TableCell>
+                              <TableCell className="text-primary font-semibold">{p.net_amount.toLocaleString()} RWF</TableCell>
+                              <TableCell className="capitalize">{p.payout_method}</TableCell>
+                              <TableCell>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.status === "paid" ? "bg-green-500/15 text-green-500" : p.status === "rejected" ? "bg-destructive/15 text-destructive" : "bg-yellow-500/15 text-yellow-500"}`}>
+                                  {p.status}
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+
             <TabsContent value="profile">
               <Card>
                 <CardHeader><CardTitle className="flex items-center gap-2"><User className="h-5 w-5" /> Account Settings</CardTitle></CardHeader>

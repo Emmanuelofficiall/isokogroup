@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import logo from "@/assets/isoko-logo.jpeg";
 import ThemeToggle from "@/components/ThemeToggle";
+import NotificationsBell from "@/components/NotificationsBell";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -69,8 +70,12 @@ const Header = () => {
           <Link to="/cart" aria-label="Cart">
             <Button variant="ghost" size="icon"><ShoppingCart className="h-4 w-4" /></Button>
           </Link>
+          {user && <NotificationsBell />}
           {user ? (
             <>
+              <Link to="/my-orders">
+                <Button variant="ghost" size="sm">Orders</Button>
+              </Link>
               <Link to="/seller">
                 <Button variant="outline" size="sm">Seller</Button>
               </Link>
@@ -97,6 +102,7 @@ const Header = () => {
         </div>
 
         <div className="md:hidden flex items-center gap-1">
+          {user && <NotificationsBell />}
           <ThemeToggle />
           <button className="p-2" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -133,6 +139,9 @@ const Header = () => {
             <div className="flex flex-col gap-2 mt-4 px-4">
               {user ? (
                 <>
+                  <Link to="/my-orders" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full">My Orders</Button>
+                  </Link>
                   <Link to="/seller" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">Seller Dashboard</Button>
                   </Link>
