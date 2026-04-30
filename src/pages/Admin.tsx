@@ -1052,8 +1052,8 @@ const Admin = () => {
                         <Input type="file" accept="image/*" onChange={(e) => setEntCoverFile(e.target.files?.[0] || null)} />
                       </div>
                       <div className="space-y-2">
-                        <Label>Media file (video/audio)</Label>
-                        <Input type="file" accept="video/*,audio/*" onChange={(e) => setEntMediaFile(e.target.files?.[0] || null)} />
+                        <Label>Media file (any video or audio format)</Label>
+                        <Input type="file" accept="video/*,audio/*,.mkv,.mov,.avi,.wmv,.flv,.webm,.mp4,.m4v,.mpg,.mpeg,.3gp,.ogv,.ts,.mts,.m4a,.aac,.wav,.flac,.ogg,.opus,.wma" onChange={(e) => setEntMediaFile(e.target.files?.[0] || null)} />
                       </div>
                     </div>
                     <label className="flex items-center gap-2 text-sm">
