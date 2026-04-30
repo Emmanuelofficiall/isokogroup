@@ -676,6 +676,8 @@ const Admin = () => {
                         <TableRow>
                           <TableHead>Order ID</TableHead>
                           <TableHead>Amount</TableHead>
+                          <TableHead>Payment</TableHead>
+                          <TableHead>Ref</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Date</TableHead>
                           <TableHead>Actions</TableHead>
@@ -688,21 +690,35 @@ const Admin = () => {
                             <TableCell>{(o.total_amount || 0).toLocaleString()} RWF</TableCell>
                             <TableCell>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                o.status === "delivered" ? "bg-green-100 text-green-700" :
-                                o.status === "shipped" ? "bg-blue-100 text-blue-700" :
-                                "bg-yellow-100 text-yellow-700"
+                                o.payment_status === "paid" ? "bg-green-500/15 text-green-500" :
+                                "bg-yellow-500/15 text-yellow-500"
+                              }`}>
+                                {o.payment_method || "—"} · {o.payment_status || "unpaid"}
+                              </span>
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">{o.payment_reference || "—"}</TableCell>
+                            <TableCell>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                o.status === "delivered" ? "bg-green-500/15 text-green-500" :
+                                o.status === "shipped" ? "bg-blue-500/15 text-blue-500" :
+                                "bg-yellow-500/15 text-yellow-500"
                               }`}>{o.status}</span>
                             </TableCell>
                             <TableCell>{new Date(o.created_at).toLocaleDateString()}</TableCell>
-                            <TableCell>
+                            <TableCell className="space-y-1">
                               <select value={o.status} onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                                className="text-xs border rounded px-2 py-1 bg-background">
+                                className="text-xs border rounded px-2 py-1 bg-background block">
                                 <option value="pending">Pending</option>
                                 <option value="processing">Processing</option>
                                 <option value="shipped">Shipped</option>
                                 <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
+                              {o.payment_status !== "paid" && (
+                                <Button size="sm" variant="outline" className="h-7 text-xs gap-1 w-full" onClick={() => handleConfirmPayment(o)}>
+                                  <CheckCircle className="h-3 w-3" /> Confirm payment
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
