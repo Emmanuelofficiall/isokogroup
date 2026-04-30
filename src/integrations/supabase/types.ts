@@ -210,6 +210,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -256,7 +289,12 @@ export type Database = {
         Row: {
           buyer_id: string
           created_at: string
+          delivered_confirmed_at: string | null
           id: string
+          payment_confirmed_at: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          payment_status: string
           seller_id: string
           shipping_address: string | null
           status: string
@@ -266,7 +304,12 @@ export type Database = {
         Insert: {
           buyer_id: string
           created_at?: string
+          delivered_confirmed_at?: string | null
           id?: string
+          payment_confirmed_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           seller_id: string
           shipping_address?: string | null
           status?: string
@@ -276,7 +319,12 @@ export type Database = {
         Update: {
           buyer_id?: string
           created_at?: string
+          delivered_confirmed_at?: string | null
           id?: string
+          payment_confirmed_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           seller_id?: string
           shipping_address?: string | null
           status?: string
@@ -315,6 +363,54 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      payout_requests: {
+        Row: {
+          admin_note: string | null
+          commission_amount: number
+          created_at: string
+          gross_amount: number
+          id: string
+          net_amount: number
+          order_id: string | null
+          paid_at: string | null
+          payout_destination: string
+          payout_method: string
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_note?: string | null
+          commission_amount: number
+          created_at?: string
+          gross_amount: number
+          id?: string
+          net_amount: number
+          order_id?: string | null
+          paid_at?: string | null
+          payout_destination: string
+          payout_method?: string
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_note?: string | null
+          commission_amount?: number
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          net_amount?: number
+          order_id?: string | null
+          paid_at?: string | null
+          payout_destination?: string
+          payout_method?: string
+          seller_id?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
