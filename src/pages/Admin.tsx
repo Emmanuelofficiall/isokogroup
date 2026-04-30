@@ -62,6 +62,7 @@ const Admin = () => {
   const [entCoverFile, setEntCoverFile] = useState<File | null>(null);
   const [entMediaFile, setEntMediaFile] = useState<File | null>(null);
   const [entUploading, setEntUploading] = useState(false);
+  const [entUploadProgress, setEntUploadProgress] = useState(0);
 
   // Reject dialog state
   const [rejectingApp, setRejectingApp] = useState<any | null>(null);
