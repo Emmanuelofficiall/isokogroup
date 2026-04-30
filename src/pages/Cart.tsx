@@ -35,6 +35,7 @@ const Cart = () => {
   const [placing, setPlacing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"momo" | "bank" | "auto">("momo");
   const [paymentReference, setPaymentReference] = useState("");
+  const [payerName, setPayerName] = useState("");
 
   const load = async () => {
     if (!user) return;
