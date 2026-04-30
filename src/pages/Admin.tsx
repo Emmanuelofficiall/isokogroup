@@ -247,11 +247,14 @@ const Admin = () => {
   const uploadEntFile = async (file: File, prefix: string) => {
     const ext = file.name.split(".").pop();
     const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
+    // Use resumable upload (TUS) for large files (>6MB), regular upload for small ones
+    const useResumable = file.size > 6 * 1024 * 1024;
     const { error } = await supabase.storage.from("entertainment").upload(path, file, {
       cacheControl: "3600",
       upsert: false,
       contentType: file.type || undefined,
-    });
+      ...(useResumable ? { duplex: "half" } : {}),
+    } as any);
     if (error) throw error;
     return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
   };
