@@ -101,7 +101,7 @@ const Header = () => {
           )}
         </div>
 
-        <div className="md:hidden flex items-center gap-1">
+        <div className="xl:hidden flex items-center gap-1">
           {user && <NotificationsBell />}
           <ThemeToggle />
           <button className="p-2" onClick={() => setMobileOpen(!mobileOpen)}>
