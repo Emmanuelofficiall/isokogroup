@@ -13,8 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
-import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Upload, User, Bell } from "lucide-react";
+import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Upload, User, Bell, Wallet } from "lucide-react";
 import { Navigate } from "react-router-dom";
+import { COMMISSION_RATE, COMPANY_PAYMENT } from "@/lib/company";
+import { notify } from "@/lib/notify";
 
 const categories = ["Electronics", "Fashion", "Food & Drink", "Crafts", "Home", "Accessories"];
 
@@ -27,10 +29,13 @@ const SellerDashboard = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [commissions, setCommissions] = useState<any[]>([]);
+  const [payouts, setPayouts] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [payoutMethod, setPayoutMethod] = useState<"momo" | "bank">("momo");
+  const [payoutDestination, setPayoutDestination] = useState("");
 
   // Product form
   const [productName, setProductName] = useState("");
@@ -53,15 +58,17 @@ const SellerDashboard = () => {
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
-    const [productsRes, ordersRes, commissionsRes, profileRes] = await Promise.all([
+    const [productsRes, ordersRes, commissionsRes, profileRes, payoutsRes] = await Promise.all([
       supabase.from("products").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("orders").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      (supabase as any).from("payout_requests").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
     ]);
     setProducts(productsRes.data || []);
     setOrders(ordersRes.data || []);
     setCommissions(commissionsRes.data || []);
+    setPayouts(payoutsRes.data || []);
     if (profileRes.data) {
       setProfile(profileRes.data);
       setEditFullName(profileRes.data.full_name || "");
