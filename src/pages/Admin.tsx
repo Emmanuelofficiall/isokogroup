@@ -62,6 +62,7 @@ const Admin = () => {
   const [entCoverFile, setEntCoverFile] = useState<File | null>(null);
   const [entMediaFile, setEntMediaFile] = useState<File | null>(null);
   const [entUploading, setEntUploading] = useState(false);
+  const [entUploadProgress, setEntUploadProgress] = useState(0);
 
   // Reject dialog state
   const [rejectingApp, setRejectingApp] = useState<any | null>(null);
@@ -244,15 +245,57 @@ const Admin = () => {
   };
 
   // Entertainment handlers
-  const uploadEntFile = async (file: File, prefix: string) => {
+  const uploadEntFile = async (file: File, prefix: string, onProgress?: (pct: number) => void) => {
     const ext = file.name.split(".").pop();
     const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("entertainment").upload(path, file, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: file.type || undefined,
+    const SIX_MB = 6 * 1024 * 1024;
+
+    // Small files: use standard upload
+    if (file.size <= SIX_MB) {
+      const { error } = await supabase.storage.from("entertainment").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || undefined,
+      });
+      if (error) throw error;
+      onProgress?.(100);
+      return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
+    }
+
+    // Large files: resumable TUS upload
+    const { tus } = await import("tus-js-client").then((m) => ({ tus: m }));
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) throw new Error("You must be signed in to upload.");
+
+    const projectUrl = (supabase as any).supabaseUrl as string;
+
+    await new Promise<void>((resolve, reject) => {
+      const upload = new tus.Upload(file, {
+        endpoint: `${projectUrl}/storage/v1/upload/resumable`,
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: {
+          authorization: `Bearer ${token}`,
+          "x-upsert": "false",
+        },
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true,
+        metadata: {
+          bucketName: "entertainment",
+          objectName: path,
+          contentType: file.type || "application/octet-stream",
+          cacheControl: "3600",
+        },
+        chunkSize: 6 * 1024 * 1024, // required by Supabase
+        onError: (err) => reject(err),
+        onProgress: (sent, total) => {
+          onProgress?.(Math.round((sent / total) * 100));
+        },
+        onSuccess: () => resolve(),
+      });
+      upload.start();
     });
-    if (error) throw error;
+
     return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
   };
 
@@ -267,12 +310,11 @@ const Admin = () => {
       return;
     }
     setEntUploading(true);
+    setEntUploadProgress(0);
     try {
-      // Upload cover and media in parallel for fastest results
-      const [cover_url, media_url] = await Promise.all([
-        entCoverFile ? uploadEntFile(entCoverFile, "covers") : Promise.resolve(null),
-        uploadEntFile(entMediaFile, "media"),
-      ]);
+      // Upload cover first (small), then media with progress tracking
+      const cover_url = entCoverFile ? await uploadEntFile(entCoverFile, "covers") : null;
+      const media_url = await uploadEntFile(entMediaFile, "media", (pct) => setEntUploadProgress(pct));
       const { error } = await supabase.from("entertainment").insert({
         title: entForm.title.trim(),
         creator: entForm.creator.trim(),
@@ -292,9 +334,10 @@ const Admin = () => {
       setEntMediaFile(null);
       fetchAll();
     } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: "Upload failed", description: err.message || "Try a smaller file or check your connection.", variant: "destructive" });
     } finally {
       setEntUploading(false);
+      setEntUploadProgress(0);
     }
   };
 
@@ -1018,7 +1061,7 @@ const Admin = () => {
                       Mark as trending
                     </label>
                     <Button type="submit" disabled={entUploading}>
-                      {entUploading ? "Uploading..." : "Upload"}
+                      {entUploading ? (entUploadProgress > 0 ? `Uploading... ${entUploadProgress}%` : "Uploading...") : "Upload"}
                     </Button>
                   </form>
 
