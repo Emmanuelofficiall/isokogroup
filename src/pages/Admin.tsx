@@ -245,18 +245,57 @@ const Admin = () => {
   };
 
   // Entertainment handlers
-  const uploadEntFile = async (file: File, prefix: string) => {
+  const uploadEntFile = async (file: File, prefix: string, onProgress?: (pct: number) => void) => {
     const ext = file.name.split(".").pop();
     const path = `${prefix}/${crypto.randomUUID()}.${ext}`;
-    // Use resumable upload (TUS) for large files (>6MB), regular upload for small ones
-    const useResumable = file.size > 6 * 1024 * 1024;
-    const { error } = await supabase.storage.from("entertainment").upload(path, file, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: file.type || undefined,
-      ...(useResumable ? { duplex: "half" } : {}),
-    } as any);
-    if (error) throw error;
+    const SIX_MB = 6 * 1024 * 1024;
+
+    // Small files: use standard upload
+    if (file.size <= SIX_MB) {
+      const { error } = await supabase.storage.from("entertainment").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || undefined,
+      });
+      if (error) throw error;
+      onProgress?.(100);
+      return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
+    }
+
+    // Large files: resumable TUS upload
+    const { tus } = await import("tus-js-client").then((m) => ({ tus: m }));
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) throw new Error("You must be signed in to upload.");
+
+    const projectUrl = (supabase as any).supabaseUrl as string;
+
+    await new Promise<void>((resolve, reject) => {
+      const upload = new tus.Upload(file, {
+        endpoint: `${projectUrl}/storage/v1/upload/resumable`,
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: {
+          authorization: `Bearer ${token}`,
+          "x-upsert": "false",
+        },
+        uploadDataDuringCreation: true,
+        removeFingerprintOnSuccess: true,
+        metadata: {
+          bucketName: "entertainment",
+          objectName: path,
+          contentType: file.type || "application/octet-stream",
+          cacheControl: "3600",
+        },
+        chunkSize: 6 * 1024 * 1024, // required by Supabase
+        onError: (err) => reject(err),
+        onProgress: (sent, total) => {
+          onProgress?.(Math.round((sent / total) * 100));
+        },
+        onSuccess: () => resolve(),
+      });
+      upload.start();
+    });
+
     return supabase.storage.from("entertainment").getPublicUrl(path).data.publicUrl;
   };
 
