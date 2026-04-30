@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, ShoppingBag, Minus, Plus } from "lucide-react";
+import { Trash2, ShoppingBag, Minus, Plus, Smartphone, Landmark, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import { COMPANY_PAYMENT, COMMISSION_RATE } from "@/lib/company";
+import { notify } from "@/lib/notify";
 
 type CartRow = {
   id: string;
