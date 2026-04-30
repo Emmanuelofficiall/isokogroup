@@ -242,12 +242,25 @@ const SellerDashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>My Products</CardTitle>
-                  <Button size="sm" onClick={() => setShowAddProduct(!showAddProduct)} className="gap-2">
-                    <Plus className="h-4 w-4" /> Add Product
-                  </Button>
+                  {isApprovedSeller && (
+                    <Button size="sm" onClick={() => setShowAddProduct(!showAddProduct)} className="gap-2">
+                      <Plus className="h-4 w-4" /> Add Product
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
-                  {showAddProduct && (
+                  {!isApprovedSeller && (
+                    <div className="mb-6 p-4 border border-border rounded-lg bg-muted/30 text-sm">
+                      {sellerAppStatus === "pending" ? (
+                        <p>Your seller application is <span className="font-semibold">pending review</span>. You'll be able to add products once an admin approves your account.</p>
+                      ) : sellerAppStatus === "rejected" ? (
+                        <p>Your seller application was <span className="font-semibold">rejected</span>. Please contact support or re-apply to start selling.</p>
+                      ) : (
+                        <p>Only approved sellers can add products. <a href="/become-seller" className="text-primary underline">Apply to become a seller</a> to get started.</p>
+                      )}
+                    </div>
+                  )}
+                  {isApprovedSeller && showAddProduct && (
                     <form onSubmit={handleAddProduct} className="mb-6 p-4 border border-border rounded-lg space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Product Name</Label><Input value={productName} onChange={(e) => setProductName(e.target.value)} required /></div>
