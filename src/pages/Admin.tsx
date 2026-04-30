@@ -263,7 +263,8 @@ const Admin = () => {
     }
 
     // Large files: resumable TUS upload
-    const { tus } = await import("tus-js-client").then((m) => ({ tus: m }));
+    const tusModule: any = await import("tus-js-client");
+    const TusUpload = tusModule.Upload || tusModule.default?.Upload || tusModule.default;
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
     if (!token) throw new Error("You must be signed in to upload.");
@@ -271,7 +272,7 @@ const Admin = () => {
     const projectUrl = (supabase as any).supabaseUrl as string;
 
     await new Promise<void>((resolve, reject) => {
-      const upload = new tus.Upload(file, {
+      const upload = new TusUpload(file, {
         endpoint: `${projectUrl}/storage/v1/upload/resumable`,
         retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
