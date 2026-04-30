@@ -58,7 +58,7 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="hidden xl:flex items-center gap-2">
+        <div className="hidden xl:flex items-center gap-1">
           <ThemeToggle />
           <button
             onClick={() => setLang(lang === "en" ? "rw" : "en")}
