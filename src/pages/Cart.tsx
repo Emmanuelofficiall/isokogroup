@@ -35,6 +35,7 @@ const Cart = () => {
   const [placing, setPlacing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"momo" | "bank" | "auto">("momo");
   const [paymentReference, setPaymentReference] = useState("");
+  const [payerName, setPayerName] = useState("");
 
   const load = async () => {
     if (!user) return;
@@ -83,6 +84,10 @@ const Cart = () => {
       toast({ title: "Coming soon", description: "Automatic payment is not yet available. Use MoMo or Bank.", variant: "destructive" });
       return;
     }
+    if (!payerName.trim()) {
+      toast({ title: "Your name is required", description: "Enter the name you used when paying.", variant: "destructive" });
+      return;
+    }
     if (!paymentReference.trim()) {
       toast({ title: "Payment reference required", description: "Enter the MoMo transaction ID or bank transfer reference.", variant: "destructive" });
       return;
@@ -110,7 +115,7 @@ const Cart = () => {
             status: "pending",
             payment_status: "awaiting_confirmation",
             payment_method: paymentMethod,
-            payment_reference: paymentReference.trim(),
+            payment_reference: `${payerName.trim()} · ${paymentReference.trim()}`,
           })
           .select()
           .single();
@@ -274,11 +279,23 @@ const Cart = () => {
               </div>
 
               <div className="space-y-2">
+                <label className="text-sm font-medium">Your full name (as paid)</label>
+                <Input
+                  placeholder="e.g. Jean Mukamana"
+                  value={payerName}
+                  onChange={(e) => setPayerName(e.target.value)}
+                  maxLength={100}
+                />
+                <p className="text-xs text-muted-foreground">Enter the name you used when sending the payment.</p>
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-sm font-medium">Payment reference / transaction ID</label>
                 <Input
                   placeholder="e.g. MoMo TXN ID or bank ref"
                   value={paymentReference}
                   onChange={(e) => setPaymentReference(e.target.value)}
+                  maxLength={100}
                 />
                 <p className="text-xs text-muted-foreground">After paying, enter the transaction reference so admin can verify.</p>
               </div>

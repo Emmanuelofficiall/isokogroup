@@ -36,6 +36,7 @@ const SellerDashboard = () => {
   const [uploading, setUploading] = useState(false);
   const [payoutMethod, setPayoutMethod] = useState<"momo" | "bank">("momo");
   const [payoutDestination, setPayoutDestination] = useState("");
+  const [payoutAccountName, setPayoutAccountName] = useState("");
 
   // Product form
   const [productName, setProductName] = useState("");
@@ -148,6 +149,10 @@ const SellerDashboard = () => {
       toast({ title: "Payout destination required", description: "Enter your MoMo number or bank account first.", variant: "destructive" });
       return;
     }
+    if (!payoutAccountName.trim()) {
+      toast({ title: "Account holder name required", description: "Enter the full name on your MoMo or bank account.", variant: "destructive" });
+      return;
+    }
     const commission = Math.round(order.total_amount * COMMISSION_RATE);
     const net = order.total_amount - commission;
     const { error } = await (supabase as any).from("payout_requests").insert({
@@ -157,7 +162,7 @@ const SellerDashboard = () => {
       commission_amount: commission,
       net_amount: net,
       payout_method: payoutMethod,
-      payout_destination: payoutDestination.trim(),
+      payout_destination: `${payoutAccountName.trim()} · ${payoutDestination.trim()}`,
       status: "pending",
     });
     if (error) {
@@ -433,8 +438,17 @@ const SellerDashboard = () => {
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <Label>{payoutMethod === "momo" ? "MoMo number" : "Bank account number"}</Label>
-                      <Input value={payoutDestination} onChange={(e) => setPayoutDestination(e.target.value)} placeholder={payoutMethod === "momo" ? "07xx xxx xxx" : "Bank · Account · Name"} />
+                      <Label>Account holder full name</Label>
+                      <Input
+                        value={payoutAccountName}
+                        onChange={(e) => setPayoutAccountName(e.target.value)}
+                        placeholder="e.g. Jean Mukamana"
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>{payoutMethod === "momo" ? "MoMo number" : "Bank · Account number"}</Label>
+                      <Input value={payoutDestination} onChange={(e) => setPayoutDestination(e.target.value)} placeholder={payoutMethod === "momo" ? "07xx xxx xxx" : "Bank of Kigali · 00040-12345678-90"} maxLength={150} />
                     </div>
                   </div>
 
