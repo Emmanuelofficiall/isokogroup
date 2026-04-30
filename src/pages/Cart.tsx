@@ -115,7 +115,7 @@ const Cart = () => {
             status: "pending",
             payment_status: "awaiting_confirmation",
             payment_method: paymentMethod,
-            payment_reference: paymentReference.trim(),
+            payment_reference: `${payerName.trim()} · ${paymentReference.trim()}`,
           })
           .select()
           .single();
