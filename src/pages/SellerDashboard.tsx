@@ -32,6 +32,8 @@ const SellerDashboard = () => {
   const [payouts, setPayouts] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isApprovedSeller, setIsApprovedSeller] = useState(false);
+  const [sellerAppStatus, setSellerAppStatus] = useState<string | null>(null);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [payoutMethod, setPayoutMethod] = useState<"momo" | "bank">("momo");
