@@ -1061,7 +1061,7 @@ const Admin = () => {
                       Mark as trending
                     </label>
                     <Button type="submit" disabled={entUploading}>
-                      {entUploading ? "Uploading..." : "Upload"}
+                      {entUploading ? (entUploadProgress > 0 ? `Uploading... ${entUploadProgress}%` : "Uploading...") : "Upload"}
                     </Button>
                   </form>
 
