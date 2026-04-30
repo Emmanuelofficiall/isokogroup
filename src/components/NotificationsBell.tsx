@@ -34,14 +34,13 @@ const NotificationsBell = () => {
   useEffect(() => {
     if (!user) return;
     load();
-    const channel = supabase
-      .channel("notif-" + user.id)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
-        () => load()
-      )
-      .subscribe();
+    const channel = supabase.channel(`notif-${user.id}-${Math.random().toString(36).slice(2)}`);
+    channel.on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+      () => load()
+    );
+    channel.subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
