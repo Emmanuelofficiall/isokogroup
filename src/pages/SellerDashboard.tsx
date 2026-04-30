@@ -32,6 +32,8 @@ const SellerDashboard = () => {
   const [payouts, setPayouts] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isApprovedSeller, setIsApprovedSeller] = useState(false);
+  const [sellerAppStatus, setSellerAppStatus] = useState<string | null>(null);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [payoutMethod, setPayoutMethod] = useState<"momo" | "bank">("momo");
@@ -59,13 +61,18 @@ const SellerDashboard = () => {
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
-    const [productsRes, ordersRes, commissionsRes, profileRes, payoutsRes] = await Promise.all([
+    const [productsRes, ordersRes, commissionsRes, profileRes, payoutsRes, appRes] = await Promise.all([
       supabase.from("products").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("orders").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
       (supabase as any).from("payout_requests").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("seller_applications").select("status").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     ]);
+    const approved = appRes.data?.status === "approved";
+    setIsApprovedSeller(approved);
+    setSellerAppStatus(appRes.data?.status ?? null);
+    if (!approved) setShowAddProduct(false);
     setProducts(productsRes.data || []);
     setOrders(ordersRes.data || []);
     setCommissions(commissionsRes.data || []);
@@ -82,6 +89,10 @@ const SellerDashboard = () => {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!isApprovedSeller) {
+      toast({ title: "Not approved yet", description: "Only approved sellers can add products.", variant: "destructive" });
+      return;
+    }
     setUploading(true);
     let imageUrl = null;
     if (productImage) {
@@ -231,12 +242,25 @@ const SellerDashboard = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>My Products</CardTitle>
-                  <Button size="sm" onClick={() => setShowAddProduct(!showAddProduct)} className="gap-2">
-                    <Plus className="h-4 w-4" /> Add Product
-                  </Button>
+                  {isApprovedSeller && (
+                    <Button size="sm" onClick={() => setShowAddProduct(!showAddProduct)} className="gap-2">
+                      <Plus className="h-4 w-4" /> Add Product
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
-                  {showAddProduct && (
+                  {!isApprovedSeller && (
+                    <div className="mb-6 p-4 border border-border rounded-lg bg-muted/30 text-sm">
+                      {sellerAppStatus === "pending" ? (
+                        <p>Your seller application is <span className="font-semibold">pending review</span>. You'll be able to add products once an admin approves your account.</p>
+                      ) : sellerAppStatus === "rejected" ? (
+                        <p>Your seller application was <span className="font-semibold">rejected</span>. Please contact support or re-apply to start selling.</p>
+                      ) : (
+                        <p>Only approved sellers can add products. <a href="/become-seller" className="text-primary underline">Apply to become a seller</a> to get started.</p>
+                      )}
+                    </div>
+                  )}
+                  {isApprovedSeller && showAddProduct && (
                     <form onSubmit={handleAddProduct} className="mb-6 p-4 border border-border rounded-lg space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Product Name</Label><Input value={productName} onChange={(e) => setProductName(e.target.value)} required /></div>
