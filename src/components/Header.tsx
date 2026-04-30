@@ -41,24 +41,24 @@ const Header = () => {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden xl:flex items-center gap-1">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`relative px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${
+              className={`relative px-3 py-2 text-sm font-medium transition-colors hover:text-primary whitespace-nowrap ${
                 location.pathname === item.path ? "text-primary" : "text-foreground/70"
               }`}
             >
               {item.label}
               {location.pathname === item.path && (
-                <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full" />
+                <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />
               )}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden xl:flex items-center gap-2">
           <ThemeToggle />
           <button
             onClick={() => setLang(lang === "en" ? "rw" : "en")}
@@ -101,7 +101,7 @@ const Header = () => {
           )}
         </div>
 
-        <div className="md:hidden flex items-center gap-1">
+        <div className="xl:hidden flex items-center gap-1">
           {user && <NotificationsBell />}
           <ThemeToggle />
           <button className="p-2" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -111,7 +111,7 @@ const Header = () => {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-background animate-fade-in">
+        <div className="xl:hidden border-t border-border bg-background animate-fade-in">
           <nav className="container flex flex-col py-4 gap-1">
             {navItems.map((item) => (
               <Link
