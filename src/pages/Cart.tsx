@@ -84,6 +84,10 @@ const Cart = () => {
       toast({ title: "Coming soon", description: "Automatic payment is not yet available. Use MoMo or Bank.", variant: "destructive" });
       return;
     }
+    if (!payerName.trim()) {
+      toast({ title: "Your name is required", description: "Enter the name you used when paying.", variant: "destructive" });
+      return;
+    }
     if (!paymentReference.trim()) {
       toast({ title: "Payment reference required", description: "Enter the MoMo transaction ID or bank transfer reference.", variant: "destructive" });
       return;
