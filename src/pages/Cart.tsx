@@ -224,9 +224,9 @@ const Cart = () => {
                 <label className="text-sm font-medium">Payment method</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { k: "momo", name: "MTN MoMo", type: "Mobile Money", icon: Smartphone },
-                    { k: "bank", name: "Bank of Kigali", type: "Bank Transfer", icon: Landmark },
-                    { k: "auto", name: "SSD", type: "Automatic Payment", icon: Zap },
+                    { k: "momo", name: "MTN MoMo", type: "Mobile Money", recipient: COMPANY_PAYMENT.momo.name, icon: Smartphone },
+                    { k: "bank", name: "Bank of Kigali", type: "Bank Transfer", recipient: COMPANY_PAYMENT.bank.name, icon: Landmark },
+                    { k: "auto", name: "SSD", type: "Automatic Payment", recipient: "—", icon: Zap },
                   ].map((opt) => {
                     const Icon = opt.icon;
                     const active = paymentMethod === opt.k;
@@ -240,6 +240,7 @@ const Cart = () => {
                         <Icon className="h-4 w-4" />
                         <span className="font-semibold">{opt.name}</span>
                         <span className="text-[10px] text-muted-foreground">{opt.type}</span>
+                        <span className="text-[10px] text-muted-foreground truncate max-w-full">{opt.recipient}</span>
                       </button>
                     );
                   })}
