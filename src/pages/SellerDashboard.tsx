@@ -61,13 +61,18 @@ const SellerDashboard = () => {
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
-    const [productsRes, ordersRes, commissionsRes, profileRes, payoutsRes] = await Promise.all([
+    const [productsRes, ordersRes, commissionsRes, profileRes, payoutsRes, appRes] = await Promise.all([
       supabase.from("products").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("orders").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
       supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
       (supabase as any).from("payout_requests").select("*").eq("seller_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("seller_applications").select("status").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     ]);
+    const approved = appRes.data?.status === "approved";
+    setIsApprovedSeller(approved);
+    setSellerAppStatus(appRes.data?.status ?? null);
+    if (!approved) setShowAddProduct(false);
     setProducts(productsRes.data || []);
     setOrders(ordersRes.data || []);
     setCommissions(commissionsRes.data || []);
