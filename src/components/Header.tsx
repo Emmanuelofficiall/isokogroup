@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Globe, ShoppingCart } from "lucide-react";
+import { Menu, X, Globe, ShoppingCart, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import logo from "@/assets/isoko-logo.jpeg";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationsBell from "@/components/NotificationsBell";
+
+type NavItem = { label: string; path: string };
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -17,23 +25,77 @@ const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
 
-  const navItems = [
-    { label: t("nav.home"), path: "/" },
-    { label: t("nav.logistics"), path: "/logistics" },
-    { label: t("nav.packaging"), path: "/packaging" },
-    { label: t("nav.marketplace"), path: "/marketplace" },
-    { label: t("nav.elibrary"), path: "/e-library" },
-    { label: t("nav.entertainment"), path: "/entertainment" },
-  ];
+  const navItems: NavItem[] = useMemo(
+    () => [
+      { label: t("nav.home"), path: "/" },
+      { label: t("nav.logistics"), path: "/logistics" },
+      { label: t("nav.packaging"), path: "/packaging" },
+      { label: t("nav.marketplace"), path: "/marketplace" },
+      { label: t("nav.elibrary"), path: "/e-library" },
+      { label: t("nav.entertainment"), path: "/entertainment" },
+    ],
+    [t]
+  );
 
   const handleLogout = async () => {
     await signOut();
     navigate("/");
   };
 
+  // ----- Auto-collapse nav -----
+  const navContainerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(navItems.length);
+
+  useLayoutEffect(() => {
+    const container = navContainerRef.current;
+    const measure = measureRef.current;
+    if (!container || !measure) return;
+
+    const recalc = () => {
+      const available = container.clientWidth;
+      const items = Array.from(measure.children) as HTMLElement[];
+      const moreWidth = (moreRef.current?.offsetWidth ?? 0) + 8;
+      const widths = items.map((el) => el.offsetWidth + 4); // include gap
+      const total = widths.reduce((a, b) => a + b, 0);
+
+      if (total <= available) {
+        setVisibleCount(navItems.length);
+        return;
+      }
+
+      let used = 0;
+      let count = 0;
+      const budget = available - moreWidth;
+      for (let i = 0; i < widths.length; i++) {
+        if (used + widths[i] <= budget) {
+          used += widths[i];
+          count++;
+        } else {
+          break;
+        }
+      }
+      setVisibleCount(count);
+    };
+
+    recalc();
+    const ro = new ResizeObserver(recalc);
+    ro.observe(container);
+    ro.observe(measure);
+    window.addEventListener("resize", recalc);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", recalc);
+    };
+  }, [navItems]);
+
+  const visibleItems = navItems.slice(0, visibleCount);
+  const overflowItems = navItems.slice(visibleCount);
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container flex h-14 items-center justify-between gap-2">
+      <div className="container flex h-14 items-center gap-2">
         <Link to="/" className="flex items-center gap-1.5 shrink-0">
           <img src={logo} alt="ISOKO GROUP" className="h-8 w-8 rounded-full object-cover" />
           <span className="text-base font-bold font-display tracking-tight whitespace-nowrap">
@@ -41,24 +103,63 @@ const Header = () => {
           </span>
         </Link>
 
-        <nav className="hidden xl:flex items-center gap-0.5">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`relative px-2 py-1.5 text-xs font-medium transition-colors hover:text-primary whitespace-nowrap ${
-                location.pathname === item.path ? "text-primary" : "text-foreground/70"
-              }`}
-            >
-              {item.label}
-              {location.pathname === item.path && (
-                <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
-              )}
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop nav with overflow detection */}
+        <div ref={navContainerRef} className="hidden xl:flex flex-1 min-w-0 items-center justify-center overflow-hidden">
+          <nav className="flex items-center gap-0.5 flex-nowrap">
+            {visibleItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`relative px-2 py-1.5 text-xs font-medium transition-colors hover:text-primary whitespace-nowrap ${
+                  location.pathname === item.path ? "text-primary" : "text-foreground/70"
+                }`}
+              >
+                {item.label}
+                {location.pathname === item.path && (
+                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+                )}
+              </Link>
+            ))}
+            {overflowItems.length > 0 && (
+              <div ref={moreRef}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-foreground/70 hover:text-primary whitespace-nowrap rounded-md focus:outline-none">
+                    More <ChevronDown className="h-3 w-3" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="z-[60]">
+                    {overflowItems.map((item) => (
+                      <DropdownMenuItem
+                        key={item.path}
+                        onSelect={() => navigate(item.path)}
+                        className={location.pathname === item.path ? "text-primary" : ""}
+                      >
+                        {item.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+          </nav>
 
-        <div className="hidden xl:flex items-center gap-1">
+          {/* Hidden measurement layer with full nav for accurate widths */}
+          <div
+            ref={measureRef}
+            aria-hidden
+            className="absolute -left-[9999px] top-0 flex items-center gap-0.5 pointer-events-none"
+          >
+            {navItems.map((item) => (
+              <span
+                key={item.path}
+                className="px-2 py-1.5 text-xs font-medium whitespace-nowrap"
+              >
+                {item.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="hidden xl:flex items-center gap-1 shrink-0 ml-auto">
           <ThemeToggle />
           <button
             onClick={() => setLang(lang === "en" ? "rw" : "en")}
@@ -101,7 +202,7 @@ const Header = () => {
           )}
         </div>
 
-        <div className="xl:hidden flex items-center gap-1">
+        <div className="xl:hidden flex items-center gap-1 ml-auto">
           {user && <NotificationsBell />}
           <ThemeToggle />
           <button className="p-2" onClick={() => setMobileOpen(!mobileOpen)}>
