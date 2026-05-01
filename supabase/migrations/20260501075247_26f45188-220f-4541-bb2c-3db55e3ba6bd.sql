@@ -1,0 +1,1 @@
+ALTER TABLE public.logistics_requests ADD COLUMN IF NOT EXISTS item_type text;
