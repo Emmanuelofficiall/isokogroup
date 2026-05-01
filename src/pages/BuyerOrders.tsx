@@ -165,7 +165,7 @@ const BuyerOrders = () => {
                     <Button size="sm" variant="outline" onClick={() => downloadInvoice(o.id)}>
                       <Download className="h-3 w-3 mr-1" /> Invoice
                     </Button>
-                    <Link to={`/track/${o.id}`}>
+                    <Link to="/track">
                       <Button size="sm" variant="ghost">
                         <ExternalLink className="h-3 w-3 mr-1" /> Public tracking page
                       </Button>
