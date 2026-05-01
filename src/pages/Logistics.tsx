@@ -81,6 +81,22 @@ const Logistics = () => {
             ))}
           </div>
 
+          <Link
+            to="/logistics/packaging"
+            className="max-w-xl mx-auto mb-8 flex items-center justify-between gap-4 rounded-xl border border-border bg-gradient-to-r from-primary/10 to-primary/5 p-6 hover-lift"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Box className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Packaging Services</h3>
+                <p className="text-sm text-muted-foreground">Need packing? Request our packaging service.</p>
+              </div>
+            </div>
+            <ArrowRight className="h-5 w-5 text-primary" />
+          </Link>
+
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("logistics.requestTitle")}</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
