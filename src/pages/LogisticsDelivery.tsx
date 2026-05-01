@@ -30,6 +30,7 @@ const LogisticsDelivery = () => {
   const [date, setDate] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [itemType, setItemType] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,13 +48,14 @@ const LogisticsDelivery = () => {
       preferred_date: date || null,
       full_name: fullName,
       phone,
+      item_type: itemType,
     });
     setLoading(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Success!", description: "Your delivery request has been submitted." });
-      setPickup(""); setDropoff(""); setWeight(""); setDate(""); setFullName(""); setPhone("");
+      setPickup(""); setDropoff(""); setWeight(""); setDate(""); setFullName(""); setPhone(""); setItemType("");
     }
   };
 
