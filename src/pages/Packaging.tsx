@@ -28,6 +28,8 @@ const Packaging = () => {
   const [qty, setQty] = useState("1");
   const [pickupDate, setPickupDate] = useState("");
   const [selectedType, setSelectedType] = useState("standard");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,13 +45,15 @@ const Packaging = () => {
       quantity: parseInt(qty) || 1,
       packaging_type: selectedType,
       pickup_date: pickupDate || null,
+      full_name: fullName,
+      phone,
     });
     setLoading(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Success!", description: "Your packaging request has been submitted." });
-      setItems(""); setQty("1"); setPickupDate("");
+      setItems(""); setQty("1"); setPickupDate(""); setFullName(""); setPhone("");
     }
   };
 

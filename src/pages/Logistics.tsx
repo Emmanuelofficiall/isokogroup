@@ -28,6 +28,8 @@ const Logistics = () => {
   const [dropoff, setDropoff] = useState("");
   const [weight, setWeight] = useState("");
   const [date, setDate] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,17 +41,19 @@ const Logistics = () => {
     setLoading(true);
     const { error } = await (supabase as any).from("logistics_requests").insert({
       user_id: user.id,
-      pickup_location: pickup,
-      dropoff_location: dropoff,
-      weight_kg: weight ? parseFloat(weight) : null,
+      pickup,
+      dropoff,
+      weight: weight ? parseFloat(weight) : 0,
       preferred_date: date || null,
+      full_name: fullName,
+      phone,
     });
     setLoading(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Success!", description: "Your delivery request has been submitted." });
-      setPickup(""); setDropoff(""); setWeight(""); setDate("");
+      setPickup(""); setDropoff(""); setWeight(""); setDate(""); setFullName(""); setPhone("");
     }
   };
 
@@ -79,6 +83,16 @@ const Logistics = () => {
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("logistics.requestTitle")}</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="full-name">Full Name</Label>
+                  <Input id="full-name" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input id="phone" type="tel" placeholder="07XXXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="pickup">{t("logistics.pickup")}</Label>
                 <Input id="pickup" placeholder="Enter pickup address" value={pickup} onChange={(e) => setPickup(e.target.value)} required />
