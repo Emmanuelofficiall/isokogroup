@@ -11,6 +11,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Logistics from "./pages/Logistics";
 import LogisticsDelivery from "./pages/LogisticsDelivery";
+import LogisticsHistory from "./pages/LogisticsHistory";
 import Packaging from "./pages/Packaging";
 import Marketplace from "./pages/Marketplace";
 import ELibrary from "./pages/ELibrary";
