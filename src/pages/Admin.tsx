@@ -501,6 +501,7 @@ const Admin = () => {
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
               <TabsTrigger value="payouts">Payouts</TabsTrigger>
+              <TabsTrigger value="software">Software</TabsTrigger>
             </TabsList>
 
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
