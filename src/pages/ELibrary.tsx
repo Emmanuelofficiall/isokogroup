@@ -169,62 +169,6 @@ const ELibrary = () => {
             <p className="text-muted-foreground max-w-xl mx-auto">{t("elibrary.subtitle")}</p>
           </div>
 
-          {isAdmin && (
-            <Card className="mb-10 border-primary/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Upload className="h-5 w-5 text-primary" /> Admin: Upload book
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleUpload} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="b-title">Title</Label>
-                    <Input id="b-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label htmlFor="b-author">Author</Label>
-                    <Input id="b-author" value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label htmlFor="b-cat">Category</Label>
-                    <select
-                      id="b-cat"
-                      value={form.category}
-                      onChange={(e) => setForm({ ...form, category: e.target.value })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      {categories.filter((c) => c !== "All").map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <Label htmlFor="b-pages">Pages</Label>
-                    <Input id="b-pages" type="number" min={0} value={form.pages} onChange={(e) => setForm({ ...form, pages: Number(e.target.value) })} />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="b-desc">Description</Label>
-                    <Textarea id="b-desc" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                  </div>
-                  <div>
-                    <Label htmlFor="b-cover">Cover image</Label>
-                    <Input id="b-cover" type="file" accept="image/*" onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="b-content">Book file (PDF / EPUB)</Label>
-                    <Input id="b-content" type="file" accept="application/pdf,application/epub+zip,.epub" onChange={(e) => setContentFile(e.target.files?.[0] || null)} />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Button type="submit" disabled={uploading} className="w-full md:w-auto">
-                      {uploading ? "Uploading..." : "Upload book"}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          )}
-
           <div className="max-w-md mx-auto relative mb-8">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input placeholder={t("elibrary.search")} className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
