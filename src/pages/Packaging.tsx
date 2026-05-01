@@ -82,17 +82,17 @@ const Packaging = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("packaging.subtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-20">
             {packagingTypes.map((p) => (
               <div key={p.value}
                 onClick={() => setSelectedType(p.value)}
-                className={`group rounded-xl border bg-card p-4 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
-                <div className="mx-auto mb-4 aspect-square w-full overflow-hidden rounded-lg bg-muted">
+                className={`group rounded-lg border bg-card p-3 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
+                <div className="mx-auto mb-2 h-20 w-20 overflow-hidden rounded-md bg-muted">
                   <img src={p.image} alt={`${p.title} paper bag`} loading="lazy" className="w-full h-full object-cover" />
                 </div>
-                <h3 className="font-semibold mb-1">{p.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{p.desc}</p>
-                <span className="font-bold text-primary">{p.price}</span>
+                <h3 className="font-semibold text-sm mb-1">{p.title}</h3>
+                <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{p.desc}</p>
+                <span className="font-bold text-sm text-primary">{p.price}</span>
               </div>
             ))}
           </div>
