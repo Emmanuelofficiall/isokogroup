@@ -222,6 +222,7 @@ export type Database = {
           dropoff: string
           full_name: string | null
           id: string
+          item_type: string | null
           phone: string | null
           pickup: string
           preferred_date: string | null
@@ -235,6 +236,7 @@ export type Database = {
           dropoff: string
           full_name?: string | null
           id?: string
+          item_type?: string | null
           phone?: string | null
           pickup: string
           preferred_date?: string | null
@@ -248,6 +250,7 @@ export type Database = {
           dropoff?: string
           full_name?: string | null
           id?: string
+          item_type?: string | null
           phone?: string | null
           pickup?: string
           preferred_date?: string | null
