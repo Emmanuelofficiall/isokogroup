@@ -177,8 +177,8 @@ const BuyerOrders = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2 pt-2">
-                    <Button size="sm" variant="outline" onClick={() => downloadInvoice(o.id)}>
-                      <Download className="h-3 w-3 mr-1" /> Invoice
+                    <Button size="sm" variant="outline" onClick={() => downloadInvoice(o.id)} disabled={downloadingId === o.id}>
+                      <Download className="h-3 w-3 mr-1" /> {downloadingId === o.id ? "Preparing…" : "Invoice"}
                     </Button>
                     <Link to="/track">
                       <Button size="sm" variant="ghost">
