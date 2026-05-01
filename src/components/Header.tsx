@@ -14,6 +14,7 @@ import { useIsAdmin } from "@/hooks/use-is-admin";
 import logo from "@/assets/isoko-logo.jpeg";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationsBell from "@/components/NotificationsBell";
+import CartBadge from "@/components/CartBadge";
 
 type NavItem = { label: string; path: string };
 
@@ -168,9 +169,7 @@ const Header = () => {
             <Globe className="h-3.5 w-3.5" />
             {lang === "en" ? "RW" : "EN"}
           </button>
-          <Link to="/cart" aria-label="Cart">
-            <Button variant="ghost" size="icon"><ShoppingCart className="h-4 w-4" /></Button>
-          </Link>
+          <CartBadge />
           {user && <NotificationsBell />}
           {user ? (
             <>
@@ -203,6 +202,7 @@ const Header = () => {
         </div>
 
         <div className="xl:hidden flex items-center gap-1 ml-auto">
+          {user && <CartBadge />}
           {user && <NotificationsBell />}
           <ThemeToggle />
           <button className="p-2" onClick={() => setMobileOpen(!mobileOpen)}>
