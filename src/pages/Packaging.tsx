@@ -98,6 +98,18 @@ const Packaging = () => {
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("packaging.requestTitle")}</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
+              {(() => {
+                const selected = packagingTypes.find((p) => p.value === selectedType);
+                return (
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Selected category</p>
+                      <p className="font-semibold">{selected?.title}</p>
+                    </div>
+                    <span className="font-bold text-primary">{selected?.price}</span>
+                  </div>
+                );
+              })()}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="pkg-full-name">Full Name</Label>
