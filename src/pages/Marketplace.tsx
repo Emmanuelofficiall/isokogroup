@@ -11,27 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { notify } from "@/lib/notify";
 
-import wirelessEarbuds from "@/assets/products/wireless-earbuds.jpg";
-import coffeeBeans from "@/assets/products/coffee-beans.jpg";
-import handwovenBasket from "@/assets/products/handwoven-basket.jpg";
-import smartWatch from "@/assets/products/smart-watch.jpg";
-import leatherWallet from "@/assets/products/leather-wallet.jpg";
-import bluetoothSpeaker from "@/assets/products/bluetooth-speaker.jpg";
-import traditionalFabric from "@/assets/products/traditional-fabric.jpg";
-import candleSet from "@/assets/products/candle-set.jpg";
-
 const categories = ["All", "Electronics", "Fashion", "Food & Drink", "Crafts", "Home", "Accessories"];
-
-const defaultProducts = [
-  { name: "Wireless Earbuds Pro", price: 12500, rating: 4.8, category: "Electronics", image: wirelessEarbuds },
-  { name: "Organic Coffee Beans", price: 8000, rating: 4.9, category: "Food & Drink", image: coffeeBeans },
-  { name: "Handwoven Basket", price: 15000, rating: 4.7, category: "Crafts", image: handwovenBasket },
-  { name: "Smart Watch Band", price: 22000, rating: 4.6, category: "Accessories", image: smartWatch },
-  { name: "Leather Wallet", price: 18000, rating: 4.5, category: "Fashion", image: leatherWallet },
-  { name: "Bluetooth Speaker", price: 30000, rating: 4.8, category: "Electronics", image: bluetoothSpeaker },
-  { name: "Traditional Fabric", price: 10000, rating: 4.4, category: "Fashion", image: traditionalFabric },
-  { name: "Home Candle Set", price: 6500, rating: 4.3, category: "Home", image: candleSet },
-];
 
 const Marketplace = () => {
   const [active, setActive] = useState("All");
@@ -50,10 +30,7 @@ const Marketplace = () => {
     fetchProducts();
   }, []);
 
-  const allProducts = [
-    ...defaultProducts.map(p => ({ ...p, id: p.name, isDefault: true })),
-    ...dbProducts.map(p => ({ name: p.name, price: p.price, rating: 4.5, category: p.category, image: p.image_url, id: p.id, isDefault: false })),
-  ];
+  const allProducts = dbProducts.map(p => ({ name: p.name, price: p.price, rating: 4.5, category: p.category, image: p.image_url, id: p.id, isDefault: false }));
 
   const filtered = allProducts
     .filter(p => active === "All" || p.category === active)
@@ -117,29 +94,35 @@ const Marketplace = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filtered.map((product, i) => (
-              <div key={product.id || i} className="group rounded-xl border border-border bg-card overflow-hidden hover-lift">
-                <div className="aspect-square overflow-hidden">
-                  <img src={product.image || "/placeholder.svg"} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div className="p-4 space-y-2">
-                  <span className="text-xs text-primary font-medium">{product.category}</span>
-                  <h3 className="font-semibold text-sm">{product.name}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-primary">{product.price.toLocaleString()} RWF</span>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Star className="h-3 w-3 fill-primary text-primary" />
-                      {product.rating}
-                    </div>
+          {filtered.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-border rounded-xl">
+              <p className="text-muted-foreground">No products available yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filtered.map((product, i) => (
+                <div key={product.id || i} className="group rounded-xl border border-border bg-card overflow-hidden hover-lift">
+                  <div className="aspect-square overflow-hidden">
+                    <img src={product.image || "/placeholder.svg"} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
-                  <Button size="sm" className="w-full mt-2 gap-2" onClick={() => handleAddToCart(product)}>
-                    <ShoppingCart className="h-3 w-3" /> {t("marketplace.addToCart")}
-                  </Button>
+                  <div className="p-4 space-y-2">
+                    <span className="text-xs text-primary font-medium">{product.category}</span>
+                    <h3 className="font-semibold text-sm">{product.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-primary">{product.price.toLocaleString()} RWF</span>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Star className="h-3 w-3 fill-primary text-primary" />
+                        {product.rating}
+                      </div>
+                    </div>
+                    <Button size="sm" className="w-full mt-2 gap-2" onClick={() => handleAddToCart(product)}>
+                      <ShoppingCart className="h-3 w-3" /> {t("marketplace.addToCart")}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
       <Footer />
