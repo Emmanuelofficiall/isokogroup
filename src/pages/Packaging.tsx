@@ -35,7 +35,7 @@ const Packaging = () => {
   const [items, setItems] = useState("");
   const [qty, setQty] = useState("1");
   const [pickupDate, setPickupDate] = useState("");
-  const [selectedType, setSelectedType] = useState("standard");
+  const [selectedType, setSelectedType] = useState("brown-small");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
 
