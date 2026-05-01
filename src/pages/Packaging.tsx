@@ -11,17 +11,20 @@ import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import paperBags from "@/assets/paper-bags.jpeg";
+import bagBrown from "@/assets/bag-brown.jpeg";
+import bagWhite from "@/assets/bag-white.jpeg";
+import bagBlack from "@/assets/bag-black.jpeg";
 
 const packagingTypes = [
-  { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700" },
-  { title: "Brown — Medium", desc: "Brown paper bag, medium size.", price: "800 RWF", value: "brown-medium", color: "bg-amber-700" },
-  { title: "Brown — Large", desc: "Brown paper bag, large size.", price: "1,000 RWF", value: "brown-large", color: "bg-amber-700" },
-  { title: "White — Small", desc: "White paper bag, small size.", price: "900 RWF", value: "white-small", color: "bg-gray-100 border border-border" },
-  { title: "White — Medium", desc: "White paper bag, medium size.", price: "1,100 RWF", value: "white-medium", color: "bg-gray-100 border border-border" },
-  { title: "White — Large", desc: "White paper bag, large size.", price: "1,600 RWF", value: "white-large", color: "bg-gray-100 border border-border" },
-  { title: "Black — Small", desc: "Black paper bag, small size.", price: "1,100 RWF", value: "black-small", color: "bg-neutral-900" },
-  { title: "Black — Medium", desc: "Black paper bag, medium size.", price: "1,300 RWF", value: "black-medium", color: "bg-neutral-900" },
-  { title: "Black — Large", desc: "Black paper bag, large size.", price: "1,800 RWF", value: "black-large", color: "bg-neutral-900" },
+  { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700", image: bagBrown },
+  { title: "Brown — Medium", desc: "Brown paper bag, medium size.", price: "800 RWF", value: "brown-medium", color: "bg-amber-700", image: bagBrown },
+  { title: "Brown — Large", desc: "Brown paper bag, large size.", price: "1,000 RWF", value: "brown-large", color: "bg-amber-700", image: bagBrown },
+  { title: "White — Small", desc: "White paper bag, small size.", price: "900 RWF", value: "white-small", color: "bg-gray-100 border border-border", image: bagWhite },
+  { title: "White — Medium", desc: "White paper bag, medium size.", price: "1,100 RWF", value: "white-medium", color: "bg-gray-100 border border-border", image: bagWhite },
+  { title: "White — Large", desc: "White paper bag, large size.", price: "1,600 RWF", value: "white-large", color: "bg-gray-100 border border-border", image: bagWhite },
+  { title: "Black — Small", desc: "Black paper bag, small size.", price: "1,100 RWF", value: "black-small", color: "bg-neutral-900", image: bagBlack },
+  { title: "Black — Medium", desc: "Black paper bag, medium size.", price: "1,300 RWF", value: "black-medium", color: "bg-neutral-900", image: bagBlack },
+  { title: "Black — Large", desc: "Black paper bag, large size.", price: "1,800 RWF", value: "black-large", color: "bg-neutral-900", image: bagBlack },
 ];
 
 const Packaging = () => {
@@ -83,9 +86,9 @@ const Packaging = () => {
             {packagingTypes.map((p) => (
               <div key={p.value}
                 onClick={() => setSelectedType(p.value)}
-                className={`group rounded-xl border bg-card p-6 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
-                <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${p.color}`}>
-                  <Package className="h-6 w-6 text-white mix-blend-difference" />
+                className={`group rounded-xl border bg-card p-4 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
+                <div className="mx-auto mb-4 aspect-square w-full overflow-hidden rounded-lg bg-muted">
+                  <img src={p.image} alt={`${p.title} paper bag`} loading="lazy" className="w-full h-full object-cover" />
                 </div>
                 <h3 className="font-semibold mb-1">{p.title}</h3>
                 <p className="text-sm text-muted-foreground mb-3">{p.desc}</p>
