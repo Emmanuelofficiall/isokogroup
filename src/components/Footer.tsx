@@ -87,8 +87,27 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} ISOKO GROUP. {t("footer.rights")}
+        <div className="border-t border-border mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} ISOKO GROUP. {t("footer.rights")}</p>
+          <div className="flex items-center gap-2">
+            {socials.map(({ name, Icon, links }) => (
+              <DropdownMenu key={name}>
+                <DropdownMenuTrigger
+                  aria-label={name}
+                  className="h-9 w-9 inline-flex items-center justify-center rounded-full border border-border bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                >
+                  <Icon className="h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {links.map((l) => (
+                    <DropdownMenuItem key={l.url} asChild>
+                      <a href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
