@@ -168,6 +168,59 @@ export type Database = {
         }
         Relationships: []
       }
+      course_registrations: {
+        Row: {
+          course_id: string | null
+          course_title: string
+          created_at: string
+          email: string
+          experience_level: string
+          full_name: string
+          id: string
+          mode: string
+          phone: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          course_id?: string | null
+          course_title: string
+          created_at?: string
+          email: string
+          experience_level?: string
+          full_name: string
+          id?: string
+          mode?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          course_id?: string | null
+          course_title?: string
+          created_at?: string
+          email?: string
+          experience_level?: string
+          full_name?: string
+          id?: string
+          mode?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_registrations_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "software_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       entertainment: {
         Row: {
           category: string
@@ -723,6 +776,114 @@ export type Database = {
           per_km_cost?: number
           updated_at?: string
           zone?: string
+        }
+        Relationships: []
+      }
+      software_bookings: {
+        Row: {
+          admin_note: string | null
+          agreed_price: number | null
+          budget_range: string | null
+          consultation_date: string | null
+          consultation_type: string
+          created_at: string
+          deposit_paid: boolean
+          deposit_paid_at: string | null
+          email: string
+          final_paid: boolean
+          final_paid_at: string | null
+          full_name: string
+          id: string
+          phone: string
+          preferred_deadline: string | null
+          project_description: string
+          service_type: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          agreed_price?: number | null
+          budget_range?: string | null
+          consultation_date?: string | null
+          consultation_type?: string
+          created_at?: string
+          deposit_paid?: boolean
+          deposit_paid_at?: string | null
+          email: string
+          final_paid?: boolean
+          final_paid_at?: string | null
+          full_name: string
+          id?: string
+          phone: string
+          preferred_deadline?: string | null
+          project_description: string
+          service_type: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          agreed_price?: number | null
+          budget_range?: string | null
+          consultation_date?: string | null
+          consultation_type?: string
+          created_at?: string
+          deposit_paid?: boolean
+          deposit_paid_at?: string | null
+          email?: string
+          final_paid?: boolean
+          final_paid_at?: string | null
+          full_name?: string
+          id?: string
+          phone?: string
+          preferred_deadline?: string | null
+          project_description?: string
+          service_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      software_courses: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          duration: string | null
+          id: string
+          level: string
+          mode: string
+          price: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          level?: string
+          mode?: string
+          price?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          level?: string
+          mode?: string
+          price?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
