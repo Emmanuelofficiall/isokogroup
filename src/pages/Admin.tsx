@@ -38,6 +38,7 @@ const Admin = () => {
   const [sellerApplications, setSellerApplications] = useState<any[]>([]);
   const [entertainment, setEntertainment] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
+  const [softwareBookings, setSoftwareBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
@@ -78,7 +79,7 @@ const Admin = () => {
   }, [user]);
 
   const fetchAll = async () => {
-    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes, payoutsRes] = await Promise.all([
+    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes, payoutsRes, swRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").order("created_at", { ascending: false }),
@@ -90,6 +91,7 @@ const Admin = () => {
       (supabase as any).from("seller_applications").select("*").order("created_at", { ascending: false }),
       supabase.from("entertainment").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("payout_requests").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("software_bookings").select("*").order("created_at", { ascending: false }),
     ]);
     setProfiles(profilesRes.data || []);
     setOrders(ordersRes.data || []);
@@ -102,6 +104,7 @@ const Admin = () => {
     setSellerApplications(sellerRes.data || []);
     setEntertainment(entRes.data || []);
     setPayouts(payoutsRes.data || []);
+    setSoftwareBookings(swRes.data || []);
     setLoading(false);
   };
 
@@ -369,6 +372,21 @@ const Admin = () => {
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
+  const updateSoftwareBooking = async (id: string, patch: Record<string, any>, msg?: string) => {
+    const { error } = await (supabase as any).from("software_bookings").update(patch).eq("id", id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    toast({ title: msg || "Updated" });
+    fetchAll();
+  };
+
+  const handleSetAgreedPrice = async (b: any) => {
+    const input = window.prompt("Set agreed price (RWF):", b.agreed_price?.toString() || "");
+    if (input === null) return;
+    const price = parseInt(input, 10);
+    if (Number.isNaN(price) || price < 0) { toast({ title: "Invalid price", variant: "destructive" }); return; }
+    await updateSoftwareBooking(b.id, { agreed_price: price }, "Agreed price set");
+  };
+
   const handleApproveApplication = async (app: any) => {
     // Update application status
     await (supabase as any).from("seller_applications").update({ status: "approved" }).eq("id", app.id);
@@ -483,6 +501,7 @@ const Admin = () => {
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
               <TabsTrigger value="payouts">Payouts</TabsTrigger>
+              <TabsTrigger value="software">Software</TabsTrigger>
             </TabsList>
 
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
@@ -1188,6 +1207,102 @@ const Admin = () => {
                             </TableRow>
                           );
                         })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="software">
+              <Card>
+                <CardHeader><CardTitle>Software Bookings ({softwareBookings.length})</CardTitle></CardHeader>
+                <CardContent>
+                  {softwareBookings.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No bookings yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Client</TableHead>
+                          <TableHead>Service</TableHead>
+                          <TableHead>Budget</TableHead>
+                          <TableHead>Agreed</TableHead>
+                          <TableHead>Payments</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {softwareBookings.map((b) => (
+                          <TableRow key={b.id}>
+                            <TableCell>
+                              <div className="font-medium">{b.full_name}</div>
+                              <div className="text-xs text-muted-foreground">{b.email} · {b.phone}</div>
+                              <div className="text-xs text-muted-foreground line-clamp-2 max-w-xs mt-1">{b.project_description}</div>
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap">{b.service_type}</TableCell>
+                            <TableCell className="text-xs">{b.budget_range || "—"}</TableCell>
+                            <TableCell className="text-xs">
+                              {b.agreed_price ? `${b.agreed_price.toLocaleString()} RWF` : "—"}
+                            </TableCell>
+                            <TableCell className="text-xs space-y-1">
+                              <div className={b.deposit_paid ? "text-green-600" : "text-muted-foreground"}>
+                                50%: {b.deposit_paid ? "Paid" : "Pending"}
+                              </div>
+                              <div className={b.final_paid ? "text-green-600" : "text-muted-foreground"}>
+                                Final: {b.final_paid ? "Paid" : "Pending"}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                b.status === "completed" ? "bg-green-100 text-green-700" :
+                                b.status === "in_progress" ? "bg-blue-100 text-blue-700" :
+                                b.status === "approved" ? "bg-purple-100 text-purple-700" :
+                                b.status === "cancelled" ? "bg-red-100 text-red-700" :
+                                "bg-yellow-100 text-yellow-700"
+                              }`}>{b.status.replace("_", " ")}</span>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-col gap-1 min-w-[160px]">
+                                <Button size="sm" variant="outline" className="h-7 text-xs"
+                                  onClick={() => handleSetAgreedPrice(b)}>Set Price</Button>
+                                {b.status === "pending" && (
+                                  <Button size="sm" className="h-7 text-xs"
+                                    onClick={() => updateSoftwareBooking(b.id, { status: "approved" }, "Project approved")}>
+                                    Approve
+                                  </Button>
+                                )}
+                                {!b.deposit_paid && (
+                                  <Button size="sm" variant="outline" className="h-7 text-xs"
+                                    onClick={() => updateSoftwareBooking(b.id, {
+                                      deposit_paid: true,
+                                      deposit_paid_at: new Date().toISOString(),
+                                      status: "in_progress",
+                                    }, "Marked 50% paid — project in progress")}>
+                                    Mark 50% Paid
+                                  </Button>
+                                )}
+                                {b.deposit_paid && !b.final_paid && (
+                                  <Button size="sm" variant="outline" className="h-7 text-xs"
+                                    onClick={() => updateSoftwareBooking(b.id, {
+                                      final_paid: true,
+                                      final_paid_at: new Date().toISOString(),
+                                      status: "completed",
+                                    }, "Final payment received — completed")}>
+                                    Mark Final Paid
+                                  </Button>
+                                )}
+                                {b.status !== "completed" && b.status !== "cancelled" && (
+                                  <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive"
+                                    onClick={() => updateSoftwareBooking(b.id, { status: "cancelled" }, "Cancelled")}>
+                                    Cancel
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   )}

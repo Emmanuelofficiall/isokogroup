@@ -13,6 +13,9 @@ import Logistics from "./pages/Logistics";
 import LogisticsDelivery from "./pages/LogisticsDelivery";
 import LogisticsHistory from "./pages/LogisticsHistory";
 import Packaging from "./pages/Packaging";
+import Software from "./pages/Software";
+import SoftwareBooking from "./pages/SoftwareBooking";
+import SoftwareAcademy from "./pages/SoftwareAcademy";
 import Marketplace from "./pages/Marketplace";
 import ELibrary from "./pages/ELibrary";
 import Entertainment from "./pages/Entertainment";
@@ -52,6 +55,9 @@ const App = () => (
                   <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
                   <Route path="/e-library" element={<ProtectedRoute><ELibrary /></ProtectedRoute>} />
                   <Route path="/entertainment" element={<ProtectedRoute><Entertainment /></ProtectedRoute>} />
+                  <Route path="/software" element={<Software />} />
+                  <Route path="/software/booking" element={<SoftwareBooking />} />
+                  <Route path="/software/academy" element={<SoftwareAcademy />} />
                   <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
                   <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                   <Route path="/my-orders" element={<ProtectedRoute><BuyerOrders /></ProtectedRoute>} />
