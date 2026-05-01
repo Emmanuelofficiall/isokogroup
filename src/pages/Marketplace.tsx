@@ -50,10 +50,7 @@ const Marketplace = () => {
     fetchProducts();
   }, []);
 
-  const allProducts = [
-    ...defaultProducts.map(p => ({ ...p, id: p.name, isDefault: true })),
-    ...dbProducts.map(p => ({ name: p.name, price: p.price, rating: 4.5, category: p.category, image: p.image_url, id: p.id, isDefault: false })),
-  ];
+  const allProducts = dbProducts.map(p => ({ name: p.name, price: p.price, rating: 4.5, category: p.category, image: p.image_url, id: p.id, isDefault: false }));
 
   const filtered = allProducts
     .filter(p => active === "All" || p.category === active)
