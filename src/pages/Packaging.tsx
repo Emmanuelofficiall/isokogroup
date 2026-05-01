@@ -67,12 +67,10 @@ const Packaging = () => {
     <div className="min-h-screen">
       <Header />
       <section className="relative py-20 overflow-hidden">
-        {/* Sliding trucks background */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 overflow-hidden opacity-30 dark:opacity-20">
-          <img src={truck1} alt="" loading="lazy" className="absolute top-[8%] left-0 h-20 md:h-28 w-auto animate-truck-slide" style={{ animationDelay: "0s" }} />
-          <img src={truck2} alt="" loading="lazy" className="absolute top-[35%] left-0 h-24 md:h-32 w-auto animate-truck-slide-reverse" style={{ animationDelay: "-6s" }} />
-          <img src={truck3} alt="" loading="lazy" className="absolute top-[62%] left-0 h-20 md:h-28 w-auto animate-truck-slide" style={{ animationDelay: "-12s", animationDuration: "22s" }} />
-          <img src={truck1} alt="" loading="lazy" className="absolute top-[85%] left-0 h-16 md:h-24 w-auto animate-truck-slide-reverse" style={{ animationDelay: "-3s", animationDuration: "28s" }} />
+        {/* Paper bags hero background */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
+          <img src={paperBags} alt="" className="w-full h-full object-cover opacity-20 dark:opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
         </div>
         <div className="container relative z-10">
           <div className="text-center mb-16 space-y-4">
