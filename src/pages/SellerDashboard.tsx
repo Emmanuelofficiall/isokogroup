@@ -475,7 +475,7 @@ const SellerDashboard = () => {
                       <Input
                         value={payoutAccountName}
                         onChange={(e) => setPayoutAccountName(e.target.value)}
-                        placeholder="e.g. Jean Mukamana"
+                        placeholder="Account holder full name"
                         maxLength={100}
                       />
                     </div>
