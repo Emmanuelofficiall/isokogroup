@@ -115,8 +115,10 @@ const ShipmentDialog = ({ orderId, buyerId, open, onOpenChange, onSaved }: Props
 
       // Upsert shipment
       const shipPayload: any = {
-        courier: shipment.courier, driver_name: shipment.driver_name,
+        courier: shipment.courier, courier_id: shipment.courier_id || null,
+        driver_name: shipment.driver_name,
         driver_phone: shipment.driver_phone, shipping_cost: Number(shipment.shipping_cost) || 0,
+        distance_km: Number(shipment.distance_km) || 0,
         estimated_delivery: shipment.estimated_delivery || null,
         status: shipment.status,
       };
