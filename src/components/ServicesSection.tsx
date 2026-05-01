@@ -1,4 +1,4 @@
-import { Truck, Package, ShoppingBag, BookOpen, Film, ArrowRight } from "lucide-react";
+import { Truck, ShoppingBag, BookOpen, Film, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 
@@ -11,12 +11,6 @@ const ServicesSection = () => {
       title: t("nav.logistics"),
       description: t("hero.fastDelivery"),
       path: "/logistics",
-    },
-    {
-      icon: Package,
-      title: t("nav.packaging"),
-      description: t("hero.securePacking"),
-      path: "/packaging",
     },
     {
       icon: ShoppingBag,
