@@ -13,19 +13,19 @@ const socials = [
     name: "YouTube",
     Icon: Youtube,
     links: [
-      { label: "Featured video", url: "https://youtu.be/KjN65T1qA7c?si=8RPTzXJNhZI1b3Bs" },
-      { label: "Short #1", url: "https://youtube.com/shorts/2zXVi01BI9s?si=ly0LXTSTdbTkWYJk" },
-      { label: "Short #2", url: "https://youtube.com/shorts/SRKsJk6D8aY?si=uhQ0Xgu3dqUvsZ6h" },
+      { label: "ISOKO ENTERTAINMENT", url: "https://youtu.be/KjN65T1qA7c?si=8RPTzXJNhZI1b3Bs" },
+      { label: "Isoko Group Ltd", url: "https://youtube.com/shorts/2zXVi01BI9s?si=ly0LXTSTdbTkWYJk" },
+      { label: "Isoko Studioz", url: "https://youtube.com/shorts/SRKsJk6D8aY?si=uhQ0Xgu3dqUvsZ6h" },
     ],
   },
   {
     name: "Instagram",
     Icon: Instagram,
     links: [
-      { label: "Post #1", url: "https://www.instagram.com/p/DXv9vurjI45/?igsh=dTg1OTk0ODlpZGNp" },
-      { label: "Post #2", url: "https://www.instagram.com/p/DU0vkdpDete/?igsh=MWp2cHVkYzVxdTZlaw==" },
-      { label: "Reel", url: "https://www.instagram.com/reel/DWvjvOkCE8p/?igsh=MTQwNmd5eWZ2c2FkZA==" },
-      { label: "Profile @isokogrou", url: "https://www.instagram.com/isokogrou?igsh=bXM1OHpndno0Y3Bv" },
+      { label: "Star Wax", url: "https://www.instagram.com/p/DXv9vurjI45/?igsh=dTg1OTk0ODlpZGNp" },
+      { label: "Isoko Studioz", url: "https://www.instagram.com/p/DU0vkdpDete/?igsh=MWp2cHVkYzVxdTZlaw==" },
+      { label: "Isoko Group Logistics", url: "https://www.instagram.com/reel/DWvjvOkCE8p/?igsh=MTQwNmd5eWZ2c2FkZA==" },
+      { label: "Isoko Group Ltd", url: "https://www.instagram.com/isokogrou?igsh=bXM1OHpndno0Y3Bv" },
     ],
   },
   {
@@ -37,9 +37,9 @@ const socials = [
       </svg>
     ),
     links: [
-      { label: "Video #1", url: "https://vt.tiktok.com/ZS9a6kw2e/" },
-      { label: "Video #2", url: "https://vt.tiktok.com/ZS9aMNuVe/" },
-      { label: "Video #3", url: "https://vt.tiktok.com/ZS9aMx5rj/" },
+      { label: "Isoko Group Ltd", url: "https://vt.tiktok.com/ZS9a6kw2e/" },
+      { label: "Isoko Studioz", url: "https://vt.tiktok.com/ZS9aMNuVe/" },
+      { label: "Isoko Movie", url: "https://vt.tiktok.com/ZS9aMx5rj/" },
     ],
   },
 ];
