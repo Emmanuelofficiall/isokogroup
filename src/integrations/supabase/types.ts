@@ -178,7 +178,9 @@ export type Database = {
         Row: {
           created_at: string
           dropoff: string
+          full_name: string | null
           id: string
+          phone: string | null
           pickup: string
           preferred_date: string | null
           status: string
@@ -189,7 +191,9 @@ export type Database = {
         Insert: {
           created_at?: string
           dropoff: string
+          full_name?: string | null
           id?: string
+          phone?: string | null
           pickup: string
           preferred_date?: string | null
           status?: string
@@ -200,7 +204,9 @@ export type Database = {
         Update: {
           created_at?: string
           dropoff?: string
+          full_name?: string | null
           id?: string
+          phone?: string | null
           pickup?: string
           preferred_date?: string | null
           status?: string
@@ -378,8 +384,10 @@ export type Database = {
       packaging_requests: {
         Row: {
           created_at: string
+          full_name: string | null
           id: string
           item_description: string
+          phone: string | null
           pickup_date: string | null
           quantity: number
           status: string
@@ -388,8 +396,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          full_name?: string | null
           id?: string
           item_description: string
+          phone?: string | null
           pickup_date?: string | null
           quantity?: number
           status?: string
@@ -398,8 +408,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          full_name?: string | null
           id?: string
           item_description?: string
+          phone?: string | null
           pickup_date?: string | null
           quantity?: number
           status?: string
