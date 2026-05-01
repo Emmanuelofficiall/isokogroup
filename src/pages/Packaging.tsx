@@ -90,9 +90,9 @@ const Packaging = () => {
                 <div className="mx-auto mb-2 h-20 w-20 overflow-hidden rounded-md bg-muted">
                   <img src={p.image} alt={`${p.title} paper bag`} loading="lazy" className="w-full h-full object-cover" />
                 </div>
-                <h3 className="font-semibold mb-1">{p.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{p.desc}</p>
-                <span className="font-bold text-primary">{p.price}</span>
+                <h3 className="font-semibold text-sm mb-1">{p.title}</h3>
+                <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{p.desc}</p>
+                <span className="font-bold text-sm text-primary">{p.price}</span>
               </div>
             ))}
           </div>
