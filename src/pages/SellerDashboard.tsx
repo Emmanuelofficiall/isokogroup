@@ -17,6 +17,8 @@ import { Package, ShoppingCart, DollarSign, TrendingUp, Plus, Upload, User, Bell
 import { Navigate } from "react-router-dom";
 import { COMMISSION_RATE, COMPANY_PAYMENT } from "@/lib/company";
 import { notify } from "@/lib/notify";
+import ShipmentDialog from "@/components/ShipmentDialog";
+import { Truck } from "lucide-react";
 
 const categories = ["Electronics", "Fashion", "Food & Drink", "Crafts", "Home", "Accessories"];
 
@@ -28,6 +30,7 @@ const SellerDashboard = () => {
 
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [shipmentOrder, setShipmentOrder] = useState<{ id: string; buyer_id: string } | null>(null);
   const [commissions, setCommissions] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
@@ -326,11 +329,17 @@ const SellerDashboard = () => {
                             <TableCell><span className={`px-2 py-1 rounded-full text-xs font-medium ${o.status === "delivered" ? "bg-green-100 text-green-700" : o.status === "shipped" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}>{o.status}</span></TableCell>
                             <TableCell>{new Date(o.created_at).toLocaleDateString()}</TableCell>
                             <TableCell>
-                              <select value={o.status} onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)} className="text-xs border rounded px-2 py-1 bg-background">
-                                <option value="pending">Pending</option><option value="processing">Processing</option>
-                                <option value="shipped">Shipped</option><option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                              </select>
+                              <div className="flex items-center gap-2">
+                                <select value={o.status} onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)} className="text-xs border rounded px-2 py-1 bg-background">
+                                  <option value="pending">Pending</option><option value="processing">Processing</option>
+                                  <option value="packed">Packed</option><option value="shipped">Shipped</option>
+                                  <option value="in_transit">In transit</option><option value="out_for_delivery">Out for delivery</option>
+                                  <option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
+                                </select>
+                                <Button size="sm" variant="outline" onClick={() => setShipmentOrder({ id: o.id, buyer_id: o.buyer_id })}>
+                                  <Truck className="h-3 w-3 mr-1" /> Manage
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -565,6 +574,15 @@ const SellerDashboard = () => {
           </Tabs>
         </div>
       </section>
+      {shipmentOrder && (
+        <ShipmentDialog
+          orderId={shipmentOrder.id}
+          buyerId={shipmentOrder.buyer_id}
+          open={!!shipmentOrder}
+          onOpenChange={(o) => { if (!o) setShipmentOrder(null); }}
+          onSaved={fetchData}
+        />
+      )}
       <Footer />
     </div>
   );
