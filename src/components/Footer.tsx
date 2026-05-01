@@ -21,7 +21,6 @@ const Footer = () => {
             <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">{t("footer.services")}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link to="/logistics" className="hover:text-primary transition-colors">{t("nav.logistics")}</Link></li>
-              <li><Link to="/packaging" className="hover:text-primary transition-colors">{t("nav.packaging")}</Link></li>
               <li><Link to="/marketplace" className="hover:text-primary transition-colors">{t("nav.marketplace")}</Link></li>
               <li><Link to="/e-library" className="hover:text-primary transition-colors">{t("nav.elibrary")}</Link></li>
             </ul>
