@@ -94,29 +94,35 @@ const Marketplace = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filtered.map((product, i) => (
-              <div key={product.id || i} className="group rounded-xl border border-border bg-card overflow-hidden hover-lift">
-                <div className="aspect-square overflow-hidden">
-                  <img src={product.image || "/placeholder.svg"} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div className="p-4 space-y-2">
-                  <span className="text-xs text-primary font-medium">{product.category}</span>
-                  <h3 className="font-semibold text-sm">{product.name}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-primary">{product.price.toLocaleString()} RWF</span>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Star className="h-3 w-3 fill-primary text-primary" />
-                      {product.rating}
-                    </div>
+          {filtered.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-border rounded-xl">
+              <p className="text-muted-foreground">No products available yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filtered.map((product, i) => (
+                <div key={product.id || i} className="group rounded-xl border border-border bg-card overflow-hidden hover-lift">
+                  <div className="aspect-square overflow-hidden">
+                    <img src={product.image || "/placeholder.svg"} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
-                  <Button size="sm" className="w-full mt-2 gap-2" onClick={() => handleAddToCart(product)}>
-                    <ShoppingCart className="h-3 w-3" /> {t("marketplace.addToCart")}
-                  </Button>
+                  <div className="p-4 space-y-2">
+                    <span className="text-xs text-primary font-medium">{product.category}</span>
+                    <h3 className="font-semibold text-sm">{product.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-primary">{product.price.toLocaleString()} RWF</span>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Star className="h-3 w-3 fill-primary text-primary" />
+                        {product.rating}
+                      </div>
+                    </div>
+                    <Button size="sm" className="w-full mt-2 gap-2" onClick={() => handleAddToCart(product)}>
+                      <ShoppingCart className="h-3 w-3" /> {t("marketplace.addToCart")}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
       <Footer />
