@@ -3,11 +3,10 @@ import { Mail, Phone, MapPin, Youtube, Instagram } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import logo from "@/assets/isoko-logo.jpeg";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const socials = [
   {
@@ -80,9 +79,21 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">{t("footer.contact")}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> info@isokogroup.com</li>
-              <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> +250 788 000 000</li>
-              <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Kigali, Rwanda</li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-primary shrink-0" />
+                <a href="mailto:isokogrou93@gmail.com" className="hover:text-primary transition-colors break-all">isokogrou93@gmail.com</a>
+              </li>
+              <li className="flex items-start gap-2">
+                <Phone className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <div className="flex flex-col">
+                  <a href="tel:+250788481648" className="hover:text-primary transition-colors">0788 481 648</a>
+                  <a href="tel:+250793736574" className="hover:text-primary transition-colors">0793 736 574</a>
+                  <a href="tel:+250790176547" className="hover:text-primary transition-colors">0790 176 547</a>
+                </div>
+              </li>
+              <li className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary shrink-0" /> Kimironko, KG 15 Ave (around the market), Kigali
+              </li>
             </ul>
           </div>
         </div>
@@ -91,21 +102,29 @@ const Footer = () => {
           <p>© {new Date().getFullYear()} ISOKO GROUP. {t("footer.rights")}</p>
           <div className="flex items-center gap-2">
             {socials.map(({ name, Icon, links }) => (
-              <DropdownMenu key={name}>
-                <DropdownMenuTrigger
+              <Popover key={name}>
+                <PopoverTrigger
                   aria-label={name}
                   className="h-9 w-9 inline-flex items-center justify-center rounded-full border border-border bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
                 >
                   <Icon className="h-4 w-4" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {links.map((l) => (
-                    <DropdownMenuItem key={l.url} asChild>
-                      <a href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-56 p-2">
+                  <div className="flex flex-col">
+                    {links.map((l) => (
+                      <a
+                        key={l.url}
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                      >
+                        {l.label}
+                      </a>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             ))}
           </div>
         </div>
