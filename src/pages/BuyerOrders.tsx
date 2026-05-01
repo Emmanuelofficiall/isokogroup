@@ -78,28 +78,43 @@ const BuyerOrders = () => {
     load();
   };
 
-  const downloadInvoice = async (orderId: string) => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-pdf`;
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ type: "invoice", order_id: orderId }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const blob = await res.blob();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `invoice-${orderId.slice(0, 8)}.pdf`;
-      document.body.appendChild(a); a.click(); a.remove();
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
-    }
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const downloadInvoice = (orderId: string) => {
+    if (downloadingId) return;
+    setDownloadingId(orderId);
+    toast({ title: "Preparing invoice…", description: "Your PDF will download shortly." });
+
+    // Defer heavy work off the click handler so the UI updates immediately (fixes INP)
+    setTimeout(async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-pdf`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ type: "invoice", order_id: orderId }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const blob = await res.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = objectUrl;
+        a.download = `invoice-${orderId.slice(0, 8)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      } catch (e: any) {
+        toast({ title: "Failed", description: e.message, variant: "destructive" });
+      } finally {
+        setDownloadingId(null);
+      }
+    }, 0);
   };
 
   if (authLoading) return null;
@@ -162,8 +177,8 @@ const BuyerOrders = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2 pt-2">
-                    <Button size="sm" variant="outline" onClick={() => downloadInvoice(o.id)}>
-                      <Download className="h-3 w-3 mr-1" /> Invoice
+                    <Button size="sm" variant="outline" onClick={() => downloadInvoice(o.id)} disabled={downloadingId === o.id}>
+                      <Download className="h-3 w-3 mr-1" /> {downloadingId === o.id ? "Preparing…" : "Invoice"}
                     </Button>
                     <Link to="/track">
                       <Button size="sm" variant="ghost">
