@@ -281,7 +281,7 @@ const Cart = () => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Your full name (as paid)</label>
                 <Input
-                  placeholder="e.g. Jean Mukamana"
+                  placeholder="Your full name"
                   value={payerName}
                   onChange={(e) => setPayerName(e.target.value)}
                   maxLength={100}

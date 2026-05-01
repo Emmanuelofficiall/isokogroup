@@ -93,7 +93,7 @@ const Login = () => {
                 <form className="space-y-4" onSubmit={handleRegister}>
                   <div className="space-y-2">
                     <Label htmlFor="fullname">{t("auth.fullName")}</Label>
-                    <Input id="fullname" name="fullname" placeholder="John Doe" required />
+                    <Input id="fullname" name="fullname" placeholder="Your full name" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="reg-email">{t("auth.email")}</Label>
