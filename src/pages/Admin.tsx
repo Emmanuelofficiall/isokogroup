@@ -354,6 +354,16 @@ const Admin = () => {
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
+  const handleUpdateCommissionStatus = async (id: string, status: string) => {
+    const { error } = await (supabase as any).from("commissions").update({ status }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `Commission marked as ${status}` });
+    fetchAll();
+  };
+
   const handleUpdatePackagingStatus = async (id: string, status: string) => {
     const { error } = await (supabase as any).from("packaging_requests").update({ status }).eq("id", id);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
