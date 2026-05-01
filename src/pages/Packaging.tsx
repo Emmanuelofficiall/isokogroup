@@ -10,9 +10,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import truck1 from "@/assets/truck-1.png";
-import truck2 from "@/assets/truck-2.png";
-import truck3 from "@/assets/truck-3.png";
+import paperBags from "@/assets/paper-bags.jpeg";
 
 const packagingTypes = [
   { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700" },
