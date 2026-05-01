@@ -333,6 +333,48 @@ export type Database = {
         }
         Relationships: []
       }
+      packages: {
+        Row: {
+          barcode: string
+          created_at: string
+          height_cm: number
+          id: string
+          length_cm: number
+          notes: string | null
+          order_id: string
+          package_type: string
+          updated_at: string
+          weight_kg: number
+          width_cm: number
+        }
+        Insert: {
+          barcode?: string
+          created_at?: string
+          height_cm?: number
+          id?: string
+          length_cm?: number
+          notes?: string | null
+          order_id: string
+          package_type?: string
+          updated_at?: string
+          weight_kg?: number
+          width_cm?: number
+        }
+        Update: {
+          barcode?: string
+          created_at?: string
+          height_cm?: number
+          id?: string
+          length_cm?: number
+          notes?: string | null
+          order_id?: string
+          package_type?: string
+          updated_at?: string
+          weight_kg?: number
+          width_cm?: number
+        }
+        Relationships: []
+      }
       packaging_requests: {
         Row: {
           created_at: string
@@ -537,6 +579,51 @@ export type Database = {
         }
         Relationships: []
       }
+      shipments: {
+        Row: {
+          courier: string | null
+          created_at: string
+          driver_name: string | null
+          driver_phone: string | null
+          estimated_delivery: string | null
+          id: string
+          order_id: string
+          shipping_address: string | null
+          shipping_cost: number
+          status: string
+          tracking_number: string
+          updated_at: string
+        }
+        Insert: {
+          courier?: string | null
+          created_at?: string
+          driver_name?: string | null
+          driver_phone?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          order_id: string
+          shipping_address?: string | null
+          shipping_cost?: number
+          status?: string
+          tracking_number?: string
+          updated_at?: string
+        }
+        Update: {
+          courier?: string | null
+          created_at?: string
+          driver_name?: string | null
+          driver_phone?: string | null
+          estimated_delivery?: string | null
+          id?: string
+          order_id?: string
+          shipping_address?: string | null
+          shipping_cost?: number
+          status?: string
+          tracking_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           amount: number
@@ -573,6 +660,36 @@ export type Database = {
           trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      tracking_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          location: string | null
+          note: string | null
+          shipment_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          note?: string | null
+          shipment_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          location?: string | null
+          note?: string | null
+          shipment_id?: string
+          status?: string
         }
         Relationships: []
       }
