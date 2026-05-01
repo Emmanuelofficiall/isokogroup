@@ -38,6 +38,7 @@ const Admin = () => {
   const [sellerApplications, setSellerApplications] = useState<any[]>([]);
   const [entertainment, setEntertainment] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
+  const [softwareBookings, setSoftwareBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
@@ -78,7 +79,7 @@ const Admin = () => {
   }, [user]);
 
   const fetchAll = async () => {
-    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes, payoutsRes] = await Promise.all([
+    const [profilesRes, ordersRes, commissionsRes, productsRes, subsRes, booksRes, logRes, packRes, sellerRes, entRes, payoutsRes, swRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("*").order("created_at", { ascending: false }),
       supabase.from("commissions").select("*").order("created_at", { ascending: false }),
@@ -90,6 +91,7 @@ const Admin = () => {
       (supabase as any).from("seller_applications").select("*").order("created_at", { ascending: false }),
       supabase.from("entertainment").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("payout_requests").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("software_bookings").select("*").order("created_at", { ascending: false }),
     ]);
     setProfiles(profilesRes.data || []);
     setOrders(ordersRes.data || []);
@@ -102,6 +104,7 @@ const Admin = () => {
     setSellerApplications(sellerRes.data || []);
     setEntertainment(entRes.data || []);
     setPayouts(payoutsRes.data || []);
+    setSoftwareBookings(swRes.data || []);
     setLoading(false);
   };
 
@@ -367,6 +370,21 @@ const Admin = () => {
   const handleUpdatePackagingStatus = async (id: string, status: string) => {
     const { error } = await (supabase as any).from("packaging_requests").update({ status }).eq("id", id);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
+  };
+
+  const updateSoftwareBooking = async (id: string, patch: Record<string, any>, msg?: string) => {
+    const { error } = await (supabase as any).from("software_bookings").update(patch).eq("id", id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    toast({ title: msg || "Updated" });
+    fetchAll();
+  };
+
+  const handleSetAgreedPrice = async (b: any) => {
+    const input = window.prompt("Set agreed price (RWF):", b.agreed_price?.toString() || "");
+    if (input === null) return;
+    const price = parseInt(input, 10);
+    if (Number.isNaN(price) || price < 0) { toast({ title: "Invalid price", variant: "destructive" }); return; }
+    await updateSoftwareBooking(b.id, { agreed_price: price }, "Agreed price set");
   };
 
   const handleApproveApplication = async (app: any) => {
