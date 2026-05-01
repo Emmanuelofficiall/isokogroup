@@ -1,7 +1,49 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Youtube, Instagram } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import logo from "@/assets/isoko-logo.jpeg";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const socials = [
+  {
+    name: "YouTube",
+    Icon: Youtube,
+    links: [
+      { label: "Featured video", url: "https://youtu.be/KjN65T1qA7c?si=8RPTzXJNhZI1b3Bs" },
+      { label: "Short #1", url: "https://youtube.com/shorts/2zXVi01BI9s?si=ly0LXTSTdbTkWYJk" },
+      { label: "Short #2", url: "https://youtube.com/shorts/SRKsJk6D8aY?si=uhQ0Xgu3dqUvsZ6h" },
+    ],
+  },
+  {
+    name: "Instagram",
+    Icon: Instagram,
+    links: [
+      { label: "Post #1", url: "https://www.instagram.com/p/DXv9vurjI45/?igsh=dTg1OTk0ODlpZGNp" },
+      { label: "Post #2", url: "https://www.instagram.com/p/DU0vkdpDete/?igsh=MWp2cHVkYzVxdTZlaw==" },
+      { label: "Reel", url: "https://www.instagram.com/reel/DWvjvOkCE8p/?igsh=MTQwNmd5eWZ2c2FkZA==" },
+      { label: "Profile @isokogrou", url: "https://www.instagram.com/isokogrou?igsh=bXM1OHpndno0Y3Bv" },
+    ],
+  },
+  {
+    name: "TikTok",
+    // Lucide has no TikTok icon — use inline SVG
+    Icon: (props: React.SVGProps<SVGSVGElement>) => (
+      <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.69a8.16 8.16 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1.84-.07Z" />
+      </svg>
+    ),
+    links: [
+      { label: "Video #1", url: "https://vt.tiktok.com/ZS9a6kw2e/" },
+      { label: "Video #2", url: "https://vt.tiktok.com/ZS9aMNuVe/" },
+      { label: "Video #3", url: "https://vt.tiktok.com/ZS9aMx5rj/" },
+    ],
+  },
+];
 
 const Footer = () => {
   const { t } = useI18n();
@@ -45,8 +87,27 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} ISOKO GROUP. {t("footer.rights")}
+        <div className="border-t border-border mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} ISOKO GROUP. {t("footer.rights")}</p>
+          <div className="flex items-center gap-2">
+            {socials.map(({ name, Icon, links }) => (
+              <DropdownMenu key={name}>
+                <DropdownMenuTrigger
+                  aria-label={name}
+                  className="h-9 w-9 inline-flex items-center justify-center rounded-full border border-border bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                >
+                  <Icon className="h-4 w-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {links.map((l) => (
+                    <DropdownMenuItem key={l.url} asChild>
+                      <a href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
