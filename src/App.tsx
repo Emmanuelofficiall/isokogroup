@@ -28,6 +28,7 @@ import Cart from "./pages/Cart";
 import BuyerOrders from "./pages/BuyerOrders";
 import Track from "./pages/Track";
 import NotFound from "./pages/NotFound";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/about" element={<About />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/become-seller" element={<BecomeSeller />} />
                   <Route path="/subscription" element={<Subscription />} />

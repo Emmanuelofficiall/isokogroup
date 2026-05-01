@@ -34,6 +34,7 @@ const Header = () => {
       { label: t("nav.elibrary"), path: "/e-library" },
       { label: t("nav.entertainment"), path: "/entertainment" },
       { label: "Software", path: "/software" },
+      { label: "About", path: "/about" },
     ],
     [t]
   );
