@@ -5,11 +5,14 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Package, Shield, Clock, Banknote, Truck } from "lucide-react";
+import { Package, Shield, Clock, Banknote } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import truck1 from "@/assets/truck-1.png";
+import truck2 from "@/assets/truck-2.png";
+import truck3 from "@/assets/truck-3.png";
 
 const packagingTypes = [
   { icon: Package, title: "Standard", desc: "Basic protective packaging for everyday items.", price: "500 RWF", value: "standard" },
