@@ -580,7 +580,7 @@ const SellerDashboard = () => {
           buyerId={shipmentOrder.buyer_id}
           open={!!shipmentOrder}
           onOpenChange={(o) => { if (!o) setShipmentOrder(null); }}
-          onSaved={loadData}
+          onSaved={fetchData}
         />
       )}
       <Footer />
