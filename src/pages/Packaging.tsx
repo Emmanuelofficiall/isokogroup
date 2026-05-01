@@ -15,10 +15,15 @@ import truck2 from "@/assets/truck-2.png";
 import truck3 from "@/assets/truck-3.png";
 
 const packagingTypes = [
-  { icon: Package, title: "Standard", desc: "Basic protective packaging for everyday items.", price: "500 RWF", value: "standard" },
-  { icon: Shield, title: "Premium", desc: "Extra cushioning and waterproof wrapping for fragile goods.", price: "1,500 RWF", value: "premium" },
-  { icon: Clock, title: "Express", desc: "Priority packaging with same-day processing.", price: "2,500 RWF", value: "express" },
-  { icon: Banknote, title: "Bulk", desc: "Discounted rates for large quantity orders.", price: "Custom", value: "bulk" },
+  { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700" },
+  { title: "Brown — Medium", desc: "Brown paper bag, medium size.", price: "800 RWF", value: "brown-medium", color: "bg-amber-700" },
+  { title: "Brown — Large", desc: "Brown paper bag, large size.", price: "1,000 RWF", value: "brown-large", color: "bg-amber-700" },
+  { title: "White — Small", desc: "White paper bag, small size.", price: "900 RWF", value: "white-small", color: "bg-gray-100 border border-border" },
+  { title: "White — Medium", desc: "White paper bag, medium size.", price: "1,100 RWF", value: "white-medium", color: "bg-gray-100 border border-border" },
+  { title: "White — Large", desc: "White paper bag, large size.", price: "1,600 RWF", value: "white-large", color: "bg-gray-100 border border-border" },
+  { title: "Black — Small", desc: "Black paper bag, small size.", price: "1,100 RWF", value: "black-small", color: "bg-neutral-900" },
+  { title: "Black — Medium", desc: "Black paper bag, medium size.", price: "1,300 RWF", value: "black-medium", color: "bg-neutral-900" },
+  { title: "Black — Large", desc: "Black paper bag, large size.", price: "1,800 RWF", value: "black-large", color: "bg-neutral-900" },
 ];
 
 const Packaging = () => {
@@ -30,7 +35,7 @@ const Packaging = () => {
   const [items, setItems] = useState("");
   const [qty, setQty] = useState("1");
   const [pickupDate, setPickupDate] = useState("");
-  const [selectedType, setSelectedType] = useState("standard");
+  const [selectedType, setSelectedType] = useState("brown-small");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
 
@@ -78,13 +83,13 @@ const Packaging = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("packaging.subtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
             {packagingTypes.map((p) => (
-              <div key={p.title}
+              <div key={p.value}
                 onClick={() => setSelectedType(p.value)}
                 className={`group rounded-xl border bg-card p-6 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <p.icon className="h-6 w-6" />
+                <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${p.color}`}>
+                  <Package className="h-6 w-6 text-white mix-blend-difference" />
                 </div>
                 <h3 className="font-semibold mb-1">{p.title}</h3>
                 <p className="text-sm text-muted-foreground mb-3">{p.desc}</p>
@@ -92,6 +97,7 @@ const Packaging = () => {
               </div>
             ))}
           </div>
+          <p className="text-center text-sm text-muted-foreground -mt-12 mb-20">Additional items are available on request. Please inquire for prices.</p>
 
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("packaging.requestTitle")}</h2>
