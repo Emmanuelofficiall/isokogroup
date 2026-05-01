@@ -15,10 +15,15 @@ import truck2 from "@/assets/truck-2.png";
 import truck3 from "@/assets/truck-3.png";
 
 const packagingTypes = [
-  { icon: Package, title: "Standard", desc: "Basic protective packaging for everyday items.", price: "500 RWF", value: "standard" },
-  { icon: Shield, title: "Premium", desc: "Extra cushioning and waterproof wrapping for fragile goods.", price: "1,500 RWF", value: "premium" },
-  { icon: Clock, title: "Express", desc: "Priority packaging with same-day processing.", price: "2,500 RWF", value: "express" },
-  { icon: Banknote, title: "Bulk", desc: "Discounted rates for large quantity orders.", price: "Custom", value: "bulk" },
+  { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700" },
+  { title: "Brown — Medium", desc: "Brown paper bag, medium size.", price: "800 RWF", value: "brown-medium", color: "bg-amber-700" },
+  { title: "Brown — Large", desc: "Brown paper bag, large size.", price: "1,000 RWF", value: "brown-large", color: "bg-amber-700" },
+  { title: "White — Small", desc: "White paper bag, small size.", price: "900 RWF", value: "white-small", color: "bg-gray-100 border border-border" },
+  { title: "White — Medium", desc: "White paper bag, medium size.", price: "1,100 RWF", value: "white-medium", color: "bg-gray-100 border border-border" },
+  { title: "White — Large", desc: "White paper bag, large size.", price: "1,600 RWF", value: "white-large", color: "bg-gray-100 border border-border" },
+  { title: "Black — Small", desc: "Black paper bag, small size.", price: "1,100 RWF", value: "black-small", color: "bg-neutral-900" },
+  { title: "Black — Medium", desc: "Black paper bag, medium size.", price: "1,300 RWF", value: "black-medium", color: "bg-neutral-900" },
+  { title: "Black — Large", desc: "Black paper bag, large size.", price: "1,800 RWF", value: "black-large", color: "bg-neutral-900" },
 ];
 
 const Packaging = () => {
