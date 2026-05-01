@@ -80,9 +80,21 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider">{t("footer.contact")}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> info@isokogroup.com</li>
-              <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> +250 788 000 000</li>
-              <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Kigali, Rwanda</li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-primary shrink-0" />
+                <a href="mailto:isokogrou93@gmail.com" className="hover:text-primary transition-colors break-all">isokogrou93@gmail.com</a>
+              </li>
+              <li className="flex items-start gap-2">
+                <Phone className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <div className="flex flex-col">
+                  <a href="tel:+250788481648" className="hover:text-primary transition-colors">0788 481 648</a>
+                  <a href="tel:+250793736574" className="hover:text-primary transition-colors">0793 736 574</a>
+                  <a href="tel:+250790176547" className="hover:text-primary transition-colors">0790 176 547</a>
+                </div>
+              </li>
+              <li className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary shrink-0" /> Kimironko, KG 15 Ave (around the market), Kigali
+              </li>
             </ul>
           </div>
         </div>
