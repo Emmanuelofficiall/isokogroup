@@ -156,35 +156,39 @@ const ShipmentDialog = ({ orderId, buyerId, open, onOpenChange, onSaved }: Props
     }
   };
 
-  const downloadPdf = async (type: "label" | "packing_slip" | "invoice") => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-pdf`;
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ type, order_id: orderId }),
-      });
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(txt || "Failed to generate PDF");
+  const downloadPdf = (type: "label" | "packing_slip" | "invoice") => {
+    toast({ title: "Preparing PDF…", description: "Your file will download shortly." });
+    // Defer heavy work off the click handler to keep the UI responsive (improves INP)
+    setTimeout(async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-pdf`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ type, order_id: orderId }),
+        });
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(txt || "Failed to generate PDF");
+        }
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = `${type}-${orderId.slice(0, 8)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      } catch (e: any) {
+        toast({ title: "PDF error", description: e.message, variant: "destructive" });
       }
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = `${type}-${orderId.slice(0, 8)}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(blobUrl);
-    } catch (e: any) {
-      toast({ title: "PDF error", description: e.message, variant: "destructive" });
-    }
+    }, 0);
   };
 
   return (
