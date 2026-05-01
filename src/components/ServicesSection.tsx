@@ -1,4 +1,4 @@
-import { Truck, ShoppingBag, BookOpen, Film, ArrowRight } from "lucide-react";
+import { Truck, Package, ShoppingBag, BookOpen, Film, Code2, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 
@@ -9,26 +9,38 @@ const ServicesSection = () => {
     {
       icon: Truck,
       title: t("nav.logistics"),
-      description: t("hero.fastDelivery"),
+      description: "Reliable pickup, delivery & courier services across Kigali and beyond.",
       path: "/logistics",
+    },
+    {
+      icon: Package,
+      title: t("nav.packaging"),
+      description: "Branded paper bags and secure packaging for shops and businesses.",
+      path: "/logistics/packaging",
     },
     {
       icon: ShoppingBag,
       title: t("nav.marketplace"),
-      description: t("hero.buySell"),
+      description: "Buy from trusted local sellers or open your own shop online.",
       path: "/marketplace",
     },
     {
       icon: BookOpen,
       title: t("nav.elibrary"),
-      description: t("hero.readOnline"),
+      description: "Read curated books, guides and study material — anywhere, anytime.",
       path: "/e-library",
     },
     {
       icon: Film,
       title: t("nav.entertainment"),
-      description: "Stream films & podcasts",
+      description: "Stream Isoko Studioz films, shorts and podcasts in one place.",
       path: "/entertainment",
+    },
+    {
+      icon: Code2,
+      title: "Software",
+      description: "Custom websites, mobile apps and tech classes by Isoko Studioz.",
+      path: "/software",
     },
   ];
 
@@ -41,7 +53,7 @@ const ServicesSection = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">{t("services.subtitle")}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, i) => (
             <Link
               key={service.title}
