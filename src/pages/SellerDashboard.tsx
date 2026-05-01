@@ -574,6 +574,15 @@ const SellerDashboard = () => {
           </Tabs>
         </div>
       </section>
+      {shipmentOrder && (
+        <ShipmentDialog
+          orderId={shipmentOrder.id}
+          buyerId={shipmentOrder.buyer_id}
+          open={!!shipmentOrder}
+          onOpenChange={(o) => { if (!o) setShipmentOrder(null); }}
+          onSaved={loadData}
+        />
+      )}
       <Footer />
     </div>
   );
