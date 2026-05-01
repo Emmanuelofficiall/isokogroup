@@ -83,13 +83,13 @@ const Packaging = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("packaging.subtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
             {packagingTypes.map((p) => (
-              <div key={p.title}
+              <div key={p.value}
                 onClick={() => setSelectedType(p.value)}
                 className={`group rounded-xl border bg-card p-6 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <p.icon className="h-6 w-6" />
+                <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${p.color}`}>
+                  <Package className="h-6 w-6 text-white mix-blend-difference" />
                 </div>
                 <h3 className="font-semibold mb-1">{p.title}</h3>
                 <p className="text-sm text-muted-foreground mb-3">{p.desc}</p>
@@ -97,6 +97,7 @@ const Packaging = () => {
               </div>
             ))}
           </div>
+          <p className="text-center text-sm text-muted-foreground -mt-12 mb-20">Additional items are available on request. Please inquire for prices.</p>
 
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("packaging.requestTitle")}</h2>
