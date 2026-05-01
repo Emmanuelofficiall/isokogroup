@@ -252,14 +252,39 @@ const ShipmentDialog = ({ orderId, buyerId, open, onOpenChange, onSaved }: Props
                 </div>
               )}
               <div>
-                <Label>Courier</Label>
-                <Input value={shipment.courier} placeholder="DHL, local courier…"
-                  onChange={(e) => setShipment({ ...shipment, courier: e.target.value })} />
+                <Label>Registered courier</Label>
+                <Select
+                  value={shipment.courier_id || "none"}
+                  onValueChange={(v) => {
+                    if (v === "none") {
+                      setShipment({ ...shipment, courier_id: "" });
+                      return;
+                    }
+                    const c = couriers.find((x) => x.id === v);
+                    setShipment({
+                      ...shipment,
+                      courier_id: v,
+                      courier: c?.company || c?.name || shipment.courier,
+                      driver_name: c?.name || shipment.driver_name,
+                      driver_phone: c?.phone || shipment.driver_phone,
+                    });
+                  }}
+                >
+                  <SelectTrigger><SelectValue placeholder="Select courier" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— None —</SelectItem>
+                    {couriers.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name} {c.company ? `(${c.company})` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Label>Shipping cost (RWF)</Label>
-                <Input type="number" value={shipment.shipping_cost}
-                  onChange={(e) => setShipment({ ...shipment, shipping_cost: parseInt(e.target.value) || 0 })} />
+                <Label>Courier (free text)</Label>
+                <Input value={shipment.courier} placeholder="DHL, local courier…"
+                  onChange={(e) => setShipment({ ...shipment, courier: e.target.value })} />
               </div>
               <div>
                 <Label>Driver name</Label>
@@ -270,6 +295,46 @@ const ShipmentDialog = ({ orderId, buyerId, open, onOpenChange, onSaved }: Props
                 <Label>Driver phone</Label>
                 <Input value={shipment.driver_phone}
                   onChange={(e) => setShipment({ ...shipment, driver_phone: e.target.value })} />
+              </div>
+              <div>
+                <Label>Zone</Label>
+                <Select value={zone} onValueChange={(v) => setZone(v as ShippingZone)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="local">Local</SelectItem>
+                    <SelectItem value="regional">Regional</SelectItem>
+                    <SelectItem value="national">National</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Distance (km)</Label>
+                <Input type="number" value={shipment.distance_km}
+                  onChange={(e) => setShipment({ ...shipment, distance_km: parseFloat(e.target.value) || 0 })} />
+              </div>
+              <div className="col-span-2 flex items-end gap-2">
+                <div className="flex-1">
+                  <Label>Shipping cost (RWF)</Label>
+                  <Input type="number" value={shipment.shipping_cost}
+                    onChange={(e) => setShipment({ ...shipment, shipping_cost: parseInt(e.target.value) || 0 })} />
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    const { total, rate } = calculateShippingCost(rates, {
+                      zone, weight_kg: pkg.weight_kg, distance_km: shipment.distance_km,
+                    });
+                    if (!rate) {
+                      toast({ title: "No matching rate", description: "Adjust zone or weight bracket.", variant: "destructive" });
+                      return;
+                    }
+                    setShipment({ ...shipment, shipping_cost: total });
+                    toast({ title: "Calculated", description: `Estimated cost: ${total.toLocaleString()} RWF` });
+                  }}
+                >
+                  <Calculator className="h-4 w-4 mr-1" /> Calculate
+                </Button>
               </div>
               <div>
                 <Label>Estimated delivery</Label>
