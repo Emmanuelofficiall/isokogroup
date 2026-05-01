@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Youtube, Instagram } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
