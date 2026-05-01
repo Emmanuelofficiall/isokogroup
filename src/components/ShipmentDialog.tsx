@@ -75,14 +75,22 @@ const ShipmentDialog = ({ orderId, buyerId, open, onOpenChange, onSaved }: Props
         setShipId(s.id);
         setShipment({
           tracking_number: s.tracking_number, courier: s.courier ?? "",
+          courier_id: s.courier_id ?? "",
           driver_name: s.driver_name ?? "", driver_phone: s.driver_phone ?? "",
           shipping_cost: s.shipping_cost ?? 0,
+          distance_km: s.distance_km ?? 0,
           estimated_delivery: s.estimated_delivery ?? "",
           status: s.status,
         });
       } else {
         setShipId(null);
       }
+      const [{ data: cs }, rs] = await Promise.all([
+        (supabase as any).from("couriers").select("*").eq("active", true).order("name"),
+        fetchShippingRates().catch(() => []),
+      ]);
+      setCouriers(cs ?? []);
+      setRates(rs);
     })();
   }, [open, orderId]);
 
