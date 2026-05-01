@@ -78,6 +78,30 @@ const BuyerOrders = () => {
     load();
   };
 
+  const downloadInvoice = async (orderId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-pdf`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ type: "invoice", order_id: orderId }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `invoice-${orderId.slice(0, 8)}.pdf`;
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch (e: any) {
+      toast({ title: "Failed", description: e.message, variant: "destructive" });
+    }
+  };
+
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
 
@@ -132,6 +156,21 @@ const BuyerOrders = () => {
                       <Clock className="h-3 w-3" /> Waiting for company to verify your payment
                     </p>
                   )}
+
+                  <div className="pt-2 border-t border-border">
+                    <TrackingTimeline orderId={o.id} />
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Button size="sm" variant="outline" onClick={() => downloadInvoice(o.id)}>
+                      <Download className="h-3 w-3 mr-1" /> Invoice
+                    </Button>
+                    <Link to={`/track/${o.id}`}>
+                      <Button size="sm" variant="ghost">
+                        <ExternalLink className="h-3 w-3 mr-1" /> Public tracking page
+                      </Button>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             ))}
