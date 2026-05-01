@@ -84,12 +84,22 @@ export default {
           "0%": { transform: "scale(0.95)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
+        "truck-slide": {
+          "0%": { transform: "translateX(-20%)" },
+          "100%": { transform: "translateX(120vw)" },
+        },
+        "truck-slide-reverse": {
+          "0%": { transform: "translateX(120vw) scaleX(-1)" },
+          "100%": { transform: "translateX(-20%) scaleX(-1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out",
+        "truck-slide": "truck-slide 18s linear infinite",
+        "truck-slide-reverse": "truck-slide-reverse 24s linear infinite",
       },
     },
   },

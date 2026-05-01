@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Package, Shield, Clock, Banknote } from "lucide-react";
+import { Package, Shield, Clock, Banknote, Truck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
@@ -60,8 +60,15 @@ const Packaging = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <section className="py-20">
-        <div className="container">
+      <section className="relative py-20 overflow-hidden">
+        {/* Sliding trucks background */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+          <Truck className="absolute top-[12%] left-0 h-16 w-16 text-primary/10 animate-truck-slide" style={{ animationDelay: "0s" }} />
+          <Truck className="absolute top-[38%] left-0 h-20 w-20 text-primary/[0.07] animate-truck-slide-reverse" style={{ animationDelay: "-6s" }} />
+          <Truck className="absolute top-[64%] left-0 h-14 w-14 text-primary/10 animate-truck-slide" style={{ animationDelay: "-12s", animationDuration: "22s" }} />
+          <Truck className="absolute top-[85%] left-0 h-12 w-12 text-primary/[0.08] animate-truck-slide-reverse" style={{ animationDelay: "-3s", animationDuration: "28s" }} />
+        </div>
+        <div className="container relative z-10">
           <div className="text-center mb-16 space-y-4">
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">{t("nav.packaging")}</span>
             <h1 className="text-4xl md:text-5xl font-display font-bold">{t("packaging.title")}</h1>
