@@ -41,14 +41,19 @@ const ShipmentDialog = ({ orderId, buyerId, open, onOpenChange, onSaved }: Props
   const [shipment, setShipment] = useState({
     tracking_number: "",
     courier: "",
+    courier_id: "" as string,
     driver_name: "",
     driver_phone: "",
     shipping_cost: 0,
+    distance_km: 0,
     estimated_delivery: "",
     status: "processing",
   });
+  const [zone, setZone] = useState<ShippingZone>("local");
   const [pkgId, setPkgId] = useState<string | null>(null);
   const [shipId, setShipId] = useState<string | null>(null);
+  const [couriers, setCouriers] = useState<any[]>([]);
+  const [rates, setRates] = useState<ShippingRate[]>([]);
 
   useEffect(() => {
     if (!open) return;
