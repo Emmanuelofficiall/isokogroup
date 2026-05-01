@@ -18,6 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
+import CouriersAdmin from "@/components/admin/CouriersAdmin";
+import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
 
 const COLORS = ["hsl(0, 85%, 50%)", "hsl(0, 0%, 20%)", "hsl(0, 85%, 65%)", "hsl(0, 0%, 45%)", "hsl(0, 85%, 80%)"];
 
@@ -466,10 +468,15 @@ const Admin = () => {
               <TabsTrigger value="commissions">{t("admin.commissions")}</TabsTrigger>
               <TabsTrigger value="logistics">Logistics</TabsTrigger>
               <TabsTrigger value="packaging">Packaging</TabsTrigger>
+              <TabsTrigger value="couriers">Couriers</TabsTrigger>
+              <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
               <TabsTrigger value="payouts">Payouts</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
+            <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
 
             {/* Analytics */}
             <TabsContent value="analytics">

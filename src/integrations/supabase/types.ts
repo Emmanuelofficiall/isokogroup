@@ -126,6 +126,48 @@ export type Database = {
           },
         ]
       }
+      couriers: {
+        Row: {
+          active: boolean
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+          vehicle_plate: string | null
+          vehicle_type: string
+        }
+        Insert: {
+          active?: boolean
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          vehicle_plate?: string | null
+          vehicle_type?: string
+        }
+        Update: {
+          active?: boolean
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          vehicle_plate?: string | null
+          vehicle_type?: string
+        }
+        Relationships: []
+      }
       entertainment: {
         Row: {
           category: string
@@ -594,7 +636,9 @@ export type Database = {
       shipments: {
         Row: {
           courier: string | null
+          courier_id: string | null
           created_at: string
+          distance_km: number | null
           driver_name: string | null
           driver_phone: string | null
           estimated_delivery: string | null
@@ -608,7 +652,9 @@ export type Database = {
         }
         Insert: {
           courier?: string | null
+          courier_id?: string | null
           created_at?: string
+          distance_km?: number | null
           driver_name?: string | null
           driver_phone?: string | null
           estimated_delivery?: string | null
@@ -622,7 +668,9 @@ export type Database = {
         }
         Update: {
           courier?: string | null
+          courier_id?: string | null
           created_at?: string
+          distance_km?: number | null
           driver_name?: string | null
           driver_phone?: string | null
           estimated_delivery?: string | null
@@ -633,6 +681,45 @@ export type Database = {
           status?: string
           tracking_number?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      shipping_rates: {
+        Row: {
+          active: boolean
+          base_cost: number
+          created_at: string
+          id: string
+          max_weight_kg: number
+          min_weight_kg: number
+          per_kg_cost: number
+          per_km_cost: number
+          updated_at: string
+          zone: string
+        }
+        Insert: {
+          active?: boolean
+          base_cost?: number
+          created_at?: string
+          id?: string
+          max_weight_kg?: number
+          min_weight_kg?: number
+          per_kg_cost?: number
+          per_km_cost?: number
+          updated_at?: string
+          zone: string
+        }
+        Update: {
+          active?: boolean
+          base_cost?: number
+          created_at?: string
+          id?: string
+          max_weight_kg?: number
+          min_weight_kg?: number
+          per_kg_cost?: number
+          per_km_cost?: number
+          updated_at?: string
+          zone?: string
         }
         Relationships: []
       }
