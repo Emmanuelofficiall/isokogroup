@@ -21,7 +21,7 @@ const translations: Record<string, Record<Lang, string>> = {
   "hero.logistics": { en: "Logistics", rw: "Gutwara" },
   "hero.marketplace": { en: "Marketplace", rw: "Isoko" },
   "hero.knowledge": { en: "Knowledge", rw: "Ubumenyi" },
-  "hero.subtitle": { en: "We are committed to delivering reliable services, connecting buyers and sellers, and giving you access to knowledge through our secure e-library.", rw: "Turiyemeje gutanga serivisi zizewe, guhuza abaguzi n'abacuruzi, no kubaha ubumenyi binyuze mu ibitabo byacu." },
+  "hero.subtitle": { en: "From logistics and packaging to a marketplace, e-library, entertainment and software — ISOKO GROUP brings six trusted services together to help Rwandans live, learn and do business better.", rw: "Kuva ku gutwara no gupakira kugeza ku isoko, ibitabo, imyidagaduro na software — ISOKO GROUP ihuza serivisi esheshatu zizewe kugira ngo Abanyarwanda babeho, bige kandi bakore neza." },
   "hero.getStarted": { en: "Get Started", rw: "Tangira" },
   "hero.browseMarketplace": { en: "Browse Marketplace", rw: "Reba Isoko" },
   "hero.fastDelivery": { en: "Fast delivery", rw: "Kohereza byihuse" },
