@@ -11,27 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { notify } from "@/lib/notify";
 
-import wirelessEarbuds from "@/assets/products/wireless-earbuds.jpg";
-import coffeeBeans from "@/assets/products/coffee-beans.jpg";
-import handwovenBasket from "@/assets/products/handwoven-basket.jpg";
-import smartWatch from "@/assets/products/smart-watch.jpg";
-import leatherWallet from "@/assets/products/leather-wallet.jpg";
-import bluetoothSpeaker from "@/assets/products/bluetooth-speaker.jpg";
-import traditionalFabric from "@/assets/products/traditional-fabric.jpg";
-import candleSet from "@/assets/products/candle-set.jpg";
-
 const categories = ["All", "Electronics", "Fashion", "Food & Drink", "Crafts", "Home", "Accessories"];
-
-const defaultProducts = [
-  { name: "Wireless Earbuds Pro", price: 12500, rating: 4.8, category: "Electronics", image: wirelessEarbuds },
-  { name: "Organic Coffee Beans", price: 8000, rating: 4.9, category: "Food & Drink", image: coffeeBeans },
-  { name: "Handwoven Basket", price: 15000, rating: 4.7, category: "Crafts", image: handwovenBasket },
-  { name: "Smart Watch Band", price: 22000, rating: 4.6, category: "Accessories", image: smartWatch },
-  { name: "Leather Wallet", price: 18000, rating: 4.5, category: "Fashion", image: leatherWallet },
-  { name: "Bluetooth Speaker", price: 30000, rating: 4.8, category: "Electronics", image: bluetoothSpeaker },
-  { name: "Traditional Fabric", price: 10000, rating: 4.4, category: "Fashion", image: traditionalFabric },
-  { name: "Home Candle Set", price: 6500, rating: 4.3, category: "Home", image: candleSet },
-];
 
 const Marketplace = () => {
   const [active, setActive] = useState("All");
