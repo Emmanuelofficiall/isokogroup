@@ -468,10 +468,15 @@ const Admin = () => {
               <TabsTrigger value="commissions">{t("admin.commissions")}</TabsTrigger>
               <TabsTrigger value="logistics">Logistics</TabsTrigger>
               <TabsTrigger value="packaging">Packaging</TabsTrigger>
+              <TabsTrigger value="couriers">Couriers</TabsTrigger>
+              <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
               <TabsTrigger value="payouts">Payouts</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
+            <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
 
             {/* Analytics */}
             <TabsContent value="analytics">
