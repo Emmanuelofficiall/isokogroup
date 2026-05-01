@@ -86,6 +86,16 @@ const Packaging = () => {
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("packaging.requestTitle")}</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pkg-full-name">Full Name</Label>
+                  <Input id="pkg-full-name" placeholder="Your full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pkg-phone">Phone</Label>
+                  <Input id="pkg-phone" type="tel" placeholder="07XXXXXXXX" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="items">{t("packaging.itemDesc")}</Label>
                 <Input id="items" placeholder="Describe your items" value={items} onChange={(e) => setItems(e.target.value)} required />
