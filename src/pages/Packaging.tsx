@@ -10,9 +10,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import truck1 from "@/assets/truck-1.png";
-import truck2 from "@/assets/truck-2.png";
-import truck3 from "@/assets/truck-3.png";
+import paperBags from "@/assets/paper-bags.jpeg";
 
 const packagingTypes = [
   { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700" },
@@ -69,12 +67,10 @@ const Packaging = () => {
     <div className="min-h-screen">
       <Header />
       <section className="relative py-20 overflow-hidden">
-        {/* Sliding trucks background */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 overflow-hidden opacity-30 dark:opacity-20">
-          <img src={truck1} alt="" loading="lazy" className="absolute top-[8%] left-0 h-20 md:h-28 w-auto animate-truck-slide" style={{ animationDelay: "0s" }} />
-          <img src={truck2} alt="" loading="lazy" className="absolute top-[35%] left-0 h-24 md:h-32 w-auto animate-truck-slide-reverse" style={{ animationDelay: "-6s" }} />
-          <img src={truck3} alt="" loading="lazy" className="absolute top-[62%] left-0 h-20 md:h-28 w-auto animate-truck-slide" style={{ animationDelay: "-12s", animationDuration: "22s" }} />
-          <img src={truck1} alt="" loading="lazy" className="absolute top-[85%] left-0 h-16 md:h-24 w-auto animate-truck-slide-reverse" style={{ animationDelay: "-3s", animationDuration: "28s" }} />
+        {/* Paper bags hero background */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
+          <img src={paperBags} alt="" className="w-full h-full object-cover opacity-20 dark:opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
         </div>
         <div className="container relative z-10">
           <div className="text-center mb-16 space-y-4">
@@ -102,6 +98,18 @@ const Packaging = () => {
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("packaging.requestTitle")}</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
+              {(() => {
+                const selected = packagingTypes.find((p) => p.value === selectedType);
+                return (
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Selected category</p>
+                      <p className="font-semibold">{selected?.title}</p>
+                    </div>
+                    <span className="font-bold text-primary">{selected?.price}</span>
+                  </div>
+                );
+              })()}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="pkg-full-name">Full Name</Label>

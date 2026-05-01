@@ -11,6 +11,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Logistics from "./pages/Logistics";
 import LogisticsDelivery from "./pages/LogisticsDelivery";
+import LogisticsHistory from "./pages/LogisticsHistory";
 import Packaging from "./pages/Packaging";
 import Marketplace from "./pages/Marketplace";
 import ELibrary from "./pages/ELibrary";
@@ -45,6 +46,7 @@ const App = () => (
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/logistics" element={<ProtectedRoute><Logistics /></ProtectedRoute>} />
                   <Route path="/logistics/delivery" element={<ProtectedRoute><LogisticsDelivery /></ProtectedRoute>} />
+                  <Route path="/logistics/history" element={<ProtectedRoute><LogisticsHistory /></ProtectedRoute>} />
                   <Route path="/logistics/packaging" element={<ProtectedRoute><Packaging /></ProtectedRoute>} />
                   <Route path="/packaging" element={<Navigate to="/logistics/packaging" replace />} />
                   <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />

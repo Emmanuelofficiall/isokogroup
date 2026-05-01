@@ -5,11 +5,14 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Truck, MapPin, Clock, Calculator, ArrowLeft } from "lucide-react";
+import { Truck, MapPin, Clock, Calculator, ArrowLeft, History } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import truck1 from "@/assets/truck-1.png";
+import truck2 from "@/assets/truck-2.png";
+import truck3 from "@/assets/truck-3.png";
 
 const features = [
   { icon: Truck, title: "logistics.requestDelivery", desc: "Submit delivery requests with pickup and drop-off details." },
@@ -62,11 +65,23 @@ const LogisticsDelivery = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <section className="py-20">
-        <div className="container">
-          <Link to="/logistics" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
-            <ArrowLeft className="h-4 w-4" /> Back to Logistics
-          </Link>
+      <section className="relative py-20 overflow-hidden">
+        {/* Sliding trucks background */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 overflow-hidden opacity-30 dark:opacity-20">
+          <img src={truck1} alt="" loading="lazy" className="absolute top-[8%] left-0 h-20 md:h-28 w-auto animate-truck-slide" style={{ animationDelay: "0s" }} />
+          <img src={truck2} alt="" loading="lazy" className="absolute top-[35%] left-0 h-24 md:h-32 w-auto animate-truck-slide-reverse" style={{ animationDelay: "-6s" }} />
+          <img src={truck3} alt="" loading="lazy" className="absolute top-[62%] left-0 h-20 md:h-28 w-auto animate-truck-slide" style={{ animationDelay: "-12s", animationDuration: "22s" }} />
+          <img src={truck1} alt="" loading="lazy" className="absolute top-[85%] left-0 h-16 md:h-24 w-auto animate-truck-slide-reverse" style={{ animationDelay: "-3s", animationDuration: "28s" }} />
+        </div>
+        <div className="container relative z-10">
+          <div className="flex items-center justify-between mb-6">
+            <Link to="/logistics" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
+              <ArrowLeft className="h-4 w-4" /> Back to Logistics
+            </Link>
+            <Link to="/logistics/history" className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+              <History className="h-4 w-4" /> My Requests
+            </Link>
+          </div>
           <div className="text-center mb-16 space-y-4">
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">{t("nav.logistics")}</span>
             <h1 className="text-4xl md:text-5xl font-display font-bold">{t("logistics.title")}</h1>
