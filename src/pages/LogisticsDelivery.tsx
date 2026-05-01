@@ -106,6 +106,10 @@ const LogisticsDelivery = () => {
                 <Label htmlFor="dropoff">{t("logistics.dropoff")}</Label>
                 <Input id="dropoff" placeholder="Enter drop-off address" value={dropoff} onChange={(e) => setDropoff(e.target.value)} required />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="item-type">Type of Item</Label>
+                <Input id="item-type" placeholder="e.g., Furniture, Electronics, Food, Documents" value={itemType} onChange={(e) => setItemType(e.target.value)} required />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="weight">{t("logistics.weight")}</Label>
