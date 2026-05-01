@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { notify } from "@/lib/notify";
-import { Download, Package as PackageIcon, FileText, Tag } from "lucide-react";
+import { Download, Package as PackageIcon, FileText, Tag, Calculator } from "lucide-react";
+import { calculateShippingCost, fetchShippingRates, type ShippingRate, type ShippingZone } from "@/lib/shipping";
 
 type Props = {
   orderId: string;
