@@ -1,0 +1,1 @@
+CREATE POLICY "Admins can update commissions" ON public.commissions FOR UPDATE USING (is_admin()) WITH CHECK (is_admin());

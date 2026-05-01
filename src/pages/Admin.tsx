@@ -354,6 +354,16 @@ const Admin = () => {
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
+  const handleUpdateCommissionStatus = async (id: string, status: string) => {
+    const { error } = await (supabase as any).from("commissions").update({ status }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `Commission marked as ${status}` });
+    fetchAll();
+  };
+
   const handleUpdatePackagingStatus = async (id: string, status: string) => {
     const { error } = await (supabase as any).from("packaging_requests").update({ status }).eq("id", id);
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
@@ -796,6 +806,7 @@ const Admin = () => {
                           <TableHead>Rate</TableHead>
                           <TableHead>Commission</TableHead>
                           <TableHead>Status</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -806,9 +817,20 @@ const Admin = () => {
                             <TableCell>{c.commission_rate}%</TableCell>
                             <TableCell className="text-primary font-medium">{c.commission_amount.toLocaleString()} RWF</TableCell>
                             <TableCell>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${c.status === "paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${c.status === "paid" ? "bg-green-100 text-green-700" : c.status === "cancelled" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}>
                                 {c.status}
                               </span>
+                            </TableCell>
+                            <TableCell>
+                              <select
+                                value={c.status}
+                                onChange={(e) => handleUpdateCommissionStatus(c.id, e.target.value)}
+                                className="text-xs border rounded px-2 py-1 bg-background"
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
                             </TableCell>
                           </TableRow>
                         ))}
