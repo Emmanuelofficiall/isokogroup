@@ -31,6 +31,8 @@ import BuyerOrders from "./pages/BuyerOrders";
 import Track from "./pages/Track";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import DriverDashboard from "./pages/DriverDashboard";
 
 const queryClient = new QueryClient();
 
