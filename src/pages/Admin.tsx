@@ -542,6 +542,7 @@ const Admin = () => {
               <TabsTrigger value="software">Software</TabsTrigger>
             </TabsList>
 
+            <TabsContent value="my"><MyOverview /></TabsContent>
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
             <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
             <TabsContent value="drivers">
