@@ -174,6 +174,9 @@ const Header = () => {
           {user && <NotificationsBell />}
           {user ? (
             <>
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm">Dashboard</Button>
+              </Link>
               <Link to="/my-orders">
                 <Button variant="ghost" size="sm">Orders</Button>
               </Link>

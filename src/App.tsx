@@ -31,6 +31,8 @@ import BuyerOrders from "./pages/BuyerOrders";
 import Track from "./pages/Track";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import DriverDashboard from "./pages/DriverDashboard";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +69,8 @@ const App = () => (
                   <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
                   <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                   <Route path="/my-orders" element={<ProtectedRoute><BuyerOrders /></ProtectedRoute>} />
+                  <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+                  <Route path="/driver" element={<ProtectedRoute><DriverDashboard /></ProtectedRoute>} />
                   <Route path="/track" element={<Track />} />
                   <Route path="/track/:trackingNumber" element={<Track />} />
                   <Route path="*" element={<NotFound />} />

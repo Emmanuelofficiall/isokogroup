@@ -271,42 +271,60 @@ export type Database = {
       }
       logistics_requests: {
         Row: {
+          assigned_driver_id: string | null
           created_at: string
+          delivered_at: string | null
+          driver_note: string | null
           dropoff: string
+          estimated_price: number | null
           full_name: string | null
           id: string
           item_type: string | null
           phone: string | null
+          picked_up_at: string | null
           pickup: string
           preferred_date: string | null
+          proof_url: string | null
           status: string
           updated_at: string
           user_id: string
           weight: number
         }
         Insert: {
+          assigned_driver_id?: string | null
           created_at?: string
+          delivered_at?: string | null
+          driver_note?: string | null
           dropoff: string
+          estimated_price?: number | null
           full_name?: string | null
           id?: string
           item_type?: string | null
           phone?: string | null
+          picked_up_at?: string | null
           pickup: string
           preferred_date?: string | null
+          proof_url?: string | null
           status?: string
           updated_at?: string
           user_id: string
           weight?: number
         }
         Update: {
+          assigned_driver_id?: string | null
           created_at?: string
+          delivered_at?: string | null
+          driver_note?: string | null
           dropoff?: string
+          estimated_price?: number | null
           full_name?: string | null
           id?: string
           item_type?: string | null
           phone?: string | null
+          picked_up_at?: string | null
           pickup?: string
           preferred_date?: string | null
+          proof_url?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -481,36 +499,48 @@ export type Database = {
       }
       packaging_requests: {
         Row: {
+          assigned_driver_id: string | null
           created_at: string
+          delivered_at: string | null
+          driver_note: string | null
           full_name: string | null
           id: string
           item_description: string
           phone: string | null
           pickup_date: string | null
+          proof_url: string | null
           quantity: number
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          assigned_driver_id?: string | null
           created_at?: string
+          delivered_at?: string | null
+          driver_note?: string | null
           full_name?: string | null
           id?: string
           item_description: string
           phone?: string | null
           pickup_date?: string | null
+          proof_url?: string | null
           quantity?: number
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          assigned_driver_id?: string | null
           created_at?: string
+          delivered_at?: string | null
+          driver_note?: string | null
           full_name?: string | null
           id?: string
           item_description?: string
           phone?: string | null
           pickup_date?: string | null
+          proof_url?: string | null
           quantity?: number
           status?: string
           updated_at?: string
@@ -989,7 +1019,7 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "driver"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1117,7 +1147,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "driver"],
     },
   },
 } as const

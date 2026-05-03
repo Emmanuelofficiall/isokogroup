@@ -39,6 +39,7 @@ const Admin = () => {
   const [entertainment, setEntertainment] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
   const [softwareBookings, setSoftwareBookings] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
@@ -105,6 +106,15 @@ const Admin = () => {
     setEntertainment(entRes.data || []);
     setPayouts(payoutsRes.data || []);
     setSoftwareBookings(swRes.data || []);
+    // Load driver users
+    const { data: driverRoles } = await (supabase as any).from("user_roles").select("user_id").eq("role", "driver");
+    if (driverRoles?.length) {
+      const ids = driverRoles.map((r: any) => r.user_id);
+      const { data: dProfiles } = await supabase.from("profiles").select("user_id, full_name, phone").in("user_id", ids);
+      setDrivers(dProfiles || []);
+    } else {
+      setDrivers([]);
+    }
     setLoading(false);
   };
 
@@ -357,6 +367,32 @@ const Admin = () => {
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
+  const handleAssignDriver = async (id: string, driver_id: string) => {
+    const patch: any = { assigned_driver_id: driver_id || null };
+    if (driver_id) patch.status = "assigned";
+    const { error } = await (supabase as any).from("logistics_requests").update(patch).eq("id", id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    const req = logisticsRequests.find((r) => r.id === id);
+    if (driver_id && req?.user_id) {
+      await (supabase as any).from("notifications").insert({
+        user_id: req.user_id,
+        title: "Driver assigned",
+        body: "A driver has been assigned to your delivery.",
+        type: "info",
+        link: "/logistics/history",
+      });
+      await (supabase as any).from("notifications").insert({
+        user_id: driver_id,
+        title: "New delivery assigned",
+        body: `Pickup: ${req.pickup} → ${req.dropoff}`,
+        type: "info",
+        link: "/driver",
+      });
+    }
+    toast({ title: driver_id ? "Driver assigned" : "Driver unassigned" });
+    fetchAll();
+  };
+
   const handleUpdateCommissionStatus = async (id: string, status: string) => {
     const { error } = await (supabase as any).from("commissions").update({ status }).eq("id", id);
     if (error) {
@@ -497,6 +533,7 @@ const Admin = () => {
               <TabsTrigger value="logistics">Logistics</TabsTrigger>
               <TabsTrigger value="packaging">Packaging</TabsTrigger>
               <TabsTrigger value="couriers">Couriers</TabsTrigger>
+              <TabsTrigger value="drivers">Drivers</TabsTrigger>
               <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
@@ -506,6 +543,43 @@ const Admin = () => {
 
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
             <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
+            <TabsContent value="drivers">
+              <Card>
+                <CardHeader><CardTitle>Drivers ({drivers.length})</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Promote any registered user to driver to let them access the driver dashboard.</p>
+                  <div className="space-y-2">
+                    {profiles.map((p) => {
+                      const isDriverUser = drivers.some((d) => d.user_id === p.user_id);
+                      return (
+                        <div key={p.user_id} className="flex items-center justify-between border border-border rounded-lg p-3">
+                          <div>
+                            <p className="font-medium text-sm">{p.full_name || p.user_id.slice(0, 8)}</p>
+                            <p className="text-xs text-muted-foreground">{p.phone || "no phone"}</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant={isDriverUser ? "outline" : "default"}
+                            onClick={async () => {
+                              if (isDriverUser) {
+                                await (supabase as any).from("user_roles").delete().eq("user_id", p.user_id).eq("role", "driver");
+                                toast({ title: "Driver removed" });
+                              } else {
+                                await (supabase as any).from("user_roles").insert({ user_id: p.user_id, role: "driver" });
+                                toast({ title: "Promoted to driver" });
+                              }
+                              fetchAll();
+                            }}
+                          >
+                            {isDriverUser ? "Remove driver" : "Make driver"}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* Analytics */}
             <TabsContent value="analytics">
@@ -875,6 +949,7 @@ const Admin = () => {
                           <TableHead>Drop-off</TableHead>
                           <TableHead>Weight</TableHead>
                           <TableHead>Date</TableHead>
+                          <TableHead>Driver</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
@@ -882,14 +957,26 @@ const Admin = () => {
                       <TableBody>
                         {logisticsRequests.map((r) => (
                           <TableRow key={r.id}>
-                            <TableCell>{r.pickup_location}</TableCell>
-                            <TableCell>{r.dropoff_location}</TableCell>
-                            <TableCell>{r.weight_kg || "—"} kg</TableCell>
+                            <TableCell className="max-w-[150px] truncate">{r.pickup}</TableCell>
+                            <TableCell className="max-w-[150px] truncate">{r.dropoff}</TableCell>
+                            <TableCell>{r.weight || "—"} kg</TableCell>
                             <TableCell>{r.preferred_date || "—"}</TableCell>
                             <TableCell>
+                              <select
+                                value={r.assigned_driver_id || ""}
+                                onChange={(e) => handleAssignDriver(r.id, e.target.value)}
+                                className="text-xs border rounded px-2 py-1 bg-background min-w-[110px]"
+                              >
+                                <option value="">Unassigned</option>
+                                {drivers.map((d) => (
+                                  <option key={d.user_id} value={d.user_id}>{d.full_name || d.user_id.slice(0, 6)}</option>
+                                ))}
+                              </select>
+                            </TableCell>
+                            <TableCell>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                r.status === "completed" ? "bg-green-100 text-green-700" :
-                                r.status === "in_transit" ? "bg-blue-100 text-blue-700" :
+                                r.status === "delivered" || r.status === "completed" ? "bg-green-100 text-green-700" :
+                                r.status === "in_progress" || r.status === "assigned" ? "bg-blue-100 text-blue-700" :
                                 "bg-yellow-100 text-yellow-700"
                               }`}>{r.status}</span>
                             </TableCell>
@@ -897,9 +984,9 @@ const Admin = () => {
                               <select value={r.status} onChange={(e) => handleUpdateLogisticsStatus(r.id, e.target.value)}
                                 className="text-xs border rounded px-2 py-1 bg-background">
                                 <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="in_transit">In Transit</option>
-                                <option value="completed">Completed</option>
+                                <option value="assigned">Assigned</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
                             </TableCell>
