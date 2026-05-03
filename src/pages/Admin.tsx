@@ -39,6 +39,7 @@ const Admin = () => {
   const [entertainment, setEntertainment] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
   const [softwareBookings, setSoftwareBookings] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Book form
