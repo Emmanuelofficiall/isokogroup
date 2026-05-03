@@ -911,6 +911,7 @@ const Admin = () => {
                           <TableHead>Drop-off</TableHead>
                           <TableHead>Weight</TableHead>
                           <TableHead>Date</TableHead>
+                          <TableHead>Driver</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
@@ -918,14 +919,26 @@ const Admin = () => {
                       <TableBody>
                         {logisticsRequests.map((r) => (
                           <TableRow key={r.id}>
-                            <TableCell>{r.pickup_location}</TableCell>
-                            <TableCell>{r.dropoff_location}</TableCell>
-                            <TableCell>{r.weight_kg || "—"} kg</TableCell>
+                            <TableCell className="max-w-[150px] truncate">{r.pickup}</TableCell>
+                            <TableCell className="max-w-[150px] truncate">{r.dropoff}</TableCell>
+                            <TableCell>{r.weight || "—"} kg</TableCell>
                             <TableCell>{r.preferred_date || "—"}</TableCell>
                             <TableCell>
+                              <select
+                                value={r.assigned_driver_id || ""}
+                                onChange={(e) => handleAssignDriver(r.id, e.target.value)}
+                                className="text-xs border rounded px-2 py-1 bg-background min-w-[110px]"
+                              >
+                                <option value="">Unassigned</option>
+                                {drivers.map((d) => (
+                                  <option key={d.user_id} value={d.user_id}>{d.full_name || d.user_id.slice(0, 6)}</option>
+                                ))}
+                              </select>
+                            </TableCell>
+                            <TableCell>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                r.status === "completed" ? "bg-green-100 text-green-700" :
-                                r.status === "in_transit" ? "bg-blue-100 text-blue-700" :
+                                r.status === "delivered" || r.status === "completed" ? "bg-green-100 text-green-700" :
+                                r.status === "in_progress" || r.status === "assigned" ? "bg-blue-100 text-blue-700" :
                                 "bg-yellow-100 text-yellow-700"
                               }`}>{r.status}</span>
                             </TableCell>
@@ -933,9 +946,9 @@ const Admin = () => {
                               <select value={r.status} onChange={(e) => handleUpdateLogisticsStatus(r.id, e.target.value)}
                                 className="text-xs border rounded px-2 py-1 bg-background">
                                 <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="in_transit">In Transit</option>
-                                <option value="completed">Completed</option>
+                                <option value="assigned">Assigned</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
                             </TableCell>
