@@ -543,6 +543,43 @@ const Admin = () => {
 
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
             <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
+            <TabsContent value="drivers">
+              <Card>
+                <CardHeader><CardTitle>Drivers ({drivers.length})</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Promote any registered user to driver to let them access the driver dashboard.</p>
+                  <div className="space-y-2">
+                    {profiles.map((p) => {
+                      const isDriverUser = drivers.some((d) => d.user_id === p.user_id);
+                      return (
+                        <div key={p.user_id} className="flex items-center justify-between border border-border rounded-lg p-3">
+                          <div>
+                            <p className="font-medium text-sm">{p.full_name || p.user_id.slice(0, 8)}</p>
+                            <p className="text-xs text-muted-foreground">{p.phone || "no phone"}</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant={isDriverUser ? "outline" : "default"}
+                            onClick={async () => {
+                              if (isDriverUser) {
+                                await (supabase as any).from("user_roles").delete().eq("user_id", p.user_id).eq("role", "driver");
+                                toast({ title: "Driver removed" });
+                              } else {
+                                await (supabase as any).from("user_roles").insert({ user_id: p.user_id, role: "driver" });
+                                toast({ title: "Promoted to driver" });
+                              }
+                              fetchAll();
+                            }}
+                          >
+                            {isDriverUser ? "Remove driver" : "Make driver"}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* Analytics */}
             <TabsContent value="analytics">
