@@ -13,6 +13,8 @@ import Logistics from "./pages/Logistics";
 import LogisticsDelivery from "./pages/LogisticsDelivery";
 import LogisticsHistory from "./pages/LogisticsHistory";
 import Packaging from "./pages/Packaging";
+import LogisticsSourcing from "./pages/LogisticsSourcing";
+import LogisticsSupplyChain from "./pages/LogisticsSupplyChain";
 import Software from "./pages/Software";
 import SoftwareBooking from "./pages/SoftwareBooking";
 import SoftwareAcademy from "./pages/SoftwareAcademy";
@@ -53,6 +55,8 @@ const App = () => (
                   <Route path="/logistics/delivery" element={<ProtectedRoute><LogisticsDelivery /></ProtectedRoute>} />
                   <Route path="/logistics/history" element={<ProtectedRoute><LogisticsHistory /></ProtectedRoute>} />
                   <Route path="/logistics/packaging" element={<ProtectedRoute><Packaging /></ProtectedRoute>} />
+                  <Route path="/logistics/sourcing" element={<ProtectedRoute><LogisticsSourcing /></ProtectedRoute>} />
+                  <Route path="/logistics/supply-chain" element={<ProtectedRoute><LogisticsSupplyChain /></ProtectedRoute>} />
                   <Route path="/packaging" element={<Navigate to="/logistics/packaging" replace />} />
                   <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
                   <Route path="/e-library" element={<ProtectedRoute><ELibrary /></ProtectedRoute>} />
