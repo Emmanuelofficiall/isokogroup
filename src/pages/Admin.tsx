@@ -106,6 +106,15 @@ const Admin = () => {
     setEntertainment(entRes.data || []);
     setPayouts(payoutsRes.data || []);
     setSoftwareBookings(swRes.data || []);
+    // Load driver users
+    const { data: driverRoles } = await (supabase as any).from("user_roles").select("user_id").eq("role", "driver");
+    if (driverRoles?.length) {
+      const ids = driverRoles.map((r: any) => r.user_id);
+      const { data: dProfiles } = await supabase.from("profiles").select("user_id, full_name, phone").in("user_id", ids);
+      setDrivers(dProfiles || []);
+    } else {
+      setDrivers([]);
+    }
     setLoading(false);
   };
 
