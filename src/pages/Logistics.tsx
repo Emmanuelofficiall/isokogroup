@@ -237,7 +237,7 @@ const Logistics = () => {
       {/* Documentation strip */}
       <section className="py-16">
         <div className="container">
-          <div className="flex items-start gap-4 max-w-3xl mx-auto text-center flex-col items-center">
+          <div className="max-w-3xl mx-auto text-center flex flex-col items-center gap-4">
             <FileText className="h-10 w-10 text-primary" />
             <h2 className="text-3xl font-display font-bold">
               Full documentation, digitally
