@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import CouriersAdmin from "@/components/admin/CouriersAdmin";
 import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
+import MyOverview from "@/components/admin/MyOverview";
 
 const COLORS = ["hsl(0, 85%, 50%)", "hsl(0, 0%, 20%)", "hsl(0, 85%, 65%)", "hsl(0, 0%, 45%)", "hsl(0, 85%, 80%)"];
 
@@ -522,8 +523,9 @@ const Admin = () => {
             ))}
           </div>
 
-          <Tabs defaultValue="analytics" className="space-y-6">
+          <Tabs defaultValue="my" className="space-y-6">
             <TabsList className="flex flex-wrap h-auto gap-1">
+              <TabsTrigger value="my">My Dashboard</TabsTrigger>
               <TabsTrigger value="analytics">{t("admin.analytics")}</TabsTrigger>
               <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
               <TabsTrigger value="sellers">Sellers</TabsTrigger>
@@ -541,6 +543,7 @@ const Admin = () => {
               <TabsTrigger value="software">Software</TabsTrigger>
             </TabsList>
 
+            <TabsContent value="my"><MyOverview /></TabsContent>
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
             <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
             <TabsContent value="drivers">
