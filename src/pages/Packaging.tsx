@@ -16,15 +16,34 @@ import bagWhite from "@/assets/bag-white.jpeg";
 import bagBlack from "@/assets/bag-black.jpeg";
 
 const packagingTypes = [
-  { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700", image: bagBrown },
-  { title: "Brown — Medium", desc: "Brown paper bag, medium size.", price: "800 RWF", value: "brown-medium", color: "bg-amber-700", image: bagBrown },
-  { title: "Brown — Large", desc: "Brown paper bag, large size.", price: "1,000 RWF", value: "brown-large", color: "bg-amber-700", image: bagBrown },
-  { title: "White — Small", desc: "White paper bag, small size.", price: "900 RWF", value: "white-small", color: "bg-gray-100 border border-border", image: bagWhite },
-  { title: "White — Medium", desc: "White paper bag, medium size.", price: "1,100 RWF", value: "white-medium", color: "bg-gray-100 border border-border", image: bagWhite },
-  { title: "White — Large", desc: "White paper bag, large size.", price: "1,600 RWF", value: "white-large", color: "bg-gray-100 border border-border", image: bagWhite },
-  { title: "Black — Small", desc: "Black paper bag, small size.", price: "1,100 RWF", value: "black-small", color: "bg-neutral-900", image: bagBlack },
-  { title: "Black — Medium", desc: "Black paper bag, medium size.", price: "1,300 RWF", value: "black-medium", color: "bg-neutral-900", image: bagBlack },
-  { title: "Black — Large", desc: "Black paper bag, large size.", price: "1,800 RWF", value: "black-large", color: "bg-neutral-900", image: bagBlack },
+  {
+    title: "Printed — Size 1–5",
+    desc: "Printed packaging, sizes 1 to 5. 1 bundle = 30 kg. Min order: 5 bundles.",
+    price: "72,000 RWF / bundle",
+    value: "printed-1-5",
+    image: bagBrown,
+  },
+  {
+    title: "Printed — Size 8–16",
+    desc: "Printed packaging, sizes 8 to 16. 1 bundle = 30 kg. Min order: 5 bundles.",
+    price: "67,000 RWF / bundle",
+    value: "printed-8-16",
+    image: bagWhite,
+  },
+  {
+    title: "Unprinted — Size 1–5",
+    desc: "Unprinted packaging, sizes 1 to 5. 1 bundle = 30 kg. Min order: 1 bundle.",
+    price: "60,000 RWF / bundle",
+    value: "unprinted-1-5",
+    image: bagBrown,
+  },
+  {
+    title: "Unprinted — Size 8–16",
+    desc: "Unprinted packaging, sizes 8 to 16. 1 bundle = 30 kg. Min order: 1 bundle.",
+    price: "54,000 RWF / bundle",
+    value: "unprinted-8-16",
+    image: bagBlack,
+  },
 ];
 
 const Packaging = () => {
@@ -36,7 +55,7 @@ const Packaging = () => {
   const [items, setItems] = useState("");
   const [qty, setQty] = useState("1");
   const [pickupDate, setPickupDate] = useState("");
-  const [selectedType, setSelectedType] = useState("brown-small");
+  const [selectedType, setSelectedType] = useState("printed-1-5");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
 
@@ -82,21 +101,23 @@ const Packaging = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("packaging.subtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 max-w-5xl mx-auto">
             {packagingTypes.map((p) => (
               <div key={p.value}
                 onClick={() => setSelectedType(p.value)}
-                className={`group rounded-lg border bg-card p-3 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
-                <div className="mx-auto mb-2 h-20 w-20 overflow-hidden rounded-md bg-muted">
-                  <img src={p.image} alt={`${p.title} paper bag`} loading="lazy" className="w-full h-full object-cover" />
+                className={`group rounded-xl border bg-card p-4 hover-lift text-center cursor-pointer transition-colors ${selectedType === p.value ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
+                <div className="mx-auto mb-3 h-24 w-24 overflow-hidden rounded-md bg-muted">
+                  <img src={p.image} alt={`${p.title} packaging`} loading="lazy" className="w-full h-full object-cover" />
                 </div>
                 <h3 className="font-semibold text-sm mb-1">{p.title}</h3>
-                <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{p.desc}</p>
+                <p className="text-xs text-muted-foreground mb-2 min-h-[3rem]">{p.desc}</p>
                 <span className="font-bold text-sm text-primary">{p.price}</span>
               </div>
             ))}
           </div>
-          <p className="text-center text-sm text-muted-foreground -mt-12 mb-20">Additional items are available on request. Please inquire for prices.</p>
+          <p className="text-center text-sm text-muted-foreground mb-12 max-w-2xl mx-auto">
+            1 Bundle = 30 kg. Minimum order: <strong>5 bundles</strong> for printed, <strong>1 bundle</strong> for unprinted. Bulk discounts available — contact us for large volumes.
+          </p>
 
           <div className="max-w-xl mx-auto rounded-xl border border-border bg-card p-8">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">{t("packaging.requestTitle")}</h2>
