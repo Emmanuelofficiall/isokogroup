@@ -16,15 +16,34 @@ import bagWhite from "@/assets/bag-white.jpeg";
 import bagBlack from "@/assets/bag-black.jpeg";
 
 const packagingTypes = [
-  { title: "Brown — Small", desc: "Brown paper bag, small size.", price: "700 RWF", value: "brown-small", color: "bg-amber-700", image: bagBrown },
-  { title: "Brown — Medium", desc: "Brown paper bag, medium size.", price: "800 RWF", value: "brown-medium", color: "bg-amber-700", image: bagBrown },
-  { title: "Brown — Large", desc: "Brown paper bag, large size.", price: "1,000 RWF", value: "brown-large", color: "bg-amber-700", image: bagBrown },
-  { title: "White — Small", desc: "White paper bag, small size.", price: "900 RWF", value: "white-small", color: "bg-gray-100 border border-border", image: bagWhite },
-  { title: "White — Medium", desc: "White paper bag, medium size.", price: "1,100 RWF", value: "white-medium", color: "bg-gray-100 border border-border", image: bagWhite },
-  { title: "White — Large", desc: "White paper bag, large size.", price: "1,600 RWF", value: "white-large", color: "bg-gray-100 border border-border", image: bagWhite },
-  { title: "Black — Small", desc: "Black paper bag, small size.", price: "1,100 RWF", value: "black-small", color: "bg-neutral-900", image: bagBlack },
-  { title: "Black — Medium", desc: "Black paper bag, medium size.", price: "1,300 RWF", value: "black-medium", color: "bg-neutral-900", image: bagBlack },
-  { title: "Black — Large", desc: "Black paper bag, large size.", price: "1,800 RWF", value: "black-large", color: "bg-neutral-900", image: bagBlack },
+  {
+    title: "Printed — Size 1–5",
+    desc: "Printed packaging, sizes 1 to 5. 1 bundle = 30 kg. Min order: 5 bundles.",
+    price: "72,000 RWF / bundle",
+    value: "printed-1-5",
+    image: bagBrown,
+  },
+  {
+    title: "Printed — Size 8–16",
+    desc: "Printed packaging, sizes 8 to 16. 1 bundle = 30 kg. Min order: 5 bundles.",
+    price: "67,000 RWF / bundle",
+    value: "printed-8-16",
+    image: bagWhite,
+  },
+  {
+    title: "Unprinted — Size 1–5",
+    desc: "Unprinted packaging, sizes 1 to 5. 1 bundle = 30 kg. Min order: 1 bundle.",
+    price: "60,000 RWF / bundle",
+    value: "unprinted-1-5",
+    image: bagBrown,
+  },
+  {
+    title: "Unprinted — Size 8–16",
+    desc: "Unprinted packaging, sizes 8 to 16. 1 bundle = 30 kg. Min order: 1 bundle.",
+    price: "54,000 RWF / bundle",
+    value: "unprinted-8-16",
+    image: bagBlack,
+  },
 ];
 
 const Packaging = () => {
@@ -36,7 +55,7 @@ const Packaging = () => {
   const [items, setItems] = useState("");
   const [qty, setQty] = useState("1");
   const [pickupDate, setPickupDate] = useState("");
-  const [selectedType, setSelectedType] = useState("brown-small");
+  const [selectedType, setSelectedType] = useState("printed-1-5");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
 
