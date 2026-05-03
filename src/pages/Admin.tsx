@@ -367,6 +367,32 @@ const Admin = () => {
     if (!error) { toast({ title: "Updated" }); fetchAll(); }
   };
 
+  const handleAssignDriver = async (id: string, driver_id: string) => {
+    const patch: any = { assigned_driver_id: driver_id || null };
+    if (driver_id) patch.status = "assigned";
+    const { error } = await (supabase as any).from("logistics_requests").update(patch).eq("id", id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    const req = logisticsRequests.find((r) => r.id === id);
+    if (driver_id && req?.user_id) {
+      await (supabase as any).from("notifications").insert({
+        user_id: req.user_id,
+        title: "Driver assigned",
+        body: "A driver has been assigned to your delivery.",
+        type: "info",
+        link: "/logistics/history",
+      });
+      await (supabase as any).from("notifications").insert({
+        user_id: driver_id,
+        title: "New delivery assigned",
+        body: `Pickup: ${req.pickup} → ${req.dropoff}`,
+        type: "info",
+        link: "/driver",
+      });
+    }
+    toast({ title: driver_id ? "Driver assigned" : "Driver unassigned" });
+    fetchAll();
+  };
+
   const handleUpdateCommissionStatus = async (id: string, status: string) => {
     const { error } = await (supabase as any).from("commissions").update({ status }).eq("id", id);
     if (error) {
