@@ -533,6 +533,7 @@ const Admin = () => {
               <TabsTrigger value="logistics">Logistics</TabsTrigger>
               <TabsTrigger value="packaging">Packaging</TabsTrigger>
               <TabsTrigger value="couriers">Couriers</TabsTrigger>
+              <TabsTrigger value="drivers">Drivers</TabsTrigger>
               <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
