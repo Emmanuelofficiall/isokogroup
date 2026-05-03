@@ -98,6 +98,31 @@ const Footer = () => {
           </div>
         </div>
 
+        <div className="mt-12">
+          <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-primary" /> Find us
+          </h4>
+          <div className="rounded-xl overflow-hidden border border-border">
+            <iframe
+              title="ISOKO GROUP location"
+              src="https://www.google.com/maps?q=Kimironko+Market,+KG+15+Ave,+Kigali&output=embed"
+              width="100%"
+              height="280"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="block w-full border-0"
+            />
+          </div>
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=Kimironko+Market+KG+15+Ave+Kigali"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-2 text-sm text-primary hover:underline"
+          >
+            Open in Google Maps →
+          </a>
+        </div>
+
         <div className="border-t border-border mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} ISOKO GROUP. {t("footer.rights")}</p>
           <div className="flex items-center gap-2">
