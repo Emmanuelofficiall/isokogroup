@@ -21,12 +21,14 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import CouriersAdmin from "@/components/admin/CouriersAdmin";
 import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
 import MyOverview from "@/components/admin/MyOverview";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 const COLORS = ["hsl(0, 85%, 50%)", "hsl(0, 0%, 20%)", "hsl(0, 85%, 65%)", "hsl(0, 0%, 45%)", "hsl(0, 85%, 80%)"];
 
 const Admin = () => {
   const { t } = useI18n();
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useIsAdmin();
   const { toast } = useToast();
   const [profiles, setProfiles] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -119,8 +121,9 @@ const Admin = () => {
     setLoading(false);
   };
 
-  if (authLoading) return null;
+  if (authLoading || roleLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   const totalRevenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
   const totalCommissions = commissions.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
