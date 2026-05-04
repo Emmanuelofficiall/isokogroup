@@ -1,4 +1,4 @@
-import { Truck, Package, ShoppingBag, BookOpen, Film, Code2, ArrowRight } from "lucide-react";
+import { Truck, Package, ShoppingBag, BookOpen, Film, Code2, ArrowRight, ShoppingCart, Network, CalendarCheck, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 
@@ -42,6 +42,30 @@ const ServicesSection = () => {
       description: "Custom websites, mobile apps and tech classes by Isoko Studioz.",
       path: "/software",
     },
+    {
+      icon: ShoppingCart,
+      title: "Sourcing & Procurement",
+      description: "We source goods locally and internationally on your behalf.",
+      path: "/logistics/sourcing",
+    },
+    {
+      icon: Network,
+      title: "Supply Chain",
+      description: "End-to-end shipments with customs, taxes and live tracking.",
+      path: "/logistics/supply-chain",
+    },
+    {
+      icon: CalendarCheck,
+      title: "Software Booking",
+      description: "Book a session with our developers for your next project.",
+      path: "/software/booking",
+    },
+    {
+      icon: GraduationCap,
+      title: "Tech Academy",
+      description: "Learn coding, design and digital skills from Isoko Academy.",
+      path: "/software/academy",
+    },
   ];
 
   return (
@@ -58,8 +82,8 @@ const ServicesSection = () => {
             <Link
               key={service.title}
               to={service.path}
-              className="group relative rounded-xl border border-border bg-card p-6 hover-lift"
-              style={{ animationDelay: `${i * 0.1}s` }}
+              className="group relative rounded-xl border border-border bg-card p-6 hover-lift animate-slide-up opacity-0"
+              style={{ animationDelay: `${i * 0.08}s`, animationFillMode: "forwards" }}
             >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                 <service.icon className="h-6 w-6" />

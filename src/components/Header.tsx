@@ -30,6 +30,7 @@ const Header = () => {
     () => [
       { label: t("nav.home"), path: "/" },
       { label: t("nav.logistics"), path: "/logistics" },
+      { label: t("nav.packaging"), path: "/logistics/packaging" },
       { label: t("nav.marketplace"), path: "/marketplace" },
       { label: t("nav.elibrary"), path: "/e-library" },
       { label: t("nav.entertainment"), path: "/entertainment" },
@@ -177,6 +178,9 @@ const Header = () => {
               <Link to="/dashboard">
                 <Button variant="ghost" size="sm">Dashboard</Button>
               </Link>
+              <Link to="/analytics">
+                <Button variant="ghost" size="sm">Analytics</Button>
+              </Link>
               <Link to="/my-orders">
                 <Button variant="ghost" size="sm">Orders</Button>
               </Link>
@@ -246,6 +250,9 @@ const Header = () => {
                 <>
                   <Link to="/my-orders" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">My Orders</Button>
+                  </Link>
+                  <Link to="/analytics" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" className="w-full">My Analytics</Button>
                   </Link>
                   <Link to="/seller" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">Seller Dashboard</Button>
