@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -9,8 +11,11 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area,
 } from "recharts";
-import { TrendingUp, Users, ShoppingBag, Truck, Box, DollarSign, Download, FileText, FileSpreadsheet, FileType } from "lucide-react";
+import { TrendingUp, Users, ShoppingBag, Truck, Box, DollarSign, Download, FileText, FileSpreadsheet, FileType, CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
+import { cn } from "@/lib/utils";
 
 const COLORS = [
   "hsl(0, 85%, 50%)", "hsl(220, 80%, 55%)", "hsl(140, 70%, 45%)",
@@ -23,12 +28,28 @@ const monthKey = (d: string) => {
 };
 
 const DataAnalysis = () => {
-  const [orders, setOrders] = useState<any[]>([]);
-  const [logistics, setLogistics] = useState<any[]>([]);
-  const [packaging, setPackaging] = useState<any[]>([]);
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [allOrders, setAllOrders] = useState<any[]>([]);
+  const [allLogistics, setAllLogistics] = useState<any[]>([]);
+  const [allPackaging, setAllPackaging] = useState<any[]>([]);
+  const [allProfiles, setAllProfiles] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  const inRange = (d: string) => {
+    if (!dateRange?.from) return true;
+    const t = new Date(d).getTime();
+    if (isNaN(t)) return false;
+    const from = new Date(dateRange.from); from.setHours(0, 0, 0, 0);
+    const to = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
+    to.setHours(23, 59, 59, 999);
+    return t >= from.getTime() && t <= to.getTime();
+  };
+
+  const orders = useMemo(() => allOrders.filter((x) => inRange(x.created_at)), [allOrders, dateRange]);
+  const logistics = useMemo(() => allLogistics.filter((x) => inRange(x.created_at)), [allLogistics, dateRange]);
+  const packaging = useMemo(() => allPackaging.filter((x) => inRange(x.created_at)), [allPackaging, dateRange]);
+  const profiles = useMemo(() => allProfiles.filter((x) => inRange(x.created_at)), [allProfiles, dateRange]);
 
   useEffect(() => {
     (async () => {
@@ -39,10 +60,10 @@ const DataAnalysis = () => {
         (supabase as any).from("profiles").select("*").limit(1000),
         (supabase as any).from("products").select("*").limit(1000),
       ]);
-      setOrders(o.data || []);
-      setLogistics(l.data || []);
-      setPackaging(p.data || []);
-      setProfiles(pr.data || []);
+      setAllOrders(o.data || []);
+      setAllLogistics(l.data || []);
+      setAllPackaging(p.data || []);
+      setAllProfiles(pr.data || []);
       setProducts(pd.data || []);
       setLoading(false);
     })();
@@ -181,7 +202,31 @@ const DataAnalysis = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap justify-end items-center gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className={cn("gap-2", !dateRange && "text-muted-foreground")}>
+              <CalendarIcon className="h-4 w-4" />
+              {dateRange?.from ? (
+                dateRange.to ? `${format(dateRange.from, "LLL d, y")} – ${format(dateRange.to, "LLL d, y")}`
+                  : format(dateRange.from, "LLL d, y")
+              ) : "All time"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="range"
+              selected={dateRange}
+              onSelect={setDateRange}
+              numberOfMonths={2}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+            <div className="flex justify-end gap-2 p-2 border-t">
+              <Button variant="ghost" size="sm" onClick={() => setDateRange(undefined)}>Clear</Button>
+            </div>
+          </PopoverContent>
+        </Popover>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" className="gap-2"><Download className="h-4 w-4" /> Export Report</Button>
