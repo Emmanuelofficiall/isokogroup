@@ -33,7 +33,7 @@ import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
-import Analytics from "./pages/Analytics";
+
 import PageTransition from "./components/PageTransition";
 
 const queryClient = new QueryClient();
