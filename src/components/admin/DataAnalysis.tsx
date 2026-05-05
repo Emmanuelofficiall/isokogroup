@@ -1,11 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area,
 } from "recharts";
-import { TrendingUp, Users, ShoppingBag, Truck, Box, DollarSign } from "lucide-react";
+import { TrendingUp, Users, ShoppingBag, Truck, Box, DollarSign, Download, FileText, FileSpreadsheet, FileType } from "lucide-react";
+import { toast } from "sonner";
 
 const COLORS = [
   "hsl(0, 85%, 50%)", "hsl(220, 80%, 55%)", "hsl(140, 70%, 45%)",
