@@ -202,7 +202,31 @@ const DataAnalysis = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap justify-end items-center gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className={cn("gap-2", !dateRange && "text-muted-foreground")}>
+              <CalendarIcon className="h-4 w-4" />
+              {dateRange?.from ? (
+                dateRange.to ? `${format(dateRange.from, "LLL d, y")} – ${format(dateRange.to, "LLL d, y")}`
+                  : format(dateRange.from, "LLL d, y")
+              ) : "All time"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="range"
+              selected={dateRange}
+              onSelect={setDateRange}
+              numberOfMonths={2}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+            <div className="flex justify-end gap-2 p-2 border-t">
+              <Button variant="ghost" size="sm" onClick={() => setDateRange(undefined)}>Clear</Button>
+            </div>
+          </PopoverContent>
+        </Popover>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" className="gap-2"><Download className="h-4 w-4" /> Export Report</Button>
