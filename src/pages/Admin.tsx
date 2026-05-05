@@ -549,6 +549,7 @@ const Admin = () => {
             </TabsList>
 
             <TabsContent value="my"><MyOverview /></TabsContent>
+            <TabsContent value="data"><DataAnalysis /></TabsContent>
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
             <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
             <TabsContent value="drivers">
