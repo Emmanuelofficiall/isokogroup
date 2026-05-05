@@ -530,6 +530,7 @@ const Admin = () => {
           <Tabs defaultValue="my" className="space-y-6">
             <TabsList className="flex flex-wrap h-auto gap-1">
               <TabsTrigger value="my">My Dashboard</TabsTrigger>
+              <TabsTrigger value="data">Data Analysis</TabsTrigger>
               <TabsTrigger value="analytics">{t("admin.analytics")}</TabsTrigger>
               <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
               <TabsTrigger value="sellers">Sellers</TabsTrigger>
