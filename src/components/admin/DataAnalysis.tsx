@@ -60,10 +60,10 @@ const DataAnalysis = () => {
         (supabase as any).from("profiles").select("*").limit(1000),
         (supabase as any).from("products").select("*").limit(1000),
       ]);
-      setOrders(o.data || []);
-      setLogistics(l.data || []);
-      setPackaging(p.data || []);
-      setProfiles(pr.data || []);
+      setAllOrders(o.data || []);
+      setAllLogistics(l.data || []);
+      setAllPackaging(p.data || []);
+      setAllProfiles(pr.data || []);
       setProducts(pd.data || []);
       setLoading(false);
     })();
