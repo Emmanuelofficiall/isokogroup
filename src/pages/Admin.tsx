@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import CouriersAdmin from "@/components/admin/CouriersAdmin";
 import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
+import DataAnalysis from "@/components/admin/DataAnalysis";
 import MyOverview from "@/components/admin/MyOverview";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
