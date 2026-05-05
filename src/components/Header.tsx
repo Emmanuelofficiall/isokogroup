@@ -248,9 +248,6 @@ const Header = () => {
                   <Link to="/my-orders" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">My Orders</Button>
                   </Link>
-                  <Link to="/analytics" onClick={() => setMobileOpen(false)}>
-                    <Button variant="outline" className="w-full">My Analytics</Button>
-                  </Link>
                   <Link to="/seller" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">Seller Dashboard</Button>
                   </Link>
