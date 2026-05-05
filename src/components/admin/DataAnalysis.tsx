@@ -28,12 +28,28 @@ const monthKey = (d: string) => {
 };
 
 const DataAnalysis = () => {
-  const [orders, setOrders] = useState<any[]>([]);
-  const [logistics, setLogistics] = useState<any[]>([]);
-  const [packaging, setPackaging] = useState<any[]>([]);
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [allOrders, setAllOrders] = useState<any[]>([]);
+  const [allLogistics, setAllLogistics] = useState<any[]>([]);
+  const [allPackaging, setAllPackaging] = useState<any[]>([]);
+  const [allProfiles, setAllProfiles] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  const inRange = (d: string) => {
+    if (!dateRange?.from) return true;
+    const t = new Date(d).getTime();
+    if (isNaN(t)) return false;
+    const from = new Date(dateRange.from); from.setHours(0, 0, 0, 0);
+    const to = dateRange.to ? new Date(dateRange.to) : new Date(dateRange.from);
+    to.setHours(23, 59, 59, 999);
+    return t >= from.getTime() && t <= to.getTime();
+  };
+
+  const orders = useMemo(() => allOrders.filter((x) => inRange(x.created_at)), [allOrders, dateRange]);
+  const logistics = useMemo(() => allLogistics.filter((x) => inRange(x.created_at)), [allLogistics, dateRange]);
+  const packaging = useMemo(() => allPackaging.filter((x) => inRange(x.created_at)), [allPackaging, dateRange]);
+  const profiles = useMemo(() => allProfiles.filter((x) => inRange(x.created_at)), [allProfiles, dateRange]);
 
   useEffect(() => {
     (async () => {
