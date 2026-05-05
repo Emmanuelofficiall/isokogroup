@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import CouriersAdmin from "@/components/admin/CouriersAdmin";
 import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
+import DataAnalysis from "@/components/admin/DataAnalysis";
 import MyOverview from "@/components/admin/MyOverview";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
@@ -529,6 +530,7 @@ const Admin = () => {
           <Tabs defaultValue="my" className="space-y-6">
             <TabsList className="flex flex-wrap h-auto gap-1">
               <TabsTrigger value="my">My Dashboard</TabsTrigger>
+              <TabsTrigger value="data">Data Analysis</TabsTrigger>
               <TabsTrigger value="analytics">{t("admin.analytics")}</TabsTrigger>
               <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
               <TabsTrigger value="sellers">Sellers</TabsTrigger>
@@ -547,6 +549,7 @@ const Admin = () => {
             </TabsList>
 
             <TabsContent value="my"><MyOverview /></TabsContent>
+            <TabsContent value="data"><DataAnalysis /></TabsContent>
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
             <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
             <TabsContent value="drivers">
