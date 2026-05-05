@@ -113,10 +113,88 @@ const DataAnalysis = () => {
     { label: "Packaging 30d", value: last30(packaging), icon: Box },
   ];
 
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const exportCSV = () => {
+    const lines: string[] = [];
+    lines.push("KPIs", "Metric,Value,Note");
+    kpis.forEach((k) => lines.push(`"${k.label}","${k.value}","${k.sub || ""}"`));
+    lines.push("", "Monthly Breakdown", "Month,Orders,Revenue (RWF),Logistics,Packaging,New Users");
+    monthly.forEach((m) => lines.push(`${m.month},${m.orders},${m.revenue},${m.logistics},${m.packaging},${m.users}`));
+    lines.push("", "Service Mix", "Service,Count");
+    serviceMix.forEach((s) => lines.push(`${s.name},${s.value}`));
+    lines.push("", "Top Buyers", "Buyer,Spend (RWF),Orders");
+    topBuyers.forEach((b) => lines.push(`"${b.name}",${b.spend},${b.count}`));
+    lines.push("", "Order Status", "Status,Count");
+    orderStatus.forEach((o) => lines.push(`${o.name},${o.value}`));
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `data-analysis-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exported");
+  };
+
+  const exportExcel = async () => {
+    const XLSX = await import("xlsx");
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(kpis.map((k) => ({ Metric: k.label, Value: k.value, Note: k.sub || "" }))), "KPIs");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(monthly), "Monthly");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(serviceMix), "ServiceMix");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(topBuyers), "TopBuyers");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(orderStatus), "OrderStatus");
+    XLSX.writeFile(wb, `data-analysis-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    toast.success("Excel exported");
+  };
+
+  const exportPDF = async () => {
+    if (!reportRef.current) return;
+    toast.info("Generating PDF…");
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+    const canvas = await html2canvas(reportRef.current, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ orientation: "p", unit: "pt", format: "a4" });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgW = pageW - 40;
+    const imgH = (canvas.height * imgW) / canvas.width;
+    let heightLeft = imgH;
+    let position = 20;
+    pdf.addImage(imgData, "PNG", 20, position, imgW, imgH);
+    heightLeft -= pageH - 40;
+    while (heightLeft > 0) {
+      position = heightLeft - imgH + 20;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 20, position, imgW, imgH);
+      heightLeft -= pageH - 40;
+    }
+    pdf.save(`data-analysis-${new Date().toISOString().slice(0, 10)}.pdf`);
+    toast.success("PDF exported");
+  };
+
   if (loading) return <p className="text-muted-foreground">Loading data analysis…</p>;
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" className="gap-2"><Download className="h-4 w-4" /> Export Report</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={exportPDF}><FileType className="h-4 w-4 mr-2" /> PDF</DropdownMenuItem>
+            <DropdownMenuItem onClick={exportExcel}><FileSpreadsheet className="h-4 w-4 mr-2" /> Excel (.xlsx)</DropdownMenuItem>
+            <DropdownMenuItem onClick={exportCSV}><FileText className="h-4 w-4 mr-2" /> CSV</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div ref={reportRef} className="space-y-6 bg-background p-2">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {kpis.map((k) => (
           <Card key={k.label} className="hover-lift">
