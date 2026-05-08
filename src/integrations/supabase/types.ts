@@ -53,6 +53,87 @@ export type Database = {
         }
         Relationships: []
       }
+      business_datasets: {
+        Row: {
+          business_id: string
+          created_at: string
+          dataset_type: string
+          id: string
+          payload: Json
+          period_end: string | null
+          period_start: string | null
+          source: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          dataset_type?: string
+          id?: string
+          payload?: Json
+          period_end?: string | null
+          period_start?: string | null
+          source?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          dataset_type?: string
+          id?: string
+          payload?: Json
+          period_end?: string | null
+          period_start?: string | null
+          source?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      business_insights: {
+        Row: {
+          business_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          period_end: string | null
+          period_start: string | null
+          status: string
+          summary: Json
+          title: string
+          trends: Json
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end?: string | null
+          period_start?: string | null
+          status?: string
+          summary?: Json
+          title?: string
+          trends?: Json
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end?: string | null
+          period_start?: string | null
+          status?: string
+          summary?: Json
+          title?: string
+          trends?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string
@@ -217,6 +298,47 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "software_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      detected_issues: {
+        Row: {
+          business_id: string
+          category: string | null
+          created_at: string
+          id: string
+          insight_id: string
+          root_cause: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          business_id: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          insight_id: string
+          root_cause?: string | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          business_id?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          insight_id?: string
+          root_cause?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "detected_issues_insight_id_fkey"
+            columns: ["insight_id"]
+            isOneToOne: false
+            referencedRelation: "business_insights"
             referencedColumns: ["id"]
           },
         ]
@@ -674,6 +796,50 @@ export type Database = {
         }
         Relationships: []
       }
+      recommendations: {
+        Row: {
+          body: string | null
+          business_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          insight_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          business_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          insight_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          business_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          insight_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendations_insight_id_fkey"
+            columns: ["insight_id"]
+            isOneToOne: false
+            referencedRelation: "business_insights"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seller_applications: {
         Row: {
           business_name: string
@@ -953,6 +1119,39 @@ export type Database = {
           trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      support_requests: {
+        Row: {
+          admin_feedback: string | null
+          business_id: string
+          created_at: string
+          id: string
+          message: string
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          admin_feedback?: string | null
+          business_id: string
+          created_at?: string
+          id?: string
+          message: string
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_feedback?: string | null
+          business_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          status?: string
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }
