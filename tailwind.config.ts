@@ -51,6 +51,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "insight-alert": {
+          DEFAULT: "hsl(var(--insight-alert))",
+          foreground: "hsl(var(--insight-alert-foreground))",
+        },
+        "insight-success": {
+          DEFAULT: "hsl(var(--insight-success))",
+          foreground: "hsl(var(--insight-success-foreground))",
+        },
+        "insight-warn": {
+          DEFAULT: "hsl(var(--insight-warn))",
+          foreground: "hsl(var(--insight-warn-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
