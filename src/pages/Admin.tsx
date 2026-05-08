@@ -21,6 +21,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import CouriersAdmin from "@/components/admin/CouriersAdmin";
 import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
 import DataAnalysis from "@/components/admin/DataAnalysis";
+import InsightsWorkspace from "@/components/admin/insights/InsightsWorkspace";
 import MyOverview from "@/components/admin/MyOverview";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
@@ -549,7 +550,7 @@ const Admin = () => {
             </TabsList>
 
             <TabsContent value="my"><MyOverview /></TabsContent>
-            <TabsContent value="data"><DataAnalysis /></TabsContent>
+            <TabsContent value="data"><InsightsWorkspace /></TabsContent>
             <TabsContent value="couriers"><CouriersAdmin /></TabsContent>
             <TabsContent value="deliveries"><DeliveriesAnalytics /></TabsContent>
             <TabsContent value="drivers">

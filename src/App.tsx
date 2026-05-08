@@ -33,6 +33,7 @@ import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
+import Insights from "./pages/Insights";
 
 import PageTransition from "./components/PageTransition";
 
@@ -74,6 +75,7 @@ const App = () => (
                   <Route path="/my-orders" element={<ProtectedRoute><BuyerOrders /></ProtectedRoute>} />
                   <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
                   <Route path="/driver" element={<ProtectedRoute><DriverDashboard /></ProtectedRoute>} />
+                  <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
                   
                   <Route path="/track" element={<Track />} />
                   <Route path="/track/:trackingNumber" element={<Track />} />
