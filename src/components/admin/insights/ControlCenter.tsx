@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, FileText, AlertTriangle, Lightbulb, MessageSquare } from "lucide-react";
+import CountUp from "@/components/CountUp";
 
 const ControlCenter = () => {
   const [stats, setStats] = useState({ businesses: 0, insights: 0, issues: 0, recsSent: 0, openSupport: 0 });
@@ -34,12 +35,12 @@ const ControlCenter = () => {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 animate-fade-in">
-      {cards.map((c) => (
-        <Card key={c.label} className="hover-lift">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+      {cards.map((c, i) => (
+        <Card key={c.label} className="hover-lift press" data-aos="fade-up" data-aos-delay={i * 60}>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground"><c.icon className={`h-4 w-4 ${c.tone}`} /> {c.label}</div>
-            <p className="text-2xl font-bold mt-1">{c.value}</p>
+            <p className="text-2xl font-bold mt-1"><CountUp value={c.value} /></p>
           </CardContent>
         </Card>
       ))}
