@@ -71,7 +71,7 @@ const ServicesSection = () => {
   return (
     <section className="py-20 md:py-28">
       <div className="container">
-        <div className="text-center mb-16 space-y-4">
+        <div className="text-center mb-16 space-y-4" data-aos="fade-up">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">{t("services.ourServices")}</span>
           <h2 className="text-3xl md:text-4xl font-display font-bold">{t("services.title")}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">{t("services.subtitle")}</p>
@@ -82,8 +82,9 @@ const ServicesSection = () => {
             <Link
               key={service.title}
               to={service.path}
-              className="group relative rounded-xl border border-border bg-card p-6 hover-lift animate-slide-up opacity-0"
-              style={{ animationDelay: `${i * 0.08}s`, animationFillMode: "forwards" }}
+              data-aos="fade-up"
+              data-aos-delay={Math.min(i * 60, 400)}
+              className="group relative rounded-xl border border-border bg-card p-6 hover-lift press"
             >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                 <service.icon className="h-6 w-6" />
