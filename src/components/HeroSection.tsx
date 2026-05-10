@@ -6,10 +6,10 @@ import { useI18n } from "@/lib/i18n";
 const HeroSection = () => {
   const { t } = useI18n();
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-card text-foreground border-b border-border">
+    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-card text-foreground border-b border-border bg-animated-gradient">
       <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary blur-3xl" />
-        <div className="absolute bottom-10 right-20 w-96 h-96 rounded-full bg-primary blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary blur-3xl animate-float-soft" />
+        <div className="absolute bottom-10 right-20 w-96 h-96 rounded-full bg-primary blur-3xl animate-float-soft" style={{ animationDelay: "1.5s" }} />
       </div>
 
       <div className="container relative py-24 md:py-32 lg:py-40">
@@ -49,9 +49,9 @@ const HeroSection = () => {
               { icon: Package, label: t("nav.packaging"), desc: t("hero.securePacking") },
               { icon: ShoppingBag, label: t("hero.marketplace"), desc: t("hero.buySell") },
               { icon: BookOpen, label: t("nav.elibrary"), desc: t("hero.readOnline") },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20">
+            ].map((item, i) => (
+              <div key={item.label} className="flex items-center gap-3" data-aos="fade-up" data-aos-delay={i * 80}>
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 animate-float-soft" style={{ animationDelay: `${i * 0.4}s` }}>
                   <item.icon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
