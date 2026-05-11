@@ -64,9 +64,37 @@ const Login = () => {
       <section className="py-20">
         <div className="container max-w-md">
           <div className="text-center mb-8 space-y-2">
+            <motion.img
+              src={logo}
+              alt="ISOKO GROUP"
+              className="mx-auto h-16 w-16 rounded-full object-cover shadow-lg"
+              initial={{ scale: 0.4, opacity: 0, rotate: -15 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            />
             <h1 className="text-3xl font-display font-bold">{t("auth.welcomeBack")}</h1>
             <p className="text-muted-foreground">{t("auth.subtitle")}</p>
           </div>
+
+          <AnimatePresence>
+            {success && (
+              <motion.div
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.img
+                  src={logo}
+                  alt="ISOKO GROUP"
+                  className="h-32 w-32 rounded-full object-cover shadow-2xl"
+                  initial={{ scale: 0.2, opacity: 0 }}
+                  animate={{ scale: [0.2, 1.2, 1], opacity: 1 }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="rounded-xl border border-border bg-card p-6">
             <Tabs defaultValue="login">
