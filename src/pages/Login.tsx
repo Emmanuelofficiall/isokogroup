@@ -21,6 +21,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { isActive } = useSubscription();
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
