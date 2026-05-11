@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/lib/subscription";
 import { supabase } from "@/integrations/supabase/client";
+import logo from "@/assets/isoko-logo.jpeg";
 
 const Login = () => {
   const { signIn, signUp } = useAuth();
