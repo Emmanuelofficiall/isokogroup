@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Globe, ShoppingCart, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -100,7 +101,15 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container flex h-14 items-center gap-2">
         <Link to="/" className="flex items-center gap-1.5 shrink-0">
-          <img src={logo} alt="ISOKO GROUP" className="h-8 w-8 rounded-full object-cover" />
+          <motion.img
+            src={logo}
+            alt="ISOKO GROUP"
+            className="h-8 w-8 rounded-full object-cover"
+            initial={{ scale: 1.6, opacity: 0, rotate: -8 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ scale: 1.1, rotate: 6 }}
+          />
           <span className="text-base font-bold font-display tracking-tight whitespace-nowrap">
             ISOKO <span className="text-primary">GROUP</span>
           </span>
