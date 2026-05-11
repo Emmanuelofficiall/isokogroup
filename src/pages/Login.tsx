@@ -33,12 +33,11 @@ const Login = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Success", description: "Logged in successfully!" });
-      // Redirect to subscription page if no active subscription
-      if (!isActive) {
-        navigate("/subscription");
-      } else {
-        navigate("/");
-      }
+      setSuccess(true);
+      setTimeout(() => {
+        if (!isActive) navigate("/subscription");
+        else navigate("/");
+      }, 900);
     }
   };
 
