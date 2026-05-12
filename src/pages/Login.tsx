@@ -37,7 +37,7 @@ const Login = () => {
       setTimeout(() => {
         if (!isActive) navigate("/subscription");
         else navigate("/");
-      }, 900);
+      }, 3000);
     }
   };
 
@@ -88,9 +88,9 @@ const Login = () => {
                   src={logo}
                   alt="ISOKO GROUP"
                   className="h-32 w-32 rounded-full object-cover shadow-2xl"
-                  initial={{ scale: 0.2, opacity: 0 }}
-                  animate={{ scale: [0.2, 1.2, 1], opacity: 1 }}
-                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ scale: 0.2, opacity: 0, rotate: -20 }}
+                  animate={{ scale: [0.2, 1.3, 0.95, 1.1, 1], opacity: 1, rotate: [-20, 10, -5, 0] }}
+                  transition={{ duration: 3, ease: [0.22, 1, 0.36, 1], times: [0, 0.3, 0.6, 0.85, 1] }}
                 />
               </motion.div>
             )}
