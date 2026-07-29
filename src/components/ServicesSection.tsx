@@ -37,9 +37,9 @@ const ServicesSection = () => {
       path: "/entertainment",
     },
     {
-      icon: Code2,
-      title: "Software",
-      description: "Custom websites, mobile apps and tech classes by Isoko Studioz.",
+      icon: GraduationCap,
+      title: "Training Center",
+      description: "Career-focused training in language, digital skills, multimedia and business disciplines.",
       path: "/software",
     },
     {
@@ -56,14 +56,14 @@ const ServicesSection = () => {
     },
     {
       icon: CalendarCheck,
-      title: "Software Booking",
-      description: "Book a session with our developers for your next project.",
+      title: "Current Intakes",
+      description: "Browse open training intakes and register for the next cohort.",
       path: "/software/booking",
     },
     {
       icon: GraduationCap,
-      title: "Tech Academy",
-      description: "Learn coding, design and digital skills from Isoko Academy.",
+      title: "Apply Now",
+      description: "Start your registration journey for the training programs that fit your goals.",
       path: "/software/academy",
     },
   ];

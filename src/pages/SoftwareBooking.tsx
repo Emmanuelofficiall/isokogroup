@@ -1,191 +1,345 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
-import { z } from "zod";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/lib/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Info } from "lucide-react";
+import { CalendarDays, ChevronRight, Clock, Globe, MapPin, Users, Award, Monitor, Pencil, Video, Layers } from "lucide-react";
 
-const SERVICE_TYPES = ["Web Design", "Web Development", "Mobile App Development", "UI/UX Design", "Maintenance"];
-const BUDGET_RANGES = ["< $500", "$500 – $1,000", "$1,000 – $5,000", "$5,000 – $10,000", "$10,000+"];
+const categories = [
+  "All Categories",
+  "Languages",
+  "ICT & Digital Skills",
+  "Multimedia & Creative",
+  "Business & Management",
+  "Professional Development",
+  "Vocational Skills",
+];
 
-const schema = z.object({
-  full_name: z.string().trim().min(2, "Name is required").max(100),
-  email: z.string().trim().email("Valid email required").max(255),
-  phone: z.string().trim().min(7, "Phone is required").max(30),
-  service_type: z.string().min(1, "Select a service"),
-  project_description: z.string().trim().min(10, "Describe your project").max(2000),
-  budget_range: z.string().optional(),
-  preferred_deadline: z.string().optional(),
-  consultation_type: z.enum(["online", "physical"]),
-  consultation_date: z.string().optional(),
-});
+const scheduleOptions = ["Morning", "Afternoon", "Evening", "Weekend"];
+const modeOptions = ["Physical Classes", "Online Classes", "Hybrid"];
+
+const courses = [
+  {
+    id: "english",
+    category: "Languages",
+    title: "English Language",
+    instructor: "Jane Uwase",
+    level: "Beginner (A1) – Advanced (C1)",
+    duration: "3 Months",
+    schedule: "Evening (Mon–Wed–Fri)",
+    mode: "Hybrid",
+    seats: "23/30",
+    fee: "RWF 120,000",
+    icon: Globe,
+  },
+  {
+    id: "french",
+    category: "Languages",
+    title: "French Language",
+    instructor: "Jean Claude",
+    level: "Beginner (A1) – Advanced (C1)",
+    duration: "3 Months",
+    schedule: "Weekend (Sat & Sun)",
+    mode: "Hybrid",
+    seats: "18/25",
+    fee: "RWF 120,000",
+    icon: Globe,
+  },
+  {
+    id: "chinese",
+    category: "Languages",
+    title: "Chinese (Mandarin)",
+    instructor: "Li Wei",
+    level: "HSK 1 – HSK 5",
+    duration: "4 Months",
+    schedule: "Morning (Tue–Thu–Sat)",
+    mode: "Hybrid",
+    seats: "12/20",
+    fee: "RWF 150,000",
+    icon: Globe,
+  },
+  {
+    id: "german",
+    category: "Languages",
+    title: "German (Deutsch)",
+    instructor: "Anna Müller",
+    level: "A1 – C1",
+    duration: "4 Months",
+    schedule: "Weekend (Sat & Sun)",
+    mode: "Hybrid",
+    seats: "15/20",
+    fee: "RWF 150,000",
+    icon: Globe,
+  },
+  {
+    id: "computer-basics",
+    category: "ICT & Digital Skills",
+    title: "Computer Basics",
+    instructor: "Patrick N.",
+    level: "Beginner",
+    duration: "2 Months",
+    schedule: "Evening (Mon–Wed–Fri)",
+    mode: "Physical Classes",
+    seats: "20/30",
+    fee: "RWF 80,000",
+    icon: Monitor,
+  },
+  {
+    id: "graphic-design",
+    category: "Multimedia & Creative",
+    title: "Graphic Design",
+    instructor: "Eric Mugisha",
+    level: "Beginner – Intermediate",
+    duration: "3 Months",
+    schedule: "Weekend (Sat & Sun)",
+    mode: "Hybrid",
+    seats: "14/20",
+    fee: "RWF 120,000",
+    icon: Pencil,
+  },
+  {
+    id: "entrepreneurship",
+    category: "Business & Management",
+    title: "Entrepreneurship",
+    instructor: "Diane K.",
+    level: "Beginner – Intermediate",
+    duration: "2 Months",
+    schedule: "Evening (Tue–Thu)",
+    mode: "Hybrid",
+    seats: "18/25",
+    fee: "RWF 90,000",
+    icon: Award,
+  },
+  {
+    id: "public-speaking",
+    category: "Professional Development",
+    title: "Public Speaking",
+    instructor: "Claude R.",
+    level: "Beginner",
+    duration: "1 Month",
+    schedule: "Weekend (Sat)",
+    mode: "Physical Classes",
+    seats: "25/30",
+    fee: "RWF 60,000",
+    icon: Users,
+  },
+];
+
+const categoryIcon: Record<string, React.ComponentType<{ className?: string }>> = {
+  Languages: Globe,
+  "ICT & Digital Skills": Monitor,
+  "Multimedia & Creative": Pencil,
+  "Business & Management": Award,
+  "Professional Development": Users,
+  "Vocational Skills": Layers,
+};
 
 const SoftwareBooking = () => {
-  const [params] = useSearchParams();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedSchedule, setSelectedSchedule] = useState("");
+  const [selectedMode, setSelectedMode] = useState("");
 
-  const [form, setForm] = useState({
-    full_name: "",
-    email: "",
-    phone: "",
-    service_type: params.get("service") || "",
-    project_description: "",
-    budget_range: "",
-    preferred_deadline: "",
-    consultation_type: "online" as "online" | "physical",
-    consultation_date: "",
-  });
-
-  useEffect(() => {
-    if (user?.email) setForm((f) => ({ ...f, email: f.email || user.email! }));
-  }, [user]);
-
-  const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = schema.safeParse(form);
-    if (!parsed.success) {
-      const first = Object.values(parsed.error.flatten().fieldErrors)[0]?.[0];
-      toast({ title: "Please fix the form", description: first, variant: "destructive" });
-      return;
-    }
-    setSubmitting(true);
-    const payload: any = {
-      ...parsed.data,
-      user_id: user?.id ?? null,
-      preferred_deadline: parsed.data.preferred_deadline || null,
-      consultation_date: parsed.data.consultation_date || null,
-      budget_range: parsed.data.budget_range || null,
-    };
-    const { error } = await (supabase as any).from("software_bookings").insert(payload);
-    setSubmitting(false);
-    if (error) {
-      toast({ title: "Submission failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    setSubmitted(true);
-  };
+  const filteredCourses = useMemo(
+    () =>
+      courses.filter((course) => {
+        const categoryMatch = selectedCategory === "All Categories" || course.category === selectedCategory;
+        const scheduleMatch = !selectedSchedule || course.schedule.includes(selectedSchedule);
+        const modeMatch = !selectedMode || course.mode === selectedMode;
+        return categoryMatch && scheduleMatch && modeMatch;
+      }),
+    [selectedCategory, selectedSchedule, selectedMode]
+  );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
-      <section className="py-16">
-        <div className="container max-w-5xl">
-          <div className="text-center mb-10">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">Booking</span>
-            <h1 className="text-3xl md:text-4xl font-display font-bold mt-2">Book a Consultation</h1>
-            <p className="text-muted-foreground mt-2">Tell us about your project — we'll get back to you to schedule a meeting.</p>
-          </div>
 
-          {submitted ? (
-            <div className="max-w-xl mx-auto rounded-xl border border-primary/30 bg-primary/5 p-8 text-center">
-              <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-3" />
-              <h2 className="text-2xl font-display font-bold">Booking submitted successfully!</h2>
-              <p className="text-muted-foreground mt-2">
-                We will review your request and contact you for consultation.
+      <section className="py-16">
+        <div className="container">
+          <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr] items-start">
+            <div>
+              <span className="text-sm font-semibold uppercase tracking-wider text-primary">TRAINING CENTER</span>
+              <h1 className="mt-4 text-4xl md:text-5xl font-display font-bold">Current Intakes</h1>
+              <p className="mt-3 text-muted-foreground max-w-2xl">
+                Explore our ongoing intakes. Choose a course that matches your goals and register before seats run out.
               </p>
-              <div className="mt-6 flex gap-3 justify-center">
-                <Link to="/software"><Button variant="outline">Back to Software</Button></Link>
-                <Button onClick={() => { setSubmitted(false); setForm({ ...form, project_description: "" }); }}>Submit another</Button>
+            </div>
+
+            <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                  <CalendarDays className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm uppercase tracking-[0.24em] text-primary font-semibold">September 2026 Intake</p>
+                  <p className="mt-2 font-semibold text-foreground">Registration is Open</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Registration closes on 30 Sept 2026.</p>
+                </div>
               </div>
             </div>
-          ) : (
-            <div className="grid lg:grid-cols-3 gap-8">
-              <form onSubmit={onSubmit} className="lg:col-span-2 rounded-xl border border-border bg-card p-6 space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
+          </div>
+
+          <div className="mt-10 grid gap-8 lg:grid-cols-[280px_1fr]">
+            <aside className="space-y-6">
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-semibold">Filter Courses</h2>
+                  <span className="text-sm text-muted-foreground">{filteredCourses.length} shown</span>
+                </div>
+                <div className="space-y-5">
                   <div>
-                    <Label>Full Name *</Label>
-                    <Input value={form.full_name} onChange={(e) => update("full_name", e.target.value)} maxLength={100} required />
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">Category</h3>
+                    <div className="space-y-2">
+                      {categories.map((category) => (
+                        <button
+                          key={category}
+                          type="button"
+                          onClick={() => setSelectedCategory(category)}
+                          className={`flex items-center gap-3 w-full rounded-2xl px-3 py-2 text-left text-sm ${
+                            selectedCategory === category ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <span>{category}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
+
                   <div>
-                    <Label>Email *</Label>
-                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} maxLength={255} required />
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">Schedule</h3>
+                    <div className="space-y-2">
+                      {scheduleOptions.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => setSelectedSchedule(selectedSchedule === option ? "" : option)}
+                          className={`flex items-center gap-2 w-full rounded-2xl px-3 py-2 text-sm ${
+                            selectedSchedule === option ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <span>{option}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
+
                   <div>
-                    <Label>Phone *</Label>
-                    <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} maxLength={30} required />
-                  </div>
-                  <div>
-                    <Label>Service Type *</Label>
-                    <Select value={form.service_type} onValueChange={(v) => update("service_type", v)}>
-                      <SelectTrigger><SelectValue placeholder="Choose service" /></SelectTrigger>
-                      <SelectContent>
-                        {SERVICE_TYPES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">Mode</h3>
+                    <div className="space-y-2">
+                      {modeOptions.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => setSelectedMode(selectedMode === option ? "" : option)}
+                          className={`flex items-center gap-2 w-full rounded-2xl px-3 py-2 text-sm ${
+                            selectedMode === option ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <span>{option}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              </div>
 
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+                <h3 className="text-sm font-semibold mb-4">Intake Summary</h3>
+                <div className="space-y-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3">
+                    <CalendarDays className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="font-medium text-foreground">Intake Period</p>
+                      <p>01 Sept – 30 Sept 2026</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="font-medium text-foreground">Classes Start</p>
+                      <p>05 October 2026</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="font-medium text-foreground">Intake Duration</p>
+                      <p>3 – 4 Months</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Users className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="font-medium text-foreground">Total Courses</p>
+                      <p>8 Courses Available</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <main className="space-y-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <Label>Project Description *</Label>
-                  <Textarea rows={5} value={form.project_description} onChange={(e) => update("project_description", e.target.value)} maxLength={2000} required />
+                  <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Showing {filteredCourses.length} courses</p>
+                  <h2 className="text-2xl font-semibold">Available courses this intake</h2>
                 </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Budget Range</Label>
-                    <Select value={form.budget_range} onValueChange={(v) => update("budget_range", v)}>
-                      <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
-                      <SelectContent>
-                        {BUDGET_RANGES.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Preferred Deadline</Label>
-                    <Input type="date" value={form.preferred_deadline} onChange={(e) => update("preferred_deadline", e.target.value)} />
-                  </div>
-                  <div>
-                    <Label>Consultation Type *</Label>
-                    <Select value={form.consultation_type} onValueChange={(v) => update("consultation_type", v)}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="physical">Physical</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Consultation Date</Label>
-                    <Input type="date" value={form.consultation_date} onChange={(e) => update("consultation_date", e.target.value)} />
-                  </div>
+                <div className="rounded-2xl border border-border bg-card p-3 text-sm text-muted-foreground">
+                  Sort by: <span className="font-semibold text-foreground">Course Name (A–Z)</span>
                 </div>
+              </div>
 
-                <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-                  {submitting ? "Submitting..." : "Submit Booking"}
-                </Button>
-              </form>
-
-              <aside className="rounded-xl border border-primary/30 bg-primary/5 p-6 h-fit">
-                <div className="flex items-center gap-2 mb-3">
-                  <Info className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">Payment Policy</h3>
-                </div>
-                <ul className="space-y-3 text-sm text-muted-foreground">
-                  <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" /> Consultation is <strong className="text-foreground">free</strong>.</li>
-                  <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" /> After agreement, <strong className="text-foreground">50% payment is required to start</strong> the project.</li>
-                  <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" /> The remaining <strong className="text-foreground">50% is paid after project completion</strong>.</li>
-                </ul>
-                <p className="text-xs text-muted-foreground mt-4">
-                  This sets clear expectations from day one and protects both parties.
-                </p>
-              </aside>
-            </div>
-          )}
+              <div className="grid gap-5 lg:grid-cols-2">
+                {filteredCourses.map((course) => {
+                  const Icon = course.icon || categoryIcon[course.category];
+                  return (
+                    <div key={course.id} className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+                      <div className="flex items-center justify-between gap-4 mb-4">
+                        <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="rounded-full bg-primary/5 px-3 py-1 text-xs font-semibold uppercase text-primary">
+                          {course.category}
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">Instructor: {course.instructor}</p>
+                      <div className="grid gap-3 sm:grid-cols-2 text-sm text-muted-foreground mb-5">
+                        <div className="flex items-center gap-2"><Clock className="h-4 w-4" />{course.duration}</div>
+                        <div className="flex items-center gap-2"><CalendarDays className="h-4 w-4" />{course.schedule}</div>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2 mb-5 text-sm">
+                        <div className="rounded-2xl bg-muted p-3">
+                          <p className="font-semibold text-foreground">Mode</p>
+                          <p>{course.mode}</p>
+                        </div>
+                        <div className="rounded-2xl bg-muted p-3">
+                          <p className="font-semibold text-foreground">Seats Left</p>
+                          <p>{course.seats}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Tuition fee</p>
+                          <p className="text-lg font-semibold">{course.fee}</p>
+                        </div>
+                          <Link
+                            to="/software/academy"
+                            state={{ course }}
+                            className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary/90"
+                          >
+                            View Details & Apply <ChevronRight className="ml-2 h-4 w-4" />
+                          </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </main>
+          </div>
         </div>
       </section>
+
       <Footer />
     </div>
   );

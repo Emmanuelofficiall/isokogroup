@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -33,6 +34,7 @@ const schema = z.object({
 
 const SoftwareAcademy = () => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -53,10 +55,38 @@ const SoftwareAcademy = () => {
   };
 
   useEffect(() => { fetchCourses(); }, []);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const state: any = (location && (location as any).state) || {};
+    if (!state) return;
+    if (state.course) {
+      const c: Course = state.course;
+      if (c && c.id) {
+        setForm((f) => ({ ...f, course_title: c.title, course_id: c.id }));
+        setSelectedCourse(c);
+        setOpen(true);
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+      return;
+    }
+    if (state.courseId) {
+      if (courses.length === 0) return;
+      const found = courses.find((x) => x.id === state.courseId);
+      if (found) {
+        setForm((f) => ({ ...f, course_title: found.title, course_id: found.id }));
+        setSelectedCourse(found);
+        setOpen(true);
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [location, courses]);
   useEffect(() => { if (user?.email) setForm((f) => ({ ...f, email: f.email || user.email! })); }, [user]);
 
   const openFor = (c: Course) => {
     setForm({ ...form, course_title: c.title, course_id: c.id });
+    setSelectedCourse(c);
     setOpen(true);
   };
 
@@ -89,10 +119,10 @@ const SoftwareAcademy = () => {
       <section className="py-16">
         <div className="container max-w-6xl">
           <div className="text-center mb-12">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">Academy</span>
-            <h1 className="text-3xl md:text-5xl font-display font-bold mt-2">Learn. Build. Launch.</h1>
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">Training Center</span>
+            <h1 className="text-3xl md:text-5xl font-display font-bold mt-2">Learn. Grow. Lead.</h1>
             <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Hands-on courses taught by working developers and designers. Online or in person.
+              Hands-on courses across language, digital, multimedia and business skills — available online or in person.
             </p>
           </div>
 
@@ -125,7 +155,7 @@ const SoftwareAcademy = () => {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Register for {form.course_title}</DialogTitle>
+                <DialogTitle>Register for {selectedCourse?.title || form.course_title}</DialogTitle>
               </DialogHeader>
               <form onSubmit={onSubmit} className="space-y-4">
                 <div>

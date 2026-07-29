@@ -13,6 +13,19 @@ export const useIsAdmin = () => {
       setLoading(false);
       return;
     }
+
+    const roleFromMetadata =
+      user.app_metadata?.role === "admin" ||
+      user.user_metadata?.role === "admin" ||
+      user.user_metadata?.app_role === "admin" ||
+      user.app_metadata?.app_role === "admin";
+
+    if (roleFromMetadata) {
+      setIsAdmin(true);
+      setLoading(false);
+      return;
+    }
+
     const check = async () => {
       const { data } = await supabase
         .from("user_roles")
