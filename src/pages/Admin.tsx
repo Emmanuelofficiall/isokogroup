@@ -19,6 +19,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import CouriersAdmin from "@/components/admin/CouriersAdmin";
+import LiveControl from "@/components/admin/LiveControl";
+import VideoManager from "@/components/admin/VideoManager";
 import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
 import DataAnalysis from "@/components/admin/DataAnalysis";
 import InsightsWorkspace from "@/components/admin/insights/InsightsWorkspace";
@@ -545,8 +547,10 @@ const Admin = () => {
               <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
               <TabsTrigger value="library">Library</TabsTrigger>
               <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
+              <TabsTrigger value="videos">Videos</TabsTrigger>
               <TabsTrigger value="payouts">Payouts</TabsTrigger>
               <TabsTrigger value="software">Software</TabsTrigger>
+              <TabsTrigger value="live">Live Streams</TabsTrigger>
             </TabsList>
 
             <TabsContent value="my"><MyOverview /></TabsContent>
@@ -1247,6 +1251,8 @@ const Admin = () => {
               </Card>
             </TabsContent>
 
+              <TabsContent value="videos"><VideoManager /></TabsContent>
+
             {/* Payouts */}
             <TabsContent value="payouts">
               <Card>
@@ -1406,6 +1412,8 @@ const Admin = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="live"><LiveControl /></TabsContent>
           </Tabs>
         </div>
       </section>

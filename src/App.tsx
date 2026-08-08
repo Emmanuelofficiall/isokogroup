@@ -36,6 +36,8 @@ import DriverDashboard from "./pages/DriverDashboard";
 import Insights from "./pages/Insights";
 
 import PageTransition from "./components/PageTransition";
+import Videos from "./pages/Videos";
+import Video from "./pages/Video";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +81,8 @@ const App = () => (
                   
                   <Route path="/track" element={<Track />} />
                   <Route path="/track/:trackingNumber" element={<Track />} />
+                  <Route path="/videos" element={<Videos />} />
+                  <Route path="/videos/:id" element={<Video />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </PageTransition>

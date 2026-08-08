@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ChevronRight, Clock, Globe, MapPin, Users, Award, Monitor, Pencil, Video, Layers } from "lucide-react";
+import { CalendarDays, ChevronRight, Clock, Globe, MapPin, Users, Award, Monitor, Pencil, Video, Layers, BookOpen, BrainCircuit, Camera, Languages } from "lucide-react";
 
 const categories = [
   "All Categories",
@@ -13,6 +13,37 @@ const categories = [
   "Business & Management",
   "Professional Development",
   "Vocational Skills",
+];
+
+const departmentCards = [
+  {
+    title: "Language Department",
+    description: "English, French, German and Chinese language learning for academic and professional growth.",
+    category: "Languages",
+    icon: Languages,
+    badge: "Popular",
+  },
+  {
+    title: "ICT & Data Analysis",
+    description: "Computer basics, Microsoft Office, spreadsheets, data analysis, Power BI and SQL fundamentals.",
+    category: "ICT & Digital Skills",
+    icon: Monitor,
+    badge: "In Demand",
+  },
+  {
+    title: "Multimedia Department",
+    description: "Creative training in design, video, photography and audio production.",
+    category: "Multimedia & Creative",
+    icon: Camera,
+    badge: "Creative",
+  },
+  {
+    title: "Business Department",
+    description: "Entrepreneurship, marketing, customer care and project management training.",
+    category: "Business & Management",
+    icon: BrainCircuit,
+    badge: "Career Ready",
+  },
 ];
 
 const scheduleOptions = ["Morning", "Afternoon", "Evening", "Weekend"];
@@ -72,9 +103,9 @@ const courses = [
     icon: Globe,
   },
   {
-    id: "computer-basics",
+    id: "data-analysis",
     category: "ICT & Digital Skills",
-    title: "Computer Basics",
+    title: "Data Analysis Essentials",
     instructor: "Patrick N.",
     level: "Beginner",
     duration: "2 Months",
@@ -135,9 +166,28 @@ const categoryIcon: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 const SoftwareBooking = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedSchedule, setSelectedSchedule] = useState("");
   const [selectedMode, setSelectedMode] = useState("");
+
+  useEffect(() => {
+    const departmentSelection = (location.state as { department?: string } | null)?.department;
+    if (!departmentSelection) return;
+
+    const categoryMap: Record<string, string> = {
+      "Language Department": "Languages",
+      "ICT & Digital Skills": "ICT & Digital Skills",
+      "Multimedia Department": "Multimedia & Creative",
+      "Business Department": "Business & Management",
+    };
+
+    const mappedCategory = categoryMap[departmentSelection];
+    if (mappedCategory) {
+      setSelectedCategory(mappedCategory);
+    }
+  }, [location.state]);
 
   const filteredCourses = useMemo(
     () =>
@@ -183,10 +233,53 @@ const SoftwareBooking = () => {
             <aside className="space-y-6">
               <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-semibold">Filter Courses</h2>
+                  <h2 className="font-semibold">Choose a Department</h2>
                   <span className="text-sm text-muted-foreground">{filteredCourses.length} shown</span>
                 </div>
-                <div className="space-y-5">
+                <div className="grid gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategory("All Categories")}
+                    className={`rounded-2xl border p-4 text-left transition-all duration-200 ease-out ${
+                      selectedCategory === "All Categories"
+                        ? "border-primary bg-primary/10 text-primary shadow-sm scale-[1.01]"
+                        : "border-border bg-background hover:border-primary/50 hover:shadow-sm hover:-translate-y-0.5"
+                    }`}
+                  >
+                    <p className="font-semibold">All Departments</p>
+                    <p className="mt-1 text-sm text-muted-foreground">View the full range of training options.</p>
+                  </button>
+                  {departmentCards.map((department) => (
+                    <button
+                      key={department.title}
+                      type="button"
+                      onClick={() => setSelectedCategory(department.category)}
+                      className={`rounded-2xl border p-4 text-left transition-all duration-200 ease-out ${
+                        selectedCategory === department.category
+                          ? "border-primary bg-primary/10 text-primary shadow-sm scale-[1.01]"
+                          : "border-border bg-background hover:border-primary/50 hover:shadow-sm hover:-translate-y-0.5"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`rounded-xl p-2 ${selectedCategory === department.category ? "bg-primary/15" : "bg-muted"}`}>
+                          <department.icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold">{department.title}</p>
+                            {department.badge && (
+                              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                {department.badge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-1 text-sm text-muted-foreground">{department.description}</p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-6 space-y-5">
                   <div>
                     <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">Category</h3>
                     <div className="space-y-2">
@@ -323,13 +416,23 @@ const SoftwareBooking = () => {
                           <p className="text-sm text-muted-foreground">Tuition fee</p>
                           <p className="text-lg font-semibold">{course.fee}</p>
                         </div>
-                          <Link
-                            to="/software/academy"
-                            state={{ course }}
+                          <a
+                            href={`/software/academy?courseId=${course.id}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              // Use SPA navigation when available, but keep an href fallback
+                              try {
+                                navigate("/software/academy", { state: { course, courseId: course.id } });
+                              } catch (err) {
+                                // Fallback to full navigation if SPA navigate fails
+                                window.location.href = `/software/academy?courseId=${course.id}`;
+                              }
+                            }}
                             className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary/90"
+                            role="button"
                           >
                             View Details & Apply <ChevronRight className="ml-2 h-4 w-4" />
-                          </Link>
+                          </a>
                       </div>
                     </div>
                   );

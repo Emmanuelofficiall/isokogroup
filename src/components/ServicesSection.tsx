@@ -64,7 +64,7 @@ const ServicesSection = () => {
       icon: GraduationCap,
       title: "Apply Now",
       description: "Start your registration journey for the training programs that fit your goals.",
-      path: "/software/academy",
+      path: "/software/booking",
     },
   ];
 

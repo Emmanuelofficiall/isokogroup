@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Truck, Package, ShoppingBag, BookOpen } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import LiveIndicator from "@/components/videos/LiveIndicator";
 
 const HeroSection = () => {
   const { t } = useI18n();
@@ -14,10 +15,7 @@ const HeroSection = () => {
 
       <div className="container relative py-24 md:py-32 lg:py-40">
         <div className="max-w-3xl space-y-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-1.5 text-sm text-muted-foreground animate-fade-in">
-            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            {t("hero.badge")}
-          </div>
+          <LiveIndicator />
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight animate-slide-up">
             {t("hero.title1")}{" "}

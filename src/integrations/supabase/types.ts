@@ -1203,6 +1203,220 @@ export type Database = {
         }
         Relationships: []
       }
+      ,
+      videos: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          category: string | null
+          thumbnail_url: string | null
+          provider: string | null
+          recording_url: string | null
+          started_at: string | null
+          ended_at: string | null
+          created_by: string | null
+          status: string
+          view_count: number
+          like_count: number
+          comments_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          category?: string | null
+          thumbnail_url?: string | null
+          provider?: string | null
+          recording_url?: string | null
+          started_at?: string | null
+          ended_at?: string | null
+          created_by?: string | null
+          status?: string
+          view_count?: number
+          like_count?: number
+          comments_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          category?: string | null
+          thumbnail_url?: string | null
+          provider?: string | null
+          recording_url?: string | null
+          started_at?: string | null
+          ended_at?: string | null
+          created_by?: string | null
+          status?: string
+          view_count?: number
+          like_count?: number
+          comments_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      ,
+      live_streams: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          category: string | null
+          thumbnail_url: string | null
+          provider_info: Json | null
+          stream_url: string | null
+          recording_url: string | null
+          status: string
+          started_at: string | null
+          ended_at: string | null
+          created_by: string | null
+          viewer_count: number
+          view_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          category?: string | null
+          thumbnail_url?: string | null
+          provider_info?: Json | null
+          stream_url?: string | null
+          recording_url?: string | null
+          status?: string
+          started_at?: string | null
+          ended_at?: string | null
+          created_by?: string | null
+          viewer_count?: number
+          view_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          category?: string | null
+          thumbnail_url?: string | null
+          provider_info?: Json | null
+          stream_url?: string | null
+          recording_url?: string | null
+          status?: string
+          started_at?: string | null
+          ended_at?: string | null
+          created_by?: string | null
+          viewer_count?: number
+          view_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_streams_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      ,
+      comments: {
+        Row: {
+          id: string
+          video_id: string | null
+          live_stream_id: string | null
+          user_id: string
+          body: string
+          parent_id: string | null
+          deleted: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          video_id?: string | null
+          live_stream_id?: string | null
+          user_id: string
+          body: string
+          parent_id?: string | null
+          deleted?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          video_id?: string | null
+          live_stream_id?: string | null
+          user_id?: string
+          body?: string
+          parent_id?: string | null
+          deleted?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      ,
+      likes: {
+        Row: {
+          id: string
+          video_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          video_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          video_id?: string
+          user_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

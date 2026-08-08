@@ -60,8 +60,10 @@ const SoftwareAcademy = () => {
 
   useEffect(() => {
     const state: any = (location && (location as any).state) || {};
-    if (!state) return;
-    if (state.course) {
+    const params = new URLSearchParams(location.search || "");
+    const qCourseId = params.get("courseId");
+
+    if (state && state.course) {
       const c: Course = state.course;
       if (c && c.id) {
         setForm((f) => ({ ...f, course_title: c.title, course_id: c.id }));
@@ -71,12 +73,23 @@ const SoftwareAcademy = () => {
       }
       return;
     }
-    if (state.courseId) {
+
+    // prefer explicit state.courseId, then query param
+    const courseIdToUse = state.courseId || qCourseId;
+    if (courseIdToUse) {
       if (courses.length === 0) return;
-      const found = courses.find((x) => x.id === state.courseId);
+      const found = courses.find((x) => x.id === courseIdToUse);
       if (found) {
         setForm((f) => ({ ...f, course_title: found.title, course_id: found.id }));
         setSelectedCourse(found);
+        setOpen(true);
+        // clear state and query from history
+        navigate(location.pathname, { replace: true, state: {} });
+      } else {
+        // If the course isn't found in the fetched list (e.g. DB differs),
+        // prefill the title with the provided courseId and open the dialog.
+        setForm((f) => ({ ...f, course_title: String(courseIdToUse), course_id: "" }));
+        setSelectedCourse(null);
         setOpen(true);
         navigate(location.pathname, { replace: true, state: {} });
       }

@@ -11,9 +11,9 @@ const departments = [
     items: ["English", "French", "German (Deutsch)", "Chinese (Mandarin)"],
   },
   {
-    title: "ICT & Digital Skills",
+    title: "ICT & Data Analysis",
     icon: MonitorPlay,
-    items: ["Computer Basics", "Microsoft Office", "Internet & Email", "Graphic Design", "Web Development", "Software Development", "Data Analysis"],
+    items: ["Computer Basics", "Microsoft Office", "Internet & Email", "Data Analysis", "Excel & Spreadsheets", "Power BI", "SQL Basics"],
   },
   {
     title: "Multimedia Department",
@@ -30,7 +30,7 @@ const departments = [
 const featuredCourses = [
   { title: "English", instructor: "Ms. Alice Uwase", duration: "8 weeks", fee: "RWF 45,000", seats: 18 },
   { title: "Graphic Design", instructor: "Mr. Eric Niyonkuru", duration: "10 weeks", fee: "RWF 70,000", seats: 12 },
-  { title: "Software Development", instructor: "Mr. Daniel Mugisha", duration: "12 weeks", fee: "RWF 95,000", seats: 10 },
+  { title: "Data Analysis", instructor: "Mr. Daniel Mugisha", duration: "12 weeks", fee: "RWF 95,000", seats: 10 },
 ];
 
 const Software = () => {
@@ -51,7 +51,7 @@ const Software = () => {
             <Link to="/software/booking">
               <Button size="lg" className="gap-2">View Current Intakes <ArrowRight className="h-4 w-4" /></Button>
             </Link>
-            <Link to="/software/academy">
+            <Link to="/software/booking">
               <Button size="lg" variant="outline" className="gap-2"><GraduationCap className="h-4 w-4" /> Apply Now</Button>
             </Link>
           </div>
@@ -83,6 +83,13 @@ const Software = () => {
                       </li>
                     ))}
                   </ul>
+                  <Link
+                    to="/software/booking"
+                    state={{ department: department.title }}
+                    className="mt-6 inline-flex"
+                  >
+                    <Button size="sm" className="gap-2">Apply in this department <ArrowRight className="h-3 w-3" /></Button>
+                  </Link>
                 </div>
               );
             })}
@@ -110,7 +117,7 @@ const Software = () => {
                   <li>Tuition Fee: {course.fee}</li>
                   <li>Remaining Seats: {course.seats}</li>
                 </ul>
-                <Link to="/software/academy" className="mt-5 inline-flex">
+                <Link to="/software/booking" state={{ department: course.title }} className="mt-5 inline-flex">
                   <Button size="sm" className="gap-2">Apply Now <ArrowRight className="h-3 w-3" /></Button>
                 </Link>
               </div>

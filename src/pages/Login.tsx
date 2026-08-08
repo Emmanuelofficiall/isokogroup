@@ -22,22 +22,41 @@ const Login = () => {
   const { isActive } = useSubscription();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const form = new FormData(e.currentTarget);
-    const { error } = await signIn(form.get("email") as string, form.get("password") as string);
-    setLoading(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
+
+    try {
+      const { error } = await signIn(form.get("email") as string, form.get("password") as string);
+      setLoading(false);
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message || "Unable to log in. Check your credentials and network connection.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       toast({ title: "Success", description: "Logged in successfully!" });
       setSuccess(true);
       setTimeout(() => {
         if (!isActive) navigate("/subscription");
         else navigate("/");
       }, 3000);
+    } catch (err) {
+      setLoading(false);
+      toast({
+        title: "Error",
+        description:
+          err instanceof Error
+            ? err.message
+            : "Unable to log in. Verify your Supabase settings and network connection.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -45,17 +64,33 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     const form = new FormData(e.currentTarget);
-    const { error } = await signUp(
-      form.get("email") as string,
-      form.get("password") as string,
-      form.get("fullname") as string,
-    );
-    setLoading(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Success", description: "Account created! Check your email to verify." });
+
+    try {
+      const { error } = await signUp(
+        form.get("email") as string,
+        form.get("password") as string,
+        form.get("fullname") as string,
+      );
+      setLoading(false);
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Success", description: "Account created! Check your email to verify." });
+      }
+    } catch (err) {
+      setLoading(false);
+      toast({
+        title: "Error",
+        description:
+          err instanceof Error
+            ? err.message
+            : "Unable to register. Verify your Supabase settings and network connection.",
+        variant: "destructive",
+      });
+      return;
     }
+    setActiveTab("login");
+    toast({ title: "Success", description: "Account created! Please login with your new credentials." });
   };
 
   return (
@@ -97,7 +132,7 @@ const Login = () => {
           </AnimatePresence>
 
           <div className="rounded-xl border border-border bg-card p-6">
-            <Tabs defaultValue="login">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")}> 
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">{t("auth.login")}</TabsTrigger>
                 <TabsTrigger value="register">{t("auth.register")}</TabsTrigger>

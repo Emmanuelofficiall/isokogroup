@@ -17,7 +17,7 @@ const translations: Record<string, Record<Lang, string>> = {
 
   // Hero
   "hero.badge": { en: "Welcome to ISOKO GROUP", rw: "Murakaza neza kuri ISOKO GROUP" },
-  "hero.title1": { en: "Your All-in-One Platform for", rw: "Urubuga rwanyu rw'ibintu byose ku" },
+  "hero.title1": { en: "All-in-One Platform for", rw: "Urubuga rwanyu rw'ibintu byose ku" },
   "hero.logistics": { en: "Logistics", rw: "Gutwara" },
   "hero.marketplace": { en: "Marketplace", rw: "Isoko" },
   "hero.knowledge": { en: "Knowledge", rw: "Ubumenyi" },

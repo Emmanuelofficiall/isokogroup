@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
+import TrainingAIHelper from "@/components/TrainingAIHelper";
 
 const COLORS = [
   "hsl(0, 85%, 50%)", "hsl(220, 80%, 55%)", "hsl(140, 70%, 45%)",
@@ -240,6 +241,10 @@ const DataAnalysis = () => {
       </div>
 
       <div ref={reportRef} className="space-y-6 bg-background p-2">
+      <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+        <TrainingAIHelper />
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {kpis.map((k) => (
           <Card key={k.label} className="hover-lift">
