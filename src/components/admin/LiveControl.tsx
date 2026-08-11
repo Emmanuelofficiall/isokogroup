@@ -12,6 +12,8 @@ const LiveControl = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Entertainment");
   const [thumbnail, setThumbnail] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => { if (user) fetchList(); }, [user]);
 
@@ -22,16 +24,61 @@ const LiveControl = () => {
 
   const createLive = async () => {
     if (!user) return toast({ title: "Not signed in", variant: "destructive" });
-    const { error } = await supabase.from("live_streams").insert({ title, description, category, thumbnail_url: thumbnail, created_by: user.id, status: "scheduled" });
-    if (error) return toast({ title: "Failed", description: error.message, variant: "destructive" });
-    toast({ title: "Scheduled" });
-    setTitle(""); setDescription(""); setThumbnail("");
-    fetchList();
+    let thumbnail_url = thumbnail || null;
+    try {
+      if (file) {
+        const ext = file.name.split(".").pop() || "jpg";
+        const key = `thumbnails/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("thumbnails").upload(key, file, { upsert: true });
+        if (uploadError) {
+          console.error("thumbnail upload error:", uploadError);
+          // Friendly guidance if bucket missing, but do not block creation if admin provided a pasted URL
+          if ((uploadError.message || "").toLowerCase().includes("bucket not found")) {
+            toast({ title: "Upload failed", description: "Storage bucket 'thumbnails' not found. Create the bucket in Supabase or paste a thumbnail URL.", variant: "destructive" });
+          } else {
+            toast({ title: "Upload failed", description: String(uploadError), variant: "destructive" });
+          }
+          // proceed without upload (use pasted thumbnail if any)
+        } else {
+          const { data: urlData } = await supabase.storage.from("thumbnails").getPublicUrl(key);
+          thumbnail_url = (urlData as any)?.publicUrl || thumbnail_url;
+        }
+      }
+
+      const { error } = await supabase.from("live_streams").insert({ title, description, category, thumbnail_url, created_by: user.id, status: "scheduled" });
+      if (error) throw error;
+      toast({ title: "Scheduled" });
+      setTitle(""); setDescription(""); setThumbnail(""); setFile(null); setPreviewUrl(null);
+      fetchList();
+    } catch (e: any) {
+      toast({ title: "Failed", description: e?.message || String(e), variant: "destructive" });
+    }
+  };
+
+  const handleFile = (f?: File) => {
+    if (!f) return;
+    setFile(f);
+    try {
+      const url = URL.createObjectURL(f);
+      setPreviewUrl(url);
+    } catch (e) {
+      setPreviewUrl(null);
+    }
   };
 
   const startLive = async (id: string) => {
-    const { error } = await supabase.from("live_streams").update({ status: "live", started_at: new Date().toISOString() }).eq("id", id);
-    if (error) return toast({ title: "Failed to start", description: error.message, variant: "destructive" });
+    console.debug("startLive: updating live_streams", id);
+    const { data, error } = await supabase
+      .from("live_streams")
+      .update({ status: "live", started_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+      .maybeSingle();
+    if (error) {
+      console.error("startLive error:", error);
+      return toast({ title: "Failed to start", description: error.message, variant: "destructive" });
+    }
+    console.debug("startLive result:", data);
     toast({ title: "Live started" });
     fetchList();
   };
@@ -58,6 +105,23 @@ const LiveControl = () => {
           <input className="w-full p-2 border border-border rounded mb-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
           <input className="w-full p-2 border border-border rounded mb-2" placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} />
           <input className="w-full p-2 border border-border rounded mb-2" placeholder="Thumbnail URL" value={thumbnail} onChange={(e) => setThumbnail(e.target.value)} />
+          <div className="mb-2">
+            <label className="text-sm">Or upload thumbnail</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const f = e.target.files && e.target.files[0];
+                if (f) handleFile(f);
+              }}
+              className="w-full mt-1"
+            />
+          </div>
+          {previewUrl && (
+            <div className="mb-2">
+              <img src={previewUrl} alt="preview" className="w-48 h-auto rounded" />
+            </div>
+          )}
           <textarea className="w-full p-2 border border-border rounded mb-2" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
           <div className="flex gap-2 justify-end">
             <button className="px-4 py-2 bg-primary text-white rounded" onClick={createLive}>Create</button>
