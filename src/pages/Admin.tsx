@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import CouriersAdmin from "@/components/admin/CouriersAdmin";
 import LiveControl from "@/components/admin/LiveControl";
+import TrainingCenterAdmin from "@/components/admin/TrainingCenterAdmin";
 import VideoManager from "@/components/admin/VideoManager";
 import DeliveriesAnalytics from "@/components/admin/DeliveriesAnalytics";
 import DataAnalysis from "@/components/admin/DataAnalysis";
@@ -550,6 +551,7 @@ const Admin = () => {
               <TabsTrigger value="videos">Videos</TabsTrigger>
               <TabsTrigger value="payouts">Payouts</TabsTrigger>
               <TabsTrigger value="software">Software</TabsTrigger>
+              <TabsTrigger value="training">Training Centre</TabsTrigger>
               <TabsTrigger value="live">Live Streams</TabsTrigger>
             </TabsList>
 
@@ -1412,6 +1414,8 @@ const Admin = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="training"><TrainingCenterAdmin /></TabsContent>
 
             <TabsContent value="live"><LiveControl /></TabsContent>
           </Tabs>

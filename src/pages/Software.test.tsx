@@ -34,6 +34,6 @@ describe("Software page", () => {
     const departmentChoices = screen.getAllByRole("link", { name: /apply in this department/i });
 
     expect(departmentChoices.length).toBeGreaterThan(0);
-    expect(departmentChoices[0]).toHaveAttribute("href", "/software/booking");
+    expect(departmentChoices[0]).toHaveAttribute("href", "/software/booking?department=languages");
   });
 });

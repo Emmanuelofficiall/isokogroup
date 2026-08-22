@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { CalendarDays, ChevronRight, Clock, Globe, MapPin, Users, Award, Monitor, Pencil, Video, Layers, BookOpen, BrainCircuit, Camera, Languages } from "lucide-react";
 
 const categories = [
@@ -165,15 +166,53 @@ const categoryIcon: Record<string, React.ComponentType<{ className?: string }>> 
   "Vocational Skills": Layers,
 };
 
+type IntakeCourse = (typeof courses)[number];
+
+const categoryForCourse = (title: string) => {
+  const value = title.toLowerCase();
+  if (/english|french|chinese|mandarin|german|language/.test(value)) return "Languages";
+  if (/design|video|photo|audio|multimedia|creative/.test(value)) return "Multimedia & Creative";
+  if (/business|entrepreneur|marketing|sales|management/.test(value)) return "Business & Management";
+  return "ICT & Digital Skills";
+};
+
 const SoftwareBooking = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedSchedule, setSelectedSchedule] = useState("");
   const [selectedMode, setSelectedMode] = useState("");
+  const [adminCourses, setAdminCourses] = useState<IntakeCourse[]>([]);
 
   useEffect(() => {
-    const departmentSelection = (location.state as { department?: string } | null)?.department;
+    const loadAdminCourses = async () => {
+      const { data } = await (supabase as any).from("software_courses").select("*").eq("active", true).order("created_at", { ascending: false });
+      setAdminCourses((data || []).map((course: any) => ({
+        id: course.id,
+        category: categoryForCourse(course.title),
+        title: course.title,
+        instructor: "ISOKO Training Centre",
+        level: course.level || "Beginner",
+        duration: course.duration || "Flexible",
+        schedule: "Flexible schedule",
+        mode: course.mode === "physical" ? "Physical Classes" : course.mode === "hybrid" ? "Hybrid" : "Online Classes",
+        seats: "Available",
+        fee: course.price > 0 ? `RWF ${Number(course.price).toLocaleString()}` : "Free",
+        icon: categoryIcon[categoryForCourse(course.title)] || BookOpen,
+      })));
+    };
+    void loadAdminCourses();
+  }, []);
+
+  const allCourses = useMemo(() => {
+    const existingTitles = new Set(courses.map((course) => course.title.toLowerCase()));
+    return [...courses, ...adminCourses.filter((course) => !existingTitles.has(course.title.toLowerCase()))];
+  }, [adminCourses]);
+
+  useEffect(() => {
+    const stateDepartment = (location.state as { department?: string } | null)?.department;
+    const queryDepartment = new URLSearchParams(location.search).get("department");
+    const departmentSelection = queryDepartment || stateDepartment;
     if (!departmentSelection) return;
 
     const categoryMap: Record<string, string> = {
@@ -181,6 +220,16 @@ const SoftwareBooking = () => {
       "ICT & Digital Skills": "ICT & Digital Skills",
       "Multimedia Department": "Multimedia & Creative",
       "Business Department": "Business & Management",
+      languages: "Languages",
+      ict: "ICT & Digital Skills",
+      multimedia: "Multimedia & Creative",
+      business: "Business & Management",
+      English: "Languages",
+      French: "Languages",
+      Chinese: "Languages",
+      German: "Languages",
+      "Graphic Design": "Multimedia & Creative",
+      "Data Analysis": "ICT & Digital Skills",
     };
 
     const mappedCategory = categoryMap[departmentSelection];
@@ -191,13 +240,13 @@ const SoftwareBooking = () => {
 
   const filteredCourses = useMemo(
     () =>
-      courses.filter((course) => {
+      allCourses.filter((course) => {
         const categoryMatch = selectedCategory === "All Categories" || course.category === selectedCategory;
         const scheduleMatch = !selectedSchedule || course.schedule.includes(selectedSchedule);
         const modeMatch = !selectedMode || course.mode === selectedMode;
         return categoryMatch && scheduleMatch && modeMatch;
       }),
-    [selectedCategory, selectedSchedule, selectedMode]
+    [allCourses, selectedCategory, selectedSchedule, selectedMode]
   );
 
   return (

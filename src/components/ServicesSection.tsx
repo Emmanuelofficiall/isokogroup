@@ -40,7 +40,7 @@ const ServicesSection = () => {
       icon: GraduationCap,
       title: "Training Center",
       description: "Career-focused training in language, digital skills, multimedia and business disciplines.",
-      path: "/software",
+      path: "/training-centre",
     },
     {
       icon: ShoppingCart,

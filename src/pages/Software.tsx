@@ -7,21 +7,25 @@ import { BookOpen, BrainCircuit, Camera, GraduationCap, ArrowRight, Languages, M
 const departments = [
   {
     title: "Language Department",
+    slug: "languages",
     icon: Languages,
     items: ["English", "French", "German (Deutsch)", "Chinese (Mandarin)"],
   },
   {
     title: "ICT & Data Analysis",
+    slug: "ict",
     icon: MonitorPlay,
     items: ["Computer Basics", "Microsoft Office", "Internet & Email", "Data Analysis", "Excel & Spreadsheets", "Power BI", "SQL Basics"],
   },
   {
     title: "Multimedia Department",
+    slug: "multimedia",
     icon: Camera,
     items: ["Graphic Design", "Video Editing", "Photography", "Videography", "Motion Graphics", "Audio Production"],
   },
   {
     title: "Business Department",
+    slug: "business",
     icon: BrainCircuit,
     items: ["Entrepreneurship", "Digital Marketing", "Customer Care", "Sales", "Project Management"],
   },
@@ -84,8 +88,7 @@ const Software = () => {
                     ))}
                   </ul>
                   <Link
-                    to="/software/booking"
-                    state={{ department: department.title }}
+                    to={`/software/booking?department=${department.slug}`}
                     className="mt-6 inline-flex"
                   >
                     <Button size="sm" className="gap-2">Apply in this department <ArrowRight className="h-3 w-3" /></Button>
@@ -117,7 +120,7 @@ const Software = () => {
                   <li>Tuition Fee: {course.fee}</li>
                   <li>Remaining Seats: {course.seats}</li>
                 </ul>
-                <Link to="/software/booking" state={{ department: course.title }} className="mt-5 inline-flex">
+                <Link to={`/software/booking?department=${course.title === "English" ? "languages" : course.title === "Graphic Design" ? "multimedia" : "ict"}`} className="mt-5 inline-flex">
                   <Button size="sm" className="gap-2">Apply Now <ArrowRight className="h-3 w-3" /></Button>
                 </Link>
               </div>

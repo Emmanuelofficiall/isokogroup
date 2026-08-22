@@ -31,7 +31,7 @@ const LiveIndicator = () => {
         // Only show toast on subsequent detections, not the very first load
         if (initialized.current) {
           if (row && prevLiveId.current !== row.id) {
-            toast({ title: "LIVE NOW", description: <Link to={`/videos/${row.id}`}>Watch: {row.title}</Link> });
+            toast({ title: "LIVE NOW", description: <Link to={`/live/${row.id}`}>Watch: {row.title}</Link> });
           }
         }
         setLive(row ? { id: row.id, title: row.title } : null);
@@ -55,7 +55,7 @@ const LiveIndicator = () => {
           if (rec.status === "live") {
             // avoid duplicate toasts for same live id
             if (prevLiveId.current !== rec.id) {
-              toast({ title: "LIVE NOW", description: <Link to={`/videos/${rec.id}`}>Watch: {rec.title}</Link> });
+              toast({ title: "LIVE NOW", description: <Link to={`/live/${rec.id}`}>Watch: {rec.title}</Link> });
             }
             setLive({ id: rec.id, title: rec.title });
             prevLiveId.current = rec.id;
@@ -87,7 +87,7 @@ const LiveIndicator = () => {
 
   if (live) {
     return (
-      <Link to={`/videos/${live.id}`} className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-1.5 text-sm text-muted-foreground animate-fade-in">
+      <Link to={`/live/${live.id}`} className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-1.5 text-sm text-muted-foreground animate-fade-in">
         <span className="h-3 w-3 rounded-full bg-red-600 shadow-[0_0_8px_rgba(239,68,68,0.6)] animate-pulse-fast" />
         <span className="font-semibold">LIVE NOW • {live.title}</span>
       </Link>

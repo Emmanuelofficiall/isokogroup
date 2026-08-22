@@ -38,6 +38,7 @@ import Insights from "./pages/Insights";
 import PageTransition from "./components/PageTransition";
 import Videos from "./pages/Videos";
 import Video from "./pages/Video";
+import Live from "./pages/Live";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,8 @@ const App = () => (
                   <Route path="/e-library" element={<ProtectedRoute><ELibrary /></ProtectedRoute>} />
                   <Route path="/entertainment" element={<ProtectedRoute><Entertainment /></ProtectedRoute>} />
                   <Route path="/software" element={<Software />} />
+                  <Route path="/training-centre" element={<Navigate to="/software" replace />} />
+                  <Route path="/training-center" element={<Navigate to="/software" replace />} />
                   <Route path="/software/booking" element={<SoftwareBooking />} />
                   <Route path="/software/academy" element={<SoftwareAcademy />} />
                   <Route path="/seller" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
@@ -83,6 +86,7 @@ const App = () => (
                   <Route path="/track/:trackingNumber" element={<Track />} />
                   <Route path="/videos" element={<Videos />} />
                   <Route path="/videos/:id" element={<Video />} />
+                  <Route path="/live/:id" element={<Live />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </PageTransition>

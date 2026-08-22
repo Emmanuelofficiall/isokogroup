@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,45 +130,15 @@ const SoftwareAcademy = () => {
       <Header />
       <section className="py-16">
         <div className="container max-w-6xl">
-          <div className="text-center mb-12">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">Training Center</span>
-            <h1 className="text-3xl md:text-5xl font-display font-bold mt-2">Learn. Grow. Lead.</h1>
-            <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Hands-on courses across language, digital, multimedia and business skills — available online or in person.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.length === 0 && (
-              <p className="col-span-full text-center text-muted-foreground py-10">No courses available yet.</p>
-            )}
-            {courses.map((c) => (
-              <div key={c.id} className="rounded-xl border border-border bg-card p-6 hover-lift flex flex-col">
-                <div className="h-11 w-11 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <BookOpen className="h-5 w-5 text-primary" />
+          {open ? (
+            <div className="mx-auto max-w-xl rounded-2xl border border-border bg-card p-6 md:p-8 shadow-lg">
+              <div className="flex items-start justify-between gap-4 mb-6">
+                <div>
+                  <span className="text-sm font-semibold uppercase tracking-wider text-primary">Training Centre Registration</span>
+                  <h1 className="text-2xl md:text-3xl font-display font-bold mt-2">Register for {selectedCourse?.title || form.course_title}</h1>
                 </div>
-                <h3 className="font-semibold text-lg">{c.title}</h3>
-                <p className="text-sm text-muted-foreground mt-1 mb-4 flex-1">{c.description}</p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
-                  <span className="capitalize px-2 py-1 rounded-full bg-muted">{c.level}</span>
-                  <span className="capitalize px-2 py-1 rounded-full bg-muted">{c.mode}</span>
-                  {c.duration && <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{c.duration}</span>}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-primary">{c.price > 0 ? `${c.price.toLocaleString()} RWF` : "Free"}</span>
-                  <Button size="sm" onClick={() => openFor(c)} className="gap-1">
-                    <GraduationCap className="h-3 w-3" /> Register
-                  </Button>
-                </div>
+                <Button type="button" variant="outline" onClick={() => { setOpen(false); setSelectedCourse(null); }}>Back to courses</Button>
               </div>
-            ))}
-          </div>
-
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Register for {selectedCourse?.title || form.course_title}</DialogTitle>
-              </DialogHeader>
               <form onSubmit={onSubmit} className="space-y-4">
                 <div>
                   <Label>Full Name *</Label>
@@ -210,8 +179,28 @@ const SoftwareAcademy = () => {
                   <CheckCircle2 className="h-4 w-4" /> {submitting ? "Submitting..." : "Submit Registration"}
                 </Button>
               </form>
-            </DialogContent>
-          </Dialog>
+            </div>
+          ) : (
+            <>
+              <div className="text-center mb-12">
+                <span className="text-sm font-semibold uppercase tracking-wider text-primary">Training Center</span>
+                <h1 className="text-3xl md:text-5xl font-display font-bold mt-2">Learn. Grow. Lead.</h1>
+                <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">Hands-on courses across language, digital, multimedia and business skills — available online or in person.</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {courses.length === 0 && <p className="col-span-full text-center text-muted-foreground py-10">No courses available yet.</p>}
+                {courses.map((c) => (
+                  <div key={c.id} className="rounded-xl border border-border bg-card p-6 hover-lift flex flex-col">
+                    <div className="h-11 w-11 rounded-lg bg-primary/10 flex items-center justify-center mb-4"><BookOpen className="h-5 w-5 text-primary" /></div>
+                    <h3 className="font-semibold text-lg">{c.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1 mb-4 flex-1">{c.description}</p>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4"><span className="capitalize px-2 py-1 rounded-full bg-muted">{c.level}</span><span className="capitalize px-2 py-1 rounded-full bg-muted">{c.mode}</span>{c.duration && <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{c.duration}</span>}</div>
+                    <div className="flex items-center justify-between"><span className="font-bold text-primary">{c.price > 0 ? `${c.price.toLocaleString()} RWF` : "Free"}</span><Button size="sm" onClick={() => openFor(c)} className="gap-1"><GraduationCap className="h-3 w-3" /> Register</Button></div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
       <Footer />
